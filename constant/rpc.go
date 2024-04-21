@@ -12,8 +12,8 @@ const (
 	WssSuiMainnetEndpoint = "wss://fullnode.mainnet.sui.io"
 
 	FaucetTestnetEndpoint  = "https://faucet.testnet.sui.io/gas"
-	FaucetDevnetEndpoint   = "https://faucet.devnet.sui.io"
-	FaucetLocalnetEndpoint = "http://127.0.0.1:9123"
+	FaucetDevnetEndpoint   = "https://faucet.devnet.sui.io/gas"
+	FaucetLocalnetEndpoint = "http://127.0.0.1:9123/gas"
 )
 
 const (
