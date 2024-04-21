@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -67,7 +67,7 @@ func (h *HttpConn) Request(ctx context.Context, op Operation) ([]byte, error) {
 	}
 	defer rsp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	bodyBytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		return []byte{}, err
 	}

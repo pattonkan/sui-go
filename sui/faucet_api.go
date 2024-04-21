@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/block-vision/sui-go-sdk/constant"
@@ -70,7 +70,7 @@ func faucetRequest(faucetUrl string, body interface{}, headers map[string]string
 
 	defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Read response body error: %s", err.Error()))
 	}
