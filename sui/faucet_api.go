@@ -3,7 +3,6 @@ package sui
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,19 +40,19 @@ func GetFaucetHost(network string) (string, error) {
 	case constant.SuiLocalnet:
 		return constant.FaucetLocalnetEndpoint, nil
 	default:
-		return "", errors.New(fmt.Sprintf("Unknown network: %s", network))
+		return "", fmt.Errorf("unknown network: %s", network)
 	}
 }
 
 func faucetRequest(faucetUrl string, body interface{}, headers map[string]string) error {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Marshal request body error: %s", err.Error()))
+		return fmt.Errorf("marshal request body error: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, faucetUrl, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return errors.New(fmt.Sprintf("Create request error: %s", err.Error()))
+		return fmt.Errorf("create request error: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -65,18 +64,18 @@ func faucetRequest(faucetUrl string, body interface{}, headers map[string]string
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Request faucet error: %s", err.Error()))
+		return fmt.Errorf("request faucet error: %w", err)
 	}
 
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Read response body error: %s", err.Error()))
+		return fmt.Errorf("read response body error: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		return errors.New(fmt.Sprintf("Request faucet failed, statusCode: %d, err: %+v", resp.StatusCode, string(bodyBytes)))
+		return fmt.Errorf("request faucet failed, statusCode: %d, err: %+v", resp.StatusCode, string(bodyBytes))
 	}
 
 	return nil
