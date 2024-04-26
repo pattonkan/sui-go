@@ -98,7 +98,7 @@ type Argument struct {
 func (a Argument) IsBcsEnum() {}
 
 type ProgrammableMoveCall struct {
-	Package       ObjectID
+	Package       *ObjectID
 	Module        move_types.Identifier
 	Function      move_types.Identifier
 	TypeArguments []move_types.TypeTag

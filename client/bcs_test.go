@@ -20,6 +20,8 @@ func TestBCS_TransferObject(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coins := getCoins(t, cli, sender, 2)
 	coin, gas := coins[0], coins[1]
 
@@ -28,7 +30,7 @@ func TestBCS_TransferObject(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.TransferObject(*recipient, []*sui_types.ObjectRef{coin.Reference()})
+	err = ptb.TransferObject(*recipient, []*sui_types.ObjectRef{coin.Reference()})
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -60,6 +62,7 @@ func TestBCS_TransferSui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
 	coin := getCoins(t, cli, sender, 1)[0]
 
 	gasPrice := uint64(1000)
@@ -67,7 +70,7 @@ func TestBCS_TransferSui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.TransferSui(recipient, &amount)
+	err = ptb.TransferSui(recipient, &amount)
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -98,6 +101,7 @@ func TestBCS_PaySui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
 	coin := getCoins(t, cli, sender, 1)[0]
 
 	gasPrice := uint64(1000)
@@ -105,7 +109,7 @@ func TestBCS_PaySui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.PaySui([]sui_types.SuiAddress{*recipient, *recipient}, []uint64{amount, amount})
+	err = ptb.PaySui([]sui_types.SuiAddress{*recipient, *recipient}, []uint64{amount, amount})
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -117,7 +121,7 @@ func TestBCS_PaySui(t *testing.T) {
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
 
-	resp := simulateCheck(t, cli, txBytesBCS, true)
+	resp := dryRunTxn(t, cli, txBytesBCS, true)
 	gasFee := resp.Effects.Data.GasFee()
 	t.Log(gasFee)
 
@@ -139,6 +143,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
 	coins := getCoins(t, cli, sender, 2)
 	coin, coin2 := coins[0], coins[1]
 
@@ -147,7 +152,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.PayAllSui(*recipient)
+	err = ptb.PayAllSui(recipient)
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -182,6 +187,7 @@ func TestBCS_Pay(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
 	coins := getCoins(t, cli, sender, 2)
 	coin, gas := coins[0], coins[1]
 
@@ -190,7 +196,7 @@ func TestBCS_Pay(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.Pay(
+	err = ptb.Pay(
 		[]*sui_types.ObjectRef{coin.Reference()},
 		[]sui_types.SuiAddress{*recipient2, *recipient2},
 		[]uint64{amount, amount},
@@ -206,7 +212,7 @@ func TestBCS_Pay(t *testing.T) {
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
 
-	resp := simulateCheck(t, cli, txBytesBCS, true)
+	resp := dryRunTxn(t, cli, txBytesBCS, true)
 	gasfee := resp.Effects.Data.GasFee()
 	t.Log(gasfee)
 
@@ -230,6 +236,8 @@ func TestBCS_MoveCall(t *testing.T) {
 	gasPrice := uint64(1000)
 
 	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coins := getCoins(t, cli, sender, 2)
 	coin, coin2 := coins[0], coins[1]
 
@@ -260,7 +268,7 @@ func TestBCS_MoveCall(t *testing.T) {
 	ptb.Command(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
-				Package:  *sui_types.SuiSystemAddress,
+				Package:  sui_types.SuiSystemAddress,
 				Module:   sui_system_state.SuiSystemModuleName,
 				Function: sui_types.AddStakeFunName,
 				Arguments: []sui_types.Argument{
@@ -311,7 +319,7 @@ func TestBCS_MoveCall(t *testing.T) {
 	// build & simulate
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
-	resp := simulateCheck(t, cli, txBytesBCS, true)
+	resp := dryRunTxn(t, cli, txBytesBCS, true)
 	t.Log(resp.Effects.Data.GasFee())
 }
 

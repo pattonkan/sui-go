@@ -8,20 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFaucetRequestFund_Devnet(t *testing.T) {
-	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.DevnetFaucetUrl)
+func TestRequestFundFromFaucet_Devnet(t *testing.T) {
+	res, err := client.RequestFundFromFaucet(account.TEST_ADDRESS.String(), client.DevnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("txn digest: ", res)
 }
 
-func TestFaucetRequestFund_Testnet(t *testing.T) {
-	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.TestnetFaucetUrl)
+func TestRequestFundFromFaucet_Testnet(t *testing.T) {
+	res, err := client.RequestFundFromFaucet(account.TEST_ADDRESS.String(), client.TestnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("txn digest: ", res)
 }
 
-func TestFaucetRequestFund_Localnet(t *testing.T) {
-	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.LocalnetFaucetUrl)
+func TestRequestFundFromFaucet_Localnet(t *testing.T) {
+	res, err := client.RequestFundFromFaucet(account.TEST_ADDRESS.String(), client.LocalnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("txn digest: ", res)
 }

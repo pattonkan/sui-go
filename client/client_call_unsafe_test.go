@@ -2,12 +2,11 @@ package client_test
 
 import (
 	"context"
-	"encoding/json"
 	"math/big"
 	"testing"
 
 	"github.com/howjmay/go-sui-sdk/client"
-	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/move_types"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 
 	"github.com/howjmay/go-sui-sdk/account"
@@ -30,7 +29,7 @@ func TestClient_TransferObject(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_TransferSui(t *testing.T) {
@@ -53,7 +52,7 @@ func TestClient_TransferSui(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_PayAllSui(t *testing.T) {
@@ -75,7 +74,7 @@ func TestClient_PayAllSui(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_Pay(t *testing.T) {
@@ -103,7 +102,7 @@ func TestClient_Pay(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_PaySui(t *testing.T) {
@@ -129,7 +128,7 @@ func TestClient_PaySui(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_SplitCoin(t *testing.T) {
@@ -152,7 +151,7 @@ func TestClient_SplitCoin(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, false)
+	dryRunTxn(t, cli, txn.TxBytes, false)
 }
 
 func TestClient_SplitCoinEqual(t *testing.T) {
@@ -174,7 +173,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_MergeCoins(t *testing.T) {
@@ -195,7 +194,7 @@ func TestClient_MergeCoins(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, cli, txn.TxBytes, true)
 }
 
 func TestClient_Publish(t *testing.T) {
@@ -204,16 +203,48 @@ func TestClient_Publish(t *testing.T) {
 
 	// txnBytes, err := cli.Publish(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
-	// simulateCheck(t, cli, txnBytes, M1Account(t))
+	// dryRunTxn(t, cli, txnBytes, M1Account(t))
 }
 
 func TestClient_MoveCall(t *testing.T) {
-	t.Log("TestClient_MoveCall TODO")
-	// cli := DevnetClient(t)
+	cli := TestnetClient(t)
+	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	require.NoError(t, err)
 
-	// txnBytes, err := cli.MoveCall(context.Background(), signer, *coin1, *coin2, nil, 10000)
-	// require.NoError(t, err)
-	// simulateCheck(t, cli, txnBytes, M1Account(t))
+	t.Log("signer: ", account.Address)
+	digest, err := client.RequestFundFromFaucet(account.Address, client.TestnetFaucetUrl)
+	require.NoError(t, err)
+	t.Log("digest: ", digest)
+
+	packageID, err := move_types.NewAccountAddressHex("0x2")
+	require.NoError(t, err)
+	txnBytes, err := cli.MoveCall(
+		context.Background(),
+		account.AccountAddress(),
+		packageID,
+		"address",
+		"length",
+		[]string{},
+		[]any{},
+		nil,
+		types.NewSafeSuiBigInt(uint64(10000000)),
+	)
+	require.NoError(t, err)
+
+	signature, err := account.SignSecureWithoutEncode(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
+	require.NoError(t, err)
+	txnResponse, err := cli.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []any{signature}, &types.SuiTransactionBlockResponseOptions{
+		ShowInput:          true,
+		ShowEffects:        true,
+		ShowEvents:         true,
+		ShowObjectChanges:  true,
+		ShowBalanceChanges: true,
+	}, types.TxnRequestTypeWaitForLocalExecution)
+	require.NoError(t, err)
+	t.Log(txnResponse)
+
+	// try dry-run
+	dryRunTxn(t, cli, txnBytes.TxBytes, true)
 }
 
 func TestClient_BatchTransaction(t *testing.T) {
@@ -222,51 +253,5 @@ func TestClient_BatchTransaction(t *testing.T) {
 
 	// txnBytes, err := cli.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
-	// simulateCheck(t, cli, txnBytes, M1Account(t))
-}
-
-// @return types.DryRunTransactionBlockResponse
-func simulateCheck(
-	t *testing.T,
-	cli *client.Client,
-	txBytes lib.Base64Data,
-	showJson bool,
-) *types.DryRunTransactionBlockResponse {
-	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
-	require.NoError(t, err)
-	require.Equal(t, simulate.Effects.Data.V1.Status.Error, "")
-	require.True(t, simulate.Effects.Data.IsSuccess())
-	if showJson {
-		data, err := json.Marshal(simulate)
-		require.NoError(t, err)
-		t.Log(string(data))
-		t.Log("gasFee: ", simulate.Effects.Data.GasFee())
-	}
-	return simulate
-}
-
-func executeTxn(
-	t *testing.T,
-	cli *client.Client,
-	txBytes lib.Base64Data,
-	acc *account.Account,
-) *types.SuiTransactionBlockResponse {
-	// First of all, make sure that there are no problems with simulated trading.
-	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
-	require.NoError(t, err)
-	require.True(t, simulate.Effects.Data.IsSuccess())
-
-	// sign and send
-	signature, err := acc.SignSecureWithoutEncode(txBytes, sui_types.DefaultIntent())
-	require.NoError(t, err)
-	options := types.SuiTransactionBlockResponseOptions{
-		ShowEffects: true,
-	}
-	resp, err := cli.ExecuteTransactionBlock(
-		context.TODO(), txBytes, []any{signature}, &options,
-		types.TxnRequestTypeWaitForLocalExecution,
-	)
-	require.NoError(t, err)
-	t.Log(resp)
-	return resp
+	// dryRunTxn(t, cli, txnBytes, M1Account(t))
 }

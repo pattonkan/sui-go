@@ -272,9 +272,9 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 }
 
 func (p *ProgrammableTransactionBuilder) MoveCall(
-	packageID ObjectID,
-	module move_types.Identifier,
-	function move_types.Identifier,
+	packageID *ObjectID,
+	module *move_types.Identifier,
+	function *move_types.Identifier,
 	typeArguments []move_types.TypeTag,
 	callArgs []CallArg,
 ) error {
@@ -290,8 +290,8 @@ func (p *ProgrammableTransactionBuilder) MoveCall(
 		Command{
 			MoveCall: &ProgrammableMoveCall{
 				Package:       packageID,
-				Module:        module,
-				Function:      function,
+				Module:        *module,
+				Function:      *function,
 				TypeArguments: typeArguments,
 				Arguments:     arguments,
 			},
@@ -311,7 +311,7 @@ func (p *ProgrammableTransactionBuilder) PaySui(
 	)
 }
 
-func (p *ProgrammableTransactionBuilder) PayAllSui(recipient SuiAddress) error {
+func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error {
 	recArg, err := p.Pure(recipient)
 	if err != nil {
 		return err

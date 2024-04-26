@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/coming-chat/go-aptos/crypto/derivation"
+	"github.com/howjmay/go-sui-sdk/move_types"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
@@ -33,6 +34,17 @@ func NewAccount(scheme sui_types.SignatureScheme, seed []byte) *Account {
 		KeyPair: suiKeyPair,
 		Address: address,
 	}
+}
+
+func (a *Account) AccountAddress() *move_types.AccountAddress {
+	addr := a.Address[2:]
+	data, err := hex.DecodeString(addr)
+	if err != nil {
+		panic(err)
+	}
+	var accountAddress move_types.AccountAddress
+	copy(accountAddress[32-len(data):], data[:])
+	return &accountAddress
 }
 
 func NewAccountWithKeystore(keystore string) (*Account, error) {

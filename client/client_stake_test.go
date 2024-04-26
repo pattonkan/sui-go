@@ -101,7 +101,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txBytes, true)
+	dryRunTxn(t, cli, txBytes, true)
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
@@ -126,5 +126,5 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	txBytes, err := client.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.NoError(t, err)
 
-	simulateCheck(t, cli, txBytes, true)
+	dryRunTxn(t, cli, txBytes, true)
 }
