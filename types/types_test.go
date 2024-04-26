@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewAddressFromHex(t *testing.T) {
-	addr := AddressFromHex(t, "0x2")
+	addr := addressFromHex(t, "0x2")
 	require.Equal(t, addr.ShortString(), "0x2")
 	t.Log(addr)
 }

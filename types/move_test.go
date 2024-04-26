@@ -9,12 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AddressFromHex(t *testing.T, hex string) *sui_types.SuiAddress {
-	addr, err := sui_types.NewAddressFromHex(hex)
-	require.NoError(t, err)
-	return addr
-}
-
 func TestNewResourceType(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -25,16 +19,16 @@ func TestNewResourceType(t *testing.T) {
 		{
 			name: "sample",
 			str:  "0x23::coin::Xxxx",
-			want: &types.ResourceType{AddressFromHex(t, "0x23"), "coin", "Xxxx", nil},
+			want: &types.ResourceType{addressFromHex(t, "0x23"), "coin", "Xxxx", nil},
 		},
 		{
 			name: "three level",
 			str:  "0xabc::Coin::Xxxx<0x789::AAA::ppp<0x111::mod3::func3>>",
 			want: &types.ResourceType{
-				AddressFromHex(t, "0xabc"), "Coin", "Xxxx",
+				addressFromHex(t, "0xabc"), "Coin", "Xxxx",
 				&types.ResourceType{
-					AddressFromHex(t, "0x789"), "AAA", "ppp",
-					&types.ResourceType{AddressFromHex(t, "0x111"), "mod3", "func3", nil},
+					addressFromHex(t, "0x789"), "AAA", "ppp",
+					&types.ResourceType{addressFromHex(t, "0x111"), "mod3", "func3", nil},
 				},
 			},
 		},
@@ -91,15 +85,15 @@ func TestResourceType_ShortString(t *testing.T) {
 		want string
 	}{
 		{
-			arg:  &types.ResourceType{AddressFromHex(t, "0x1"), "m1", "f1", nil},
+			arg:  &types.ResourceType{addressFromHex(t, "0x1"), "m1", "f1", nil},
 			want: "0x1::m1::f1",
 		},
 		{
 			arg: &types.ResourceType{
-				AddressFromHex(t, "0x1"), "m1", "f1",
+				addressFromHex(t, "0x1"), "m1", "f1",
 				&types.ResourceType{
-					AddressFromHex(t, "2"), "m2", "f2",
-					&types.ResourceType{AddressFromHex(t, "0x123abcdef"), "m3", "f3", nil},
+					addressFromHex(t, "2"), "m2", "f2",
+					&types.ResourceType{addressFromHex(t, "0x123abcdef"), "m3", "f3", nil},
 				},
 			},
 			want: "0x1::m1::f1<0x2::m2::f2<0x123abcdef::m3::f3>>",
@@ -114,4 +108,10 @@ func TestResourceType_ShortString(t *testing.T) {
 			},
 		)
 	}
+}
+
+func addressFromHex(t *testing.T, hex string) *sui_types.SuiAddress {
+	addr, err := sui_types.NewAddressFromHex(hex)
+	require.NoError(t, err)
+	return addr
 }
