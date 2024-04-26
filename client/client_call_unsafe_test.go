@@ -35,7 +35,7 @@ func TestClient_TransferObject(t *testing.T) {
 
 func TestClient_TransferSui(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	recipient := signer
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -58,7 +58,7 @@ func TestClient_TransferSui(t *testing.T) {
 
 func TestClient_PayAllSui(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	recipient := signer
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -80,7 +80,7 @@ func TestClient_PayAllSui(t *testing.T) {
 
 func TestClient_Pay(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	recipient := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -108,7 +108,7 @@ func TestClient_Pay(t *testing.T) {
 
 func TestClient_PaySui(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	recipient := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -134,7 +134,7 @@ func TestClient_PaySui(t *testing.T) {
 
 func TestClient_SplitCoin(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
 
@@ -157,7 +157,7 @@ func TestClient_SplitCoin(t *testing.T) {
 
 func TestClient_SplitCoinEqual(t *testing.T) {
 	cli := DevnetClient(t)
-	signer := M1Address(t)
+	signer := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
 

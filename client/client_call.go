@@ -13,9 +13,6 @@ import (
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
 const QUERY_MAX_RESULT_LIMIT = 50
 
-// type sui_types.SuiAddress = sui_types.SuiAddress
-// type sui_types.ObjectID = sui_types.ObjectID
-// type sui_types.TransactionDigest = sui_types.TransactionDigest
 type suiBase64Data = lib.Base64Data
 
 // MARK - Getter Function

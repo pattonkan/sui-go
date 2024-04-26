@@ -39,19 +39,19 @@ func LocalnetClient(t *testing.T) *client.Client {
 	return c
 }
 
-func M1Account(t *testing.T) *account.Account {
-	a, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
-	require.NoError(t, err)
-	return a
-}
+// func M1Account(t *testing.T) *account.Account {
+// 	a, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+// 	require.NoError(t, err)
+// 	return a
+// }
 
-func M1Address(t *testing.T) *sui_types.SuiAddress {
-	return account.TEST_ADDRESS
-}
+// func M1Address(t *testing.T) *sui_types.SuiAddress {
+// 	return account.TEST_ADDRESS
+// }
 
-func Signer(t *testing.T) *account.Account {
-	return M1Account(t)
-}
+// func Signer(t *testing.T) *account.Account {
+// 	return M1Account(t)
+// }
 
 func AddressFromStrMust(str string) *sui_types.SuiAddress {
 	s, _ := sui_types.NewAddressFromHex(str)
