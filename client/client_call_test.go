@@ -16,47 +16,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//func TestClient_BatchGetTransaction(t *testing.T) {
-//	chain := DevnetClient(t)
-//	coins, err := chain.GetCoins(context.TODO(), *Address, nil, nil, 1)
-//	require.NoError(t, err)
-//	object, err := chain.GetObject(context.TODO(), coins.Data[0].CoinObjectID, nil)
-//	require.NoError(t, err)
-//	type args struct {
-//		digests []string
-//	}
-//	tests := []struct {
-//		name    string
-//		chain   *client.Client
-//		args    args
-//		want    int
-//		wantErr bool
-//	}{
-//		{
-//			name:  "test for devnet transaction",
-//			chain: chain,
-//			args: args{
-//				digests: []string{*object.Data.PreviousTransaction},
-//			},
-//			want:    1,
-//			wantErr: false,
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			got, err := tt.chain.BatchGetTransaction(tt.args.digests)
-//			if (err != nil) != tt.wantErr {
-//				t.Errorf("BatchGetTransaction() error: %v, wantErr %v", err, tt.wantErr)
-//				return
-//			}
-//			if len(got) != tt.want {
-//				t.Errorf("BatchGetTransaction() got: %v, want %v", got, tt.want)
-//			}
-//			t.Logf("%+v", got)
-//		})
-//	}
-//}
-
 func Test_TagJson_Owner(t *testing.T) {
 	test := func(str string) lib.TagJson[sui_types.Owner] {
 		var s lib.TagJson[sui_types.Owner]
@@ -100,8 +59,8 @@ func TestClient_DryRunTransaction(t *testing.T) {
 
 	resp, err := cli.DryRunTransaction(context.Background(), tx.TxBytes)
 	require.NoError(t, err)
-	t.Log("dry run status:", resp.Effects.Data.IsSuccess())
-	t.Log("dry run error:", resp.Effects.Data.V1.Status.Error)
+	require.True(t, resp.Effects.Data.IsSuccess())
+	require.Empty(t, resp.Effects.Data.V1.Status.Error)
 }
 
 // TestClient_ExecuteTransactionSerializedSig
@@ -591,7 +550,7 @@ func TestClient_ResolveNameServiceAddress(t *testing.T) {
 	c := MainnetClient(t)
 	addr, err := c.ResolveNameServiceAddress(context.Background(), "2222.sui")
 	require.NoError(t, err)
-	require.Equal(t, addr.String(), "0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9")
+	require.Equal(t, "0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9", addr.String())
 
 	_, err = c.ResolveNameServiceAddress(context.Background(), "2222.suijjzzww")
 	require.ErrorContains(t, err, "not found")
