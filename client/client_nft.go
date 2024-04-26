@@ -11,7 +11,7 @@ import (
 // Create an unsigned transaction to mint a nft at devnet
 func (c *Client) MintNFT(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	nftName, nftDescription, nftUri string,
 	gas *sui_types.ObjectID,
 	gasBudget uint64,
@@ -23,7 +23,7 @@ func (c *Client) MintNFT(
 	return c.MoveCall(
 		ctx,
 		signer,
-		*packageId,
+		packageId,
 		"devnet_nft",
 		"mint",
 		[]string{},
@@ -33,9 +33,9 @@ func (c *Client) MintNFT(
 	)
 }
 
-func (c *Client) GetNFTsOwnedByAddress(ctx context.Context, address sui_types.SuiAddress) ([]types.SuiObjectResponse, error) {
+func (c *Client) GetNFTsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) ([]types.SuiObjectResponse, error) {
 	return c.BatchGetObjectsOwnedByAddress(
-		ctx, address, types.SuiObjectDataOptions{
+		ctx, address, &types.SuiObjectDataOptions{
 			ShowType:    true,
 			ShowContent: true,
 			ShowOwner:   true,

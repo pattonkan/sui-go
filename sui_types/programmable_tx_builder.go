@@ -226,7 +226,7 @@ func (p *ProgrammableTransactionBuilder) TransferObject(
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) TransferSui(recipient SuiAddress, amount *uint64) error {
+func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amount *uint64) error {
 	recArg, err := p.Pure(recipient)
 	if err != nil {
 		return err

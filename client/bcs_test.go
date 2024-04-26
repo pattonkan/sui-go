@@ -42,8 +42,8 @@ func TestBCS_TransferObject(t *testing.T) {
 
 	// build with remote rpc
 	txn, err := cli.TransferObject(
-		context.Background(), *sender, *recipient,
-		coin.CoinObjectID,
+		context.Background(), sender, recipient,
+		&coin.CoinObjectID,
 		&gas.CoinObjectID,
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -67,7 +67,7 @@ func TestBCS_TransferSui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err := ptb.TransferSui(*recipient, &amount)
+	err := ptb.TransferSui(recipient, &amount)
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -81,7 +81,7 @@ func TestBCS_TransferSui(t *testing.T) {
 
 	// build with remote rpc
 	txn, err := cli.TransferSui(
-		context.Background(), *sender, *recipient, coin.CoinObjectID,
+		context.Background(), sender, recipient, &coin.CoinObjectID,
 		types.NewSafeSuiBigInt(amount),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -162,7 +162,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 
 	// build with remote rpc
 	txn, err := cli.PayAllSui(
-		context.Background(), *sender, *recipient,
+		context.Background(), sender, recipient,
 		[]sui_types.ObjectID{
 			coin.CoinObjectID, coin2.CoinObjectID,
 		},
@@ -316,7 +316,7 @@ func TestBCS_MoveCall(t *testing.T) {
 }
 
 func getCoins(t *testing.T, cli *client.Client, sender *sui_types.SuiAddress, needCoinObjNum int) []types.Coin {
-	coins, err := cli.GetCoins(context.Background(), *sender, nil, nil, uint(needCoinObjNum))
+	coins, err := cli.GetCoins(context.Background(), sender, nil, nil, uint(needCoinObjNum))
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= needCoinObjNum)
 	return coins.Data

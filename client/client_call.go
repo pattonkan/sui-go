@@ -18,7 +18,7 @@ type suiBase64Data = lib.Base64Data
 // MARK - Getter Function
 
 // GetBalance to use default sui coin(0x2::sui::SUI) when coinType is empty
-func (c *Client) GetBalance(ctx context.Context, owner sui_types.SuiAddress, coinType string) (*types.Balance, error) {
+func (c *Client) GetBalance(ctx context.Context, owner *sui_types.SuiAddress, coinType string) (*types.Balance, error) {
 	resp := types.Balance{}
 	if coinType == "" {
 		return &resp, c.CallContext(ctx, &resp, getBalance, owner)
@@ -27,13 +27,13 @@ func (c *Client) GetBalance(ctx context.Context, owner sui_types.SuiAddress, coi
 	}
 }
 
-func (c *Client) GetAllBalances(ctx context.Context, owner sui_types.SuiAddress) ([]types.Balance, error) {
+func (c *Client) GetAllBalances(ctx context.Context, owner *sui_types.SuiAddress) ([]types.Balance, error) {
 	var resp []types.Balance
 	return resp, c.CallContext(ctx, &resp, getAllBalances, owner)
 }
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
-func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address sui_types.SuiAddress) (types.Coins, error) {
+func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (types.Coins, error) {
 	coinType := types.SuiCoinType
 	page, err := c.GetCoins(ctx, address, &coinType, nil, 200)
 	if err != nil {
@@ -46,7 +46,7 @@ func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address sui_type
 // start with the first object when cursor is nil
 func (c *Client) GetCoins(
 	ctx context.Context,
-	owner sui_types.SuiAddress,
+	owner *sui_types.SuiAddress,
 	coinType *string,
 	cursor *sui_types.ObjectID,
 	limit uint,
@@ -59,7 +59,7 @@ func (c *Client) GetCoins(
 // start with the first object when cursor is nil
 func (c *Client) GetAllCoins(
 	ctx context.Context,
-	owner sui_types.SuiAddress,
+	owner *sui_types.SuiAddress,
 	cursor *sui_types.ObjectID,
 	limit uint,
 ) (*types.CoinPage, error) {
@@ -74,7 +74,7 @@ func (c *Client) GetCoinMetadata(ctx context.Context, coinType string) (*types.S
 
 func (c *Client) GetObject(
 	ctx context.Context,
-	objID sui_types.ObjectID,
+	objID *sui_types.ObjectID,
 	options *types.SuiObjectDataOptions,
 ) (*types.SuiObjectResponse, error) {
 	var resp types.SuiObjectResponse
@@ -96,7 +96,7 @@ func (c *Client) MultiGetObjects(
 // limit : <uint> - Max number of items returned per page, default to [QUERY_MAX_RESULT_LIMIT_OBJECTS] if is 0
 func (c *Client) GetOwnedObjects(
 	ctx context.Context,
-	address sui_types.SuiAddress,
+	address *sui_types.SuiAddress,
 	query *types.SuiObjectResponseQuery,
 	cursor *types.CheckpointedObjectID,
 	limit *uint,
@@ -123,8 +123,8 @@ func (c *Client) GetLatestCheckpointSequenceNumber(ctx context.Context) (string,
 // BatchGetObjectsOwnedByAddress @param filterType You can specify filtering out the specified resources, this will fetch all resources if it is not empty ""
 func (c *Client) BatchGetObjectsOwnedByAddress(
 	ctx context.Context,
-	address sui_types.SuiAddress,
-	options types.SuiObjectDataOptions,
+	address *sui_types.SuiAddress,
+	options *types.SuiObjectDataOptions,
 	filterType string,
 ) ([]types.SuiObjectResponse, error) {
 	filterType = strings.TrimSpace(filterType)
@@ -137,8 +137,8 @@ func (c *Client) BatchGetObjectsOwnedByAddress(
 
 func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 	ctx context.Context,
-	address sui_types.SuiAddress,
-	options types.SuiObjectDataOptions,
+	address *sui_types.SuiAddress,
+	options *types.SuiObjectDataOptions,
 	filter func(*types.SuiObjectData) bool,
 ) ([]types.SuiObjectResponse, error) {
 	query := types.SuiObjectResponseQuery{
@@ -161,7 +161,7 @@ func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 		objIds = append(objIds, obj.Data.ObjectID)
 	}
 
-	return c.MultiGetObjects(ctx, objIds, &options)
+	return c.MultiGetObjects(ctx, objIds, options)
 }
 
 func (c *Client) GetTransactionBlock(
@@ -185,7 +185,7 @@ func (c *Client) GetEvents(ctx context.Context, digest sui_types.TransactionDige
 
 func (c *Client) TryGetPastObject(
 	ctx context.Context,
-	objectId sui_types.ObjectID,
+	objectId *sui_types.ObjectID,
 	version uint64,
 	options *types.SuiObjectDataOptions,
 ) (*types.SuiPastObjectResponse, error) {
@@ -195,7 +195,7 @@ func (c *Client) TryGetPastObject(
 
 func (c *Client) DevInspectTransactionBlock(
 	ctx context.Context,
-	senderAddress sui_types.SuiAddress,
+	senderAddress *sui_types.SuiAddress,
 	txByte suiBase64Data,
 	gasPrice *types.SafeSuiBigInt[uint64],
 	epoch *uint64,
@@ -223,8 +223,8 @@ func (c *Client) ExecuteTransactionBlock(
 // TransferObject Create an unsigned transaction to transfer an object from one address to another. The object's type must allow public transfers
 func (c *Client) TransferObject(
 	ctx context.Context,
-	signer, recipient sui_types.SuiAddress,
-	objID sui_types.ObjectID,
+	signer, recipient *sui_types.SuiAddress,
+	objID *sui_types.ObjectID,
 	gas *sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
@@ -234,7 +234,7 @@ func (c *Client) TransferObject(
 
 // TransferSui Create an unsigned transaction to send SUI coin object to a Sui address. The SUI object is also used as the gas object.
 func (c *Client) TransferSui(
-	ctx context.Context, signer, recipient sui_types.SuiAddress, suiObjID sui_types.ObjectID, amount,
+	ctx context.Context, signer, recipient *sui_types.SuiAddress, suiObjID *sui_types.ObjectID, amount,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
@@ -244,7 +244,7 @@ func (c *Client) TransferSui(
 // PayAllSui Create an unsigned transaction to send all SUI coins to one recipient.
 func (c *Client) PayAllSui(
 	ctx context.Context,
-	signer, recipient sui_types.SuiAddress,
+	signer, recipient *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
@@ -254,9 +254,9 @@ func (c *Client) PayAllSui(
 
 func (c *Client) Pay(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
-	recipients []sui_types.SuiAddress,
+	recipients []*sui_types.SuiAddress,
 	amount []types.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
@@ -267,9 +267,9 @@ func (c *Client) Pay(
 
 func (c *Client) PaySui(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
-	recipients []sui_types.SuiAddress,
+	recipients []*sui_types.SuiAddress,
 	amount []types.SafeSuiBigInt[uint64],
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
@@ -280,8 +280,8 @@ func (c *Client) PaySui(
 // SplitCoin Create an unsigned transaction to split a coin object into multiple coins.
 func (c *Client) SplitCoin(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
-	Coin sui_types.ObjectID,
+	signer *sui_types.SuiAddress,
+	Coin *sui_types.ObjectID,
 	splitAmounts []types.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
@@ -293,8 +293,8 @@ func (c *Client) SplitCoin(
 // SplitCoinEqual Create an unsigned transaction to split a coin object into multiple equal-size coins.
 func (c *Client) SplitCoinEqual(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
-	Coin sui_types.ObjectID,
+	signer *sui_types.SuiAddress,
+	Coin *sui_types.ObjectID,
 	splitCount types.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
@@ -306,8 +306,8 @@ func (c *Client) SplitCoinEqual(
 // MergeCoins Create an unsigned transaction to merge multiple coins into one coin.
 func (c *Client) MergeCoins(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
-	primaryCoin, coinToMerge sui_types.ObjectID,
+	signer *sui_types.SuiAddress,
+	primaryCoin, coinToMerge *sui_types.ObjectID,
 	gas *sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
@@ -317,10 +317,10 @@ func (c *Client) MergeCoins(
 
 func (c *Client) Publish(
 	ctx context.Context,
-	sender sui_types.SuiAddress,
+	sender *sui_types.SuiAddress,
 	compiledModules []*suiBase64Data,
 	dependencies []sui_types.ObjectID,
-	gas sui_types.ObjectID,
+	gas *sui_types.ObjectID,
 	gasBudget uint,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
@@ -333,8 +333,8 @@ func (c *Client) Publish(
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
 func (c *Client) MoveCall(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
-	packageId sui_types.ObjectID,
+	signer *sui_types.SuiAddress,
+	packageId *sui_types.ObjectID,
 	module, function string,
 	typeArgs []string,
 	arguments []any,
@@ -360,7 +360,7 @@ func (c *Client) MoveCall(
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
 func (c *Client) BatchTransaction(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	txnParams []map[string]interface{},
 	gas *sui_types.ObjectID,
 	gasBudget uint64,
@@ -395,13 +395,13 @@ func (c *Client) ResolveNameServiceAddress(ctx context.Context, suiName string) 
 }
 
 func (c *Client) ResolveNameServiceNames(ctx context.Context,
-	owner sui_types.SuiAddress, cursor *sui_types.ObjectID, limit *uint) (*types.SuiNamePage, error) {
+	owner *sui_types.SuiAddress, cursor *sui_types.ObjectID, limit *uint) (*types.SuiNamePage, error) {
 	var resp types.SuiNamePage
 	return &resp, c.CallContext(ctx, &resp, resolveNameServiceNames, owner, cursor, limit)
 }
 
 func (c *Client) GetDynamicFields(
-	ctx context.Context, parentObjectID sui_types.ObjectID, cursor *sui_types.ObjectID,
+	ctx context.Context, parentObjectID *sui_types.ObjectID, cursor *sui_types.ObjectID,
 	limit *uint,
 ) (*types.DynamicFieldPage, error) {
 	var resp types.DynamicFieldPage
@@ -409,7 +409,7 @@ func (c *Client) GetDynamicFields(
 }
 
 func (c *Client) GetDynamicFieldObject(
-	ctx context.Context, parentObjectID sui_types.ObjectID,
+	ctx context.Context, parentObjectID *sui_types.ObjectID,
 	name sui_types.DynamicFieldName,
 ) (*types.SuiObjectResponse, error) {
 	var resp types.SuiObjectResponse

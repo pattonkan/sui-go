@@ -17,7 +17,7 @@ func TestAccountSignAndSend(t *testing.T) {
 
 	cli := TestnetClient(t)
 	signer := AddressFromStrMust(account.Address)
-	coins, err := cli.GetSuiCoinsOwnedByAddress(context.Background(), *signer)
+	coins, err := cli.GetSuiCoinsOwnedByAddress(context.Background(), signer)
 	require.NoError(t, err)
 	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
 
@@ -26,7 +26,7 @@ func TestAccountSignAndSend(t *testing.T) {
 		coinIDs[i] = c.CoinObjectID
 	}
 	gasBudget := types.NewSafeSuiBigInt(uint64(10000000))
-	txn, err := cli.PayAllSui(context.Background(), *signer, *signer, coinIDs, gasBudget)
+	txn, err := cli.PayAllSui(context.Background(), signer, signer, coinIDs, gasBudget)
 	require.NoError(t, err)
 
 	resp := executeTxn(t, cli, txn.TxBytes, account)

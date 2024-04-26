@@ -84,7 +84,7 @@ func Test_TagJson_Owner(t *testing.T) {
 func TestClient_DryRunTransaction(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
@@ -92,7 +92,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 	tx, err := cli.PayAllSui(
-		context.Background(), *signer, *signer,
+		context.Background(), signer, signer,
 		pickedCoins.CoinIds(),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -145,7 +145,7 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 		ShowContent: true,
 	}
 	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", types.SuiCoinType)
-	filterObject, err := cli.BatchGetObjectsOwnedByAddress(context.TODO(), *account.TEST_ADDRESS, options, coinType)
+	filterObject, err := cli.BatchGetObjectsOwnedByAddress(context.TODO(), account.TEST_ADDRESS, &options, coinType)
 	require.NoError(t, err)
 	t.Log(filterObject)
 }
@@ -159,7 +159,7 @@ func TestClient_GetCoinMetadata(t *testing.T) {
 
 func TestClient_GetAllBalances(t *testing.T) {
 	chain := DevnetClient(t)
-	balances, err := chain.GetAllBalances(context.TODO(), *account.TEST_ADDRESS)
+	balances, err := chain.GetAllBalances(context.TODO(), account.TEST_ADDRESS)
 	require.NoError(t, err)
 	for _, balance := range balances {
 		t.Logf(
@@ -172,7 +172,7 @@ func TestClient_GetAllBalances(t *testing.T) {
 
 func TestClient_GetBalance(t *testing.T) {
 	chain := DevnetClient(t)
-	balance, err := chain.GetBalance(context.TODO(), *account.TEST_ADDRESS, "")
+	balance, err := chain.GetBalance(context.TODO(), account.TEST_ADDRESS, "")
 	require.NoError(t, err)
 	t.Logf(
 		"Coin Name: %v, Count: %v, Total: %v, Locked: %v",
@@ -184,7 +184,7 @@ func TestClient_GetBalance(t *testing.T) {
 func TestClient_GetCoins(t *testing.T) {
 	chain := DevnetClient(t)
 	defaultCoinType := types.SuiCoinType
-	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, &defaultCoinType, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), account.TEST_ADDRESS, &defaultCoinType, nil, 1)
 	require.NoError(t, err)
 	t.Logf("%#v", coins)
 }
@@ -193,7 +193,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 	chain := DevnetClient(t)
 	type args struct {
 		ctx     context.Context
-		address sui_types.SuiAddress
+		address *sui_types.SuiAddress
 		cursor  *sui_types.ObjectID
 		limit   uint
 	}
@@ -209,7 +209,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 			chain: chain,
 			args: args{
 				ctx:     context.TODO(),
-				address: *account.TEST_ADDRESS,
+				address: account.TEST_ADDRESS,
 				cursor:  nil,
 				limit:   3,
 			},
@@ -259,7 +259,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 		objId, err := sui_types.NewAddressFromHex(idstr)
 		require.NoError(t, err)
 		obj, err := cli.GetObject(
-			context.Background(), *objId, &types.SuiObjectDataOptions{
+			context.Background(), objId, &types.SuiObjectDataOptions{
 				ShowType:    true,
 				ShowContent: true,
 			},
@@ -268,13 +268,13 @@ func TestBatchCall_GetObject(t *testing.T) {
 		t.Log(obj.Data)
 	}
 
-	coins, err := cli.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 3)
+	coins, err := cli.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 3)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		return
 	}
 	objId := coins.Data[0].CoinObjectID
-	obj, err := cli.GetObject(context.Background(), objId, nil)
+	obj, err := cli.GetObject(context.Background(), &objId, nil)
 	require.NoError(t, err)
 	t.Log(obj.Data)
 }
@@ -282,10 +282,10 @@ func TestBatchCall_GetObject(t *testing.T) {
 func TestClient_GetObject(t *testing.T) {
 	type args struct {
 		ctx   context.Context
-		objID sui_types.ObjectID
+		objID *sui_types.ObjectID
 	}
 	chain := DevnetClient(t)
-	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -300,7 +300,7 @@ func TestClient_GetObject(t *testing.T) {
 			chain: chain,
 			args: args{
 				ctx:   context.TODO(),
-				objID: coins.Data[0].CoinObjectID,
+				objID: &coins.Data[0].CoinObjectID,
 			},
 			want:    3,
 			wantErr: false,
@@ -332,7 +332,7 @@ func TestClient_GetObject(t *testing.T) {
 
 func TestClient_MultiGetObjects(t *testing.T) {
 	chain := DevnetClient(t)
-	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		t.Log("Warning: No Object Id for test.")
@@ -372,7 +372,7 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 		},
 	}
 	limit := uint(1)
-	objs, err := cli.GetOwnedObjects(context.Background(), *account.TEST_ADDRESS, &query, nil, &limit)
+	objs, err := cli.GetOwnedObjects(context.Background(), account.TEST_ADDRESS, &query, nil, &limit)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(objs.Data), int(limit))
 }
@@ -487,7 +487,7 @@ func TestClient_TryGetPastObject(t *testing.T) {
 	cli := DevnetClient(t)
 	objId, err := sui_types.NewAddressFromHex("0x11462c88e74bb00079e3c043efb664482ee4551744ee691c7623b98503cb3f4d")
 	require.NoError(t, err)
-	data, err := cli.TryGetPastObject(context.Background(), *objId, 903, nil)
+	data, err := cli.TryGetPastObject(context.Background(), objId, 903, nil)
 	require.NoError(t, err)
 	t.Log(data)
 }
@@ -514,7 +514,7 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 // 	signer := Address
 // 	price, err := chain.GetReferenceGasPrice(context.TODO())
 // 	require.NoError(t, err)
-// 	coins, err := chain.GetCoins(context.Background(), *signer, nil, nil, 10)
+// 	coins, err := chain.GetCoins(context.Background(), signer, nil, nil, 10)
 // 	require.NoError(t, err)
 
 // 	amount := SUI(0.01).Int64()
@@ -522,12 +522,12 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 // 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(amount * 2), 0, false)
 // 	require.NoError(t, err)
 // 	tx, err := chain.PayAllSui(context.Background(),
-// 		*signer, *signer,
+// 		signer, signer,
 // 		pickedCoins.CoinIds(),
 // 		types.NewSafeSuiBigInt(gasBudget))
 // 	require.NoError(t, err)
 
-// 	resp, err := chain.DevInspectTransactionBlock(context.Background(), *signer, tx.TxBytes, price, nil)
+// 	resp, err := chain.DevInspectTransactionBlock(context.Background(), signer, tx.TxBytes, price, nil)
 // 	require.NoError(t, err)
 // 	t.Log(resp)
 // }
@@ -600,13 +600,13 @@ func TestClient_ResolveNameServiceAddress(t *testing.T) {
 func TestClient_ResolveNameServiceNames(t *testing.T) {
 	c := MainnetClient(t)
 	owner := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
-	namePage, err := c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
+	namePage, err := c.ResolveNameServiceNames(context.Background(), owner, nil, nil)
 	require.NoError(t, err)
 	require.NotEmpty(t, namePage.Data)
 	t.Log(namePage.Data)
 
 	owner = AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
-	namePage, err = c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
+	namePage, err = c.ResolveNameServiceNames(context.Background(), owner, nil, nil)
 	require.NoError(t, err)
 	require.Empty(t, namePage.Data)
 }
@@ -667,7 +667,7 @@ func TestClient_GetDynamicFields(t *testing.T) {
 	limit := uint(5)
 	type args struct {
 		ctx            context.Context
-		parentObjectID sui_types.ObjectID
+		parentObjectID *sui_types.ObjectID
 		cursor         *sui_types.ObjectID
 		limit          *uint
 	}
@@ -681,7 +681,7 @@ func TestClient_GetDynamicFields(t *testing.T) {
 			name: "case 1",
 			args: args{
 				ctx:            context.TODO(),
-				parentObjectID: *parentObjectID,
+				parentObjectID: parentObjectID,
 				cursor:         nil,
 				limit:          &limit,
 			},
@@ -707,7 +707,7 @@ func TestClient_GetDynamicFieldObject(t *testing.T) {
 	require.NoError(t, err)
 	type args struct {
 		ctx            context.Context
-		parentObjectID sui_types.ObjectID
+		parentObjectID *sui_types.ObjectID
 		name           sui_types.DynamicFieldName
 	}
 	tests := []struct {
@@ -720,7 +720,7 @@ func TestClient_GetDynamicFieldObject(t *testing.T) {
 			name: "case 1",
 			args: args{
 				ctx:            context.TODO(),
-				parentObjectID: *parentObjectID,
+				parentObjectID: parentObjectID,
 				name: sui_types.DynamicFieldName{
 					Type:  "address",
 					Value: "0xf9ed7d8de1a6c44d703b64318a1cc687c324fdec35454281035a53ea3ba1a95a",

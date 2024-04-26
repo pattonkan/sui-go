@@ -20,7 +20,7 @@ func (c *Client) GetValidatorsApy(ctx context.Context) (*types.ValidatorsApy, er
 	return &resp, c.CallContext(ctx, &resp, getValidatorsApy)
 }
 
-func (c *Client) GetStakes(ctx context.Context, owner sui_types.SuiAddress) ([]types.DelegatedStake, error) {
+func (c *Client) GetStakes(ctx context.Context, owner *sui_types.SuiAddress) ([]types.DelegatedStake, error) {
 	var resp []types.DelegatedStake
 	return resp, c.CallContext(ctx, &resp, getStakes, owner)
 }
@@ -32,10 +32,10 @@ func (c *Client) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.Ob
 
 func (c *Client) RequestAddStake(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	coins []sui_types.ObjectID,
 	amount types.SuiBigInt,
-	validator sui_types.SuiAddress,
+	validator *sui_types.SuiAddress,
 	gas *sui_types.ObjectID,
 	gasBudget types.SuiBigInt,
 ) (*types.TransactionBytes, error) {
@@ -45,7 +45,7 @@ func (c *Client) RequestAddStake(
 
 func (c *Client) RequestWithdrawStake(
 	ctx context.Context,
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	stakedSuiId sui_types.ObjectID,
 	gas *sui_types.ObjectID,
 	gasBudget types.SuiBigInt,
@@ -55,10 +55,10 @@ func (c *Client) RequestWithdrawStake(
 }
 
 func BCS_RequestAddStake(
-	signer sui_types.SuiAddress,
+	signer *sui_types.SuiAddress,
 	coins []*sui_types.ObjectRef,
 	amount types.SafeSuiBigInt[uint64],
-	validator sui_types.SuiAddress,
+	validator *sui_types.SuiAddress,
 	gasBudget, gasPrice uint64,
 ) ([]byte, error) {
 	// build with BCS
@@ -101,12 +101,12 @@ func BCS_RequestAddStake(
 	)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		signer, coins, pt, gasBudget, gasPrice,
+		*signer, coins, pt, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }
 
-func BCS_RequestWithdrawStake(signer sui_types.SuiAddress, stakedSuiRef sui_types.ObjectRef, gas []*sui_types.ObjectRef, gasBudget, gasPrice uint64) ([]byte, error) {
+func BCS_RequestWithdrawStake(signer *sui_types.SuiAddress, stakedSuiRef sui_types.ObjectRef, gas []*sui_types.ObjectRef, gasBudget, gasPrice uint64) ([]byte, error) {
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 	arg0, err := ptb.Obj(sui_types.SuiSystemMutObj)
@@ -131,7 +131,7 @@ func BCS_RequestWithdrawStake(signer sui_types.SuiAddress, stakedSuiRef sui_type
 	})
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		signer, gas, pt, gasBudget, gasPrice,
+		*signer, gas, pt, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }

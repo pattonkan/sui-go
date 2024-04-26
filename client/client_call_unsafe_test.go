@@ -19,14 +19,14 @@ func TestClient_TransferObject(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(coins.Data), 2)
 	coin := coins.Data[0]
 
 	txn, err := cli.TransferObject(
-		context.Background(), *signer, *recipient,
-		coin.CoinObjectID, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
+		context.Background(), signer, recipient,
+		&coin.CoinObjectID, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
 	)
 	require.NoError(t, err)
 
@@ -37,7 +37,7 @@ func TestClient_TransferSui(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.0001).Uint64()
@@ -46,8 +46,8 @@ func TestClient_TransferSui(t *testing.T) {
 	require.NoError(t, err)
 
 	txn, err := cli.TransferSui(
-		context.Background(), *signer, *recipient,
-		pickedCoins.Coins[0].CoinObjectID,
+		context.Background(), signer, recipient,
+		&pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(amount),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -60,7 +60,7 @@ func TestClient_PayAllSui(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.001).Uint64()
@@ -69,7 +69,7 @@ func TestClient_PayAllSui(t *testing.T) {
 	require.NoError(t, err)
 
 	txn, err := cli.PayAllSui(
-		context.Background(), *signer, *recipient,
+		context.Background(), signer, recipient,
 		pickedCoins.CoinIds(),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -82,7 +82,7 @@ func TestClient_Pay(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	recipient := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	limit := len(coins.Data) - 1 // need reserve a coin for gas
 
@@ -92,9 +92,9 @@ func TestClient_Pay(t *testing.T) {
 	require.NoError(t, err)
 
 	txn, err := cli.Pay(
-		context.Background(), *signer,
+		context.Background(), signer,
 		pickedCoins.CoinIds(),
-		[]sui_types.SuiAddress{*recipient},
+		[]*sui_types.SuiAddress{recipient},
 		[]types.SafeSuiBigInt[uint64]{
 			types.NewSafeSuiBigInt(amount),
 		},
@@ -110,7 +110,7 @@ func TestClient_PaySui(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	recipient := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.001).Uint64()
@@ -119,9 +119,9 @@ func TestClient_PaySui(t *testing.T) {
 	require.NoError(t, err)
 
 	txn, err := cli.PaySui(
-		context.Background(), *signer,
+		context.Background(), signer,
 		pickedCoins.CoinIds(),
-		[]sui_types.SuiAddress{*recipient},
+		[]*sui_types.SuiAddress{recipient},
 		[]types.SafeSuiBigInt[uint64]{
 			types.NewSafeSuiBigInt(amount),
 		},
@@ -135,7 +135,7 @@ func TestClient_PaySui(t *testing.T) {
 func TestClient_SplitCoin(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
@@ -145,8 +145,8 @@ func TestClient_SplitCoin(t *testing.T) {
 	splitCoins := []types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount / 2)}
 
 	txn, err := cli.SplitCoin(
-		context.Background(), *signer,
-		pickedCoins.Coins[0].CoinObjectID,
+		context.Background(), signer,
+		&pickedCoins.Coins[0].CoinObjectID,
 		splitCoins,
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -158,7 +158,7 @@ func TestClient_SplitCoin(t *testing.T) {
 func TestClient_SplitCoinEqual(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
@@ -167,8 +167,8 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 	require.NoError(t, err)
 
 	txn, err := cli.SplitCoinEqual(
-		context.Background(), *signer,
-		pickedCoins.Coins[0].CoinObjectID,
+		context.Background(), signer,
+		&pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(uint64(2)),
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -180,7 +180,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 func TestClient_MergeCoins(t *testing.T) {
 	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
+	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= 3)
 
@@ -189,8 +189,8 @@ func TestClient_MergeCoins(t *testing.T) {
 	coin3 := coins.Data[2] // gas coin
 
 	txn, err := cli.MergeCoins(
-		context.Background(), *signer,
-		coin1.CoinObjectID, coin2.CoinObjectID,
+		context.Background(), signer,
+		&coin1.CoinObjectID, &coin2.CoinObjectID,
 		&coin3.CoinObjectID, coin3.Balance,
 	)
 	require.NoError(t, err)
@@ -202,7 +202,7 @@ func TestClient_Publish(t *testing.T) {
 	t.Log("TestClient_Publish TODO")
 	// cli := DevnetClient(t)
 
-	// txnBytes, err := cli.Publish(context.Background(), *signer, *coin1, *coin2, nil, 10000)
+	// txnBytes, err := cli.Publish(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
@@ -211,7 +211,7 @@ func TestClient_MoveCall(t *testing.T) {
 	t.Log("TestClient_MoveCall TODO")
 	// cli := DevnetClient(t)
 
-	// txnBytes, err := cli.MoveCall(context.Background(), *signer, *coin1, *coin2, nil, 10000)
+	// txnBytes, err := cli.MoveCall(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
@@ -220,7 +220,7 @@ func TestClient_BatchTransaction(t *testing.T) {
 	t.Log("TestClient_BatchTransaction TODO")
 	// cli := DevnetClient(t)
 
-	// txnBytes, err := cli.BatchTransaction(context.Background(), *signer, *coin1, *coin2, nil, 10000)
+	// txnBytes, err := cli.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
