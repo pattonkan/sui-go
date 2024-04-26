@@ -24,7 +24,7 @@ func TestClient_GetLatestSuiSystemState(t *testing.T) {
 }
 
 func TestClient_GetValidatorsApy(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	apys, err := cli.GetValidatorsApy(context.Background())
 	require.NoError(t, err)
 	t.Logf("current epoch %v", apys.Epoch)
@@ -36,7 +36,7 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 }
 
 func TestGetDelegatedStakes(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 
 	address, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)

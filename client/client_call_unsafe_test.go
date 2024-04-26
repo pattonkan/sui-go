@@ -34,7 +34,7 @@ func TestClient_TransferObject(t *testing.T) {
 }
 
 func TestClient_TransferSui(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	recipient := signer
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
@@ -57,7 +57,7 @@ func TestClient_TransferSui(t *testing.T) {
 }
 
 func TestClient_PayAllSui(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	recipient := signer
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
@@ -79,7 +79,7 @@ func TestClient_PayAllSui(t *testing.T) {
 }
 
 func TestClient_Pay(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	recipient := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
@@ -107,7 +107,7 @@ func TestClient_Pay(t *testing.T) {
 }
 
 func TestClient_PaySui(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	recipient := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
@@ -133,7 +133,7 @@ func TestClient_PaySui(t *testing.T) {
 }
 
 func TestClient_SplitCoin(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -156,7 +156,7 @@ func TestClient_SplitCoin(t *testing.T) {
 }
 
 func TestClient_SplitCoinEqual(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := M1Address(t)
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -178,7 +178,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 }
 
 func TestClient_MergeCoins(t *testing.T) {
-	cli := ChainClient(t)
+	cli := DevnetClient(t)
 	signer := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -200,7 +200,7 @@ func TestClient_MergeCoins(t *testing.T) {
 
 func TestClient_Publish(t *testing.T) {
 	t.Log("TestClient_Publish TODO")
-	// cli := ChainClient(t)
+	// cli := DevnetClient(t)
 
 	// txnBytes, err := cli.Publish(context.Background(), *signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
@@ -209,7 +209,7 @@ func TestClient_Publish(t *testing.T) {
 
 func TestClient_MoveCall(t *testing.T) {
 	t.Log("TestClient_MoveCall TODO")
-	// cli := ChainClient(t)
+	// cli := DevnetClient(t)
 
 	// txnBytes, err := cli.MoveCall(context.Background(), *signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
@@ -218,7 +218,7 @@ func TestClient_MoveCall(t *testing.T) {
 
 func TestClient_BatchTransaction(t *testing.T) {
 	t.Log("TestClient_BatchTransaction TODO")
-	// cli := ChainClient(t)
+	// cli := DevnetClient(t)
 
 	// txnBytes, err := cli.BatchTransaction(context.Background(), *signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)

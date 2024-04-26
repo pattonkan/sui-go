@@ -6,11 +6,8 @@ import (
 )
 
 const (
-	vsn                    = "2.0"
-	serviceMethodSeparator = "_"
+	version = "2.0"
 )
-
-var null = json.RawMessage("null")
 
 // A value of this type can a JSON-RPC request, notification, successful response or
 // error response. Which one it is depends on the fields.

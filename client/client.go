@@ -158,7 +158,7 @@ func (c *Client) nextID() json.RawMessage {
 }
 
 func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
-	msg := &jsonrpcMessage{Version: vsn, ID: c.nextID(), Method: method}
+	msg := &jsonrpcMessage{Version: version, ID: c.nextID(), Method: method}
 	if paramsIn != nil { // prevent sending "params":null
 		var err error
 		if msg.Params, err = json.Marshal(paramsIn); err != nil {

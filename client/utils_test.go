@@ -2,7 +2,6 @@ package client_test
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/howjmay/go-sui-sdk/client"
@@ -13,10 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	TestAddress, _ = sui_types.NewAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
-)
-
 func MainnetClient(t *testing.T) *client.Client {
 	c := client.Dial(client.MainnetEndpointUrl)
 	return c
@@ -24,7 +19,6 @@ func MainnetClient(t *testing.T) *client.Client {
 
 func TestnetClient(t *testing.T) *client.Client {
 	c := client.Dial(client.TestnetEndpointUrl)
-
 	return c
 }
 
@@ -40,18 +34,9 @@ func DevnetClient(t *testing.T) *client.Client {
 	return c
 }
 
-func ChainClient(t *testing.T) *client.Client {
-	suiEnv := os.Getenv("SUI_NETWORK")
-	switch suiEnv {
-	case "testnet":
-		return TestnetClient(t)
-	case "devnet":
-		return DevnetClient(t)
-	case "":
-		fallthrough
-	default:
-		return TestnetClient(t)
-	}
+func LocalnetClient(t *testing.T) *client.Client {
+	c := client.Dial(client.LocalnetEndpointUrl)
+	return c
 }
 
 func M1Account(t *testing.T) *account.Account {
