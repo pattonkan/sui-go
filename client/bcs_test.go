@@ -17,7 +17,7 @@ import (
 func TestBCS_TransferObject(t *testing.T) {
 	sender := account.TEST_ADDRESS
 	recipient := account.TEST_ADDRESS
-	gasBudget := sui_types.SUI(0.01).Uint64()
+	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	cli := TestnetClient(t)
 	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
@@ -30,7 +30,7 @@ func TestBCS_TransferObject(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.TransferObject(*recipient, []*sui_types.ObjectRef{coin.Reference()})
+	err = ptb.TransferObject(recipient, []*sui_types.ObjectRef{coin.Reference()})
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -63,6 +63,7 @@ func TestBCS_TransferSui(t *testing.T) {
 
 	cli := TestnetClient(t)
 	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coin := getCoins(t, cli, sender, 1)[0]
 
 	gasPrice := uint64(1000)
@@ -102,6 +103,7 @@ func TestBCS_PaySui(t *testing.T) {
 
 	cli := TestnetClient(t)
 	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coin := getCoins(t, cli, sender, 1)[0]
 
 	gasPrice := uint64(1000)
@@ -109,7 +111,7 @@ func TestBCS_PaySui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.PaySui([]sui_types.SuiAddress{*recipient, *recipient}, []uint64{amount, amount})
+	err = ptb.PaySui([]*sui_types.SuiAddress{recipient, recipient}, []uint64{amount, amount})
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -127,7 +129,7 @@ func TestBCS_PaySui(t *testing.T) {
 
 	// build with remote rpc
 	// txn, err := cli.PaySui(context.Background(), *sender, []sui_types.ObjectID{coin.CoinObjectID},
-	// 	[]sui_types.SuiAddress{*recipient, *recipient},
+	// 	[]*sui_types.SuiAddress{recipient, recipient},
 	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
 	// 	types.NewSafeSuiBigInt(gasBudget))
 	// require.NoError(t, err)
@@ -144,6 +146,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 
 	cli := TestnetClient(t)
 	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coins := getCoins(t, cli, sender, 2)
 	coin, coin2 := coins[0], coins[1]
 
@@ -181,13 +184,13 @@ func TestBCS_PayAllSui(t *testing.T) {
 
 func TestBCS_Pay(t *testing.T) {
 	sender := account.TEST_ADDRESS
-	// recipient := sender
-	recipient2, _ := sui_types.NewAddressFromHex("0x123456")
+	recipient, _ := sui_types.NewAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	cli := TestnetClient(t)
 	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
 	coins := getCoins(t, cli, sender, 2)
 	coin, gas := coins[0], coins[1]
 
@@ -198,7 +201,7 @@ func TestBCS_Pay(t *testing.T) {
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 	err = ptb.Pay(
 		[]*sui_types.ObjectRef{coin.Reference()},
-		[]sui_types.SuiAddress{*recipient2, *recipient2},
+		[]*sui_types.SuiAddress{recipient, recipient},
 		[]uint64{amount, amount},
 	)
 	require.NoError(t, err)
@@ -219,7 +222,7 @@ func TestBCS_Pay(t *testing.T) {
 	// build with remote rpc
 	// txn, err := cli.Pay(context.Background(), *sender,
 	// 	[]sui_types.ObjectID{coin.CoinObjectID},
-	// 	[]sui_types.SuiAddress{*recipient, *recipient2},
+	// 	[]*sui_types.SuiAddress{recipient, recipient},
 	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
 	// 	&gas.CoinObjectID,
 	// 	types.NewSafeSuiBigInt(gasBudget))
@@ -232,7 +235,7 @@ func TestBCS_Pay(t *testing.T) {
 
 func TestBCS_MoveCall(t *testing.T) {
 	sender := account.TEST_ADDRESS
-	gasBudget := sui_types.SUI(0.02).Uint64()
+	gasBudget := sui_types.SUI(1).Uint64()
 	gasPrice := uint64(1000)
 
 	cli := TestnetClient(t)

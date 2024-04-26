@@ -196,7 +196,7 @@ func (p *ProgrammableTransactionBuilder) Command(command Command) Argument {
 }
 
 func (p *ProgrammableTransactionBuilder) TransferObject(
-	recipient SuiAddress,
+	recipient *SuiAddress,
 	objectRefs []*ObjectRef,
 ) error {
 	recArg, err := p.Pure(recipient)
@@ -301,7 +301,7 @@ func (p *ProgrammableTransactionBuilder) MoveCall(
 }
 
 func (p *ProgrammableTransactionBuilder) PaySui(
-	recipients []SuiAddress,
+	recipients []*SuiAddress,
 	amounts []uint64,
 ) error {
 	return p.PayMulInternal(
@@ -329,7 +329,7 @@ func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error 
 
 func (p *ProgrammableTransactionBuilder) Pay(
 	coins []*ObjectRef,
-	recipients []SuiAddress,
+	recipients []*SuiAddress,
 	amounts []uint64,
 ) error {
 	if len(coins) == 0 {
@@ -370,7 +370,7 @@ func (p *ProgrammableTransactionBuilder) Pay(
 }
 
 func (p *ProgrammableTransactionBuilder) PayMulInternal(
-	recipients []SuiAddress,
+	recipients []*SuiAddress,
 	amounts []uint64, coin Argument,
 ) error {
 	if len(recipients) != len(amounts) {
@@ -393,9 +393,9 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 		if err != nil {
 			return err
 		}
-		recipientMap[recipients[i]] = append(recipientMap[recipients[i]], i)
-		if len(recipientMap[recipients[i]]) == 1 {
-			recipientMapKeyIndex = append(recipientMapKeyIndex, recipients[i])
+		recipientMap[*recipients[i]] = append(recipientMap[*recipients[i]], i)
+		if len(recipientMap[*recipients[i]]) == 1 {
+			recipientMapKeyIndex = append(recipientMapKeyIndex, *recipients[i])
 		}
 		amtArgs = append(amtArgs, amt)
 	}
