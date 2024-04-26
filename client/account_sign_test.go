@@ -15,9 +15,7 @@ func TestAccountSignAndSend(t *testing.T) {
 }
 
 func ManualTest_AccountSignAndSend(t *testing.T) {
-	unsafeMnemonic := account.TEST_MNEMONIC
-
-	account, err := account.NewAccountWithMnemonic(unsafeMnemonic)
+	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
 	require.NoError(t, err)
 	t.Log(account.Address)
 
@@ -27,12 +25,12 @@ func ManualTest_AccountSignAndSend(t *testing.T) {
 	require.NoError(t, err)
 	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
 
-	coinIds := make([]sui_types.ObjectID, len(coins))
+	coinIDs := make([]sui_types.ObjectID, len(coins))
 	for i, c := range coins {
-		coinIds[i] = c.CoinObjectId
+		coinIDs[i] = c.CoinObjectID
 	}
 	gasBudget := types.NewSafeSuiBigInt(uint64(10000000))
-	txn, err := cli.PayAllSui(context.Background(), *signer, *signer, coinIds, gasBudget)
+	txn, err := cli.PayAllSui(context.Background(), *signer, *signer, coinIDs, gasBudget)
 	require.NoError(t, err)
 
 	resp := executeTxn(t, cli, txn.TxBytes, account)

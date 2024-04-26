@@ -26,7 +26,7 @@ func TestClient_TransferObject(t *testing.T) {
 
 	txn, err := cli.TransferObject(
 		context.Background(), *signer, *recipient,
-		coin.CoinObjectId, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
+		coin.CoinObjectID, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
 	)
 	require.NoError(t, err)
 
@@ -47,7 +47,7 @@ func TestClient_TransferSui(t *testing.T) {
 
 	txn, err := cli.TransferSui(
 		context.Background(), *signer, *recipient,
-		pickedCoins.Coins[0].CoinObjectId,
+		pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(amount),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -146,7 +146,7 @@ func TestClient_SplitCoin(t *testing.T) {
 
 	txn, err := cli.SplitCoin(
 		context.Background(), *signer,
-		pickedCoins.Coins[0].CoinObjectId,
+		pickedCoins.Coins[0].CoinObjectID,
 		splitCoins,
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -168,7 +168,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 
 	txn, err := cli.SplitCoinEqual(
 		context.Background(), *signer,
-		pickedCoins.Coins[0].CoinObjectId,
+		pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(uint64(2)),
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -190,8 +190,8 @@ func TestClient_MergeCoins(t *testing.T) {
 
 	txn, err := cli.MergeCoins(
 		context.Background(), *signer,
-		coin1.CoinObjectId, coin2.CoinObjectId,
-		&coin3.CoinObjectId, coin3.Balance,
+		coin1.CoinObjectID, coin2.CoinObjectID,
+		&coin3.CoinObjectID, coin3.Balance,
 	)
 	require.NoError(t, err)
 
@@ -240,7 +240,7 @@ func simulateCheck(
 		data, err := json.Marshal(simulate)
 		require.NoError(t, err)
 		t.Log(string(data))
-		t.Log("gasFee = ", simulate.Effects.Data.GasFee())
+		t.Log("gasFee: ", simulate.Effects.Data.GasFee())
 	}
 	return simulate
 }

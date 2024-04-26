@@ -12,7 +12,7 @@ var (
 			Id                   ObjectID
 			InitialSharedVersion SequenceNumber
 			Mutable              bool
-		}{Id: *SuiSystemStateObjectId, InitialSharedVersion: SuiSystemStateObjectSharedVersion, Mutable: true},
+		}{Id: *SuiSystemStateObjectID, InitialSharedVersion: SuiSystemStateObjectSharedVersion, Mutable: true},
 	}
 )
 

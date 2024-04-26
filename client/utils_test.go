@@ -28,7 +28,7 @@ func DevnetClient(t *testing.T) *client.Client {
 	balance, err := c.GetBalance(context.Background(), *account.TEST_ADDRESS, types.SUI_COIN_TYPE)
 	require.NoError(t, err)
 	if balance.TotalBalance.BigInt().Uint64() < sui_types.SUI(0.3).Uint64() {
-		_, err = client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.DevNetFaucetUrl)
+		_, err = client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.DevnetFaucetUrl)
 		require.NoError(t, err)
 	}
 	return c

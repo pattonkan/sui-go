@@ -212,7 +212,7 @@ func (o ObjectArg) IsBcsEnum() {
 func (o ObjectArg) id() ObjectID {
 	switch {
 	case o.ImmOrOwnedObject != nil:
-		return o.ImmOrOwnedObject.ObjectId
+		return o.ImmOrOwnedObject.ObjectID
 	case o.SharedObject != nil:
 		return o.SharedObject.Id
 	default:

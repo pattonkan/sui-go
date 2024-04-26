@@ -12,11 +12,6 @@ import (
 	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
-const (
-	DevNetFaucetUrl  = "https://faucet.devnet.sui.io/gas"
-	TestNetFaucetUrl = "https://faucet.testnet.sui.io/gas"
-)
-
 func FaucetRequestFund(address string, faucetUrl string) (string, error) {
 	_, err := sui_types.NewAddressFromHex(address)
 	if err != nil {

@@ -43,8 +43,8 @@ func TestBCS_TransferObject(t *testing.T) {
 	// build with remote rpc
 	txn, err := cli.TransferObject(
 		context.Background(), *sender, *recipient,
-		coin.CoinObjectId,
-		&gas.CoinObjectId,
+		coin.CoinObjectID,
+		&gas.CoinObjectID,
 		types.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
@@ -82,7 +82,7 @@ func TestBCS_TransferSui(t *testing.T) {
 
 	// build with remote rpc
 	txn, err := cli.TransferSui(
-		context.Background(), *sender, *recipient, coin.CoinObjectId,
+		context.Background(), *sender, *recipient, coin.CoinObjectID,
 		types.NewSafeSuiBigInt(amount),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -125,7 +125,7 @@ func TestBCS_PaySui(t *testing.T) {
 	t.Log(gasFee)
 
 	// build with remote rpc
-	// txn, err := cli.PaySui(context.Background(), *sender, []sui_types.ObjectID{coin.CoinObjectId},
+	// txn, err := cli.PaySui(context.Background(), *sender, []sui_types.ObjectID{coin.CoinObjectID},
 	// 	[]sui_types.SuiAddress{*recipient2, *recipient2},
 	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
 	// 	types.NewSafeSuiBigInt(gasBudget))
@@ -168,7 +168,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 	txn, err := cli.PayAllSui(
 		context.Background(), *sender, *recipient,
 		[]sui_types.ObjectID{
-			coin.CoinObjectId, coin2.CoinObjectId,
+			coin.CoinObjectID, coin2.CoinObjectID,
 		},
 		types.NewSafeSuiBigInt(gasBudget),
 	)
@@ -217,10 +217,10 @@ func TestBCS_Pay(t *testing.T) {
 
 	// build with remote rpc
 	// txn, err := cli.Pay(context.Background(), *sender,
-	// 	[]sui_types.ObjectID{coin.CoinObjectId},
+	// 	[]sui_types.ObjectID{coin.CoinObjectID},
 	// 	[]sui_types.SuiAddress{*recipient, *recipient2},
 	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
-	// 	&gas.CoinObjectId,
+	// 	&gas.CoinObjectID,
 	// 	types.NewSafeSuiBigInt(gasBudget))
 	// require.NoError(t, err)
 	// txBytesRemote := txn.TxBytes.Data()

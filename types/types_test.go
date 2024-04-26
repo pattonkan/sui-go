@@ -45,8 +45,8 @@ func TestTransactionQuery_MarshalJSON(t1 *testing.T) {
 	// type fields struct {
 	// 	All           *string
 	// 	MoveFunction  *MoveFunction
-	// 	InputObject   *ObjectId
-	// 	MutatedObject *ObjectId
+	// 	InputObject   *ObjectID
+	// 	MutatedObject *ObjectID
 	// 	FromAddress   *Address
 	// 	ToAddress     *Address
 	// }

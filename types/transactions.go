@@ -37,7 +37,7 @@ type OwnedObjectRef struct {
 }
 
 type SuiTransactionBlockEffectsModifiedAtVersions struct {
-	ObjectId       sui_types.ObjectID                      `json:"objectId"`
+	ObjectID       sui_types.ObjectID                      `json:"objectId"`
 	SequenceNumber SafeSuiBigInt[sui_types.SequenceNumber] `json:"sequenceNumber"`
 }
 
@@ -197,7 +197,7 @@ type ObjectChange struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Recipient  ObjectOwner                             `json:"recipient"`
 		ObjectType string                                  `json:"objectType"`
-		ObjectId   sui_types.ObjectID                      `json:"objectId"`
+		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		Digest     sui_types.ObjectDigest                  `json:"digest"`
 	} `json:"transferred,omitempty"`
@@ -206,7 +206,7 @@ type ObjectChange struct {
 		Sender          sui_types.SuiAddress                    `json:"sender"`
 		Owner           ObjectOwner                             `json:"owner"`
 		ObjectType      string                                  `json:"objectType"`
-		ObjectId        sui_types.ObjectID                      `json:"objectId"`
+		ObjectID        sui_types.ObjectID                      `json:"objectId"`
 		Version         SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		PreviousVersion SafeSuiBigInt[sui_types.SequenceNumber] `json:"previousVersion"`
 		Digest          sui_types.ObjectDigest                  `json:"digest"`
@@ -215,14 +215,14 @@ type ObjectChange struct {
 	Deleted *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		ObjectType string                                  `json:"objectType"`
-		ObjectId   sui_types.ObjectID                      `json:"objectId"`
+		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"deleted,omitempty"`
 	/// Wrapped object
 	Wrapped *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		ObjectType string                                  `json:"objectType"`
-		ObjectId   sui_types.ObjectID                      `json:"objectId"`
+		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"wrapped,omitempty"`
 	/// New object creation
@@ -230,7 +230,7 @@ type ObjectChange struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Owner      ObjectOwner                             `json:"owner"`
 		ObjectType string                                  `json:"objectType"`
-		ObjectId   sui_types.ObjectID                      `json:"objectId"`
+		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		Digest     sui_types.ObjectDigest                  `json:"digest"`
 	} `json:"created,omitempty"`

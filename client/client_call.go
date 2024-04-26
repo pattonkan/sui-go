@@ -101,7 +101,7 @@ func (c *Client) GetOwnedObjects(
 	ctx context.Context,
 	address sui_types.SuiAddress,
 	query *types.SuiObjectResponseQuery,
-	cursor *types.CheckpointedObjectId,
+	cursor *types.CheckpointedObjectID,
 	limit *uint,
 ) (*types.ObjectsPage, error) {
 	var resp types.ObjectsPage
@@ -161,7 +161,7 @@ func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 		if filter != nil && !filter(obj.Data) {
 			continue // ignore objects if non-specified type
 		}
-		objIds = append(objIds, obj.Data.ObjectId)
+		objIds = append(objIds, obj.Data.ObjectID)
 	}
 
 	return c.MultiGetObjects(ctx, objIds, &options)
@@ -404,17 +404,17 @@ func (c *Client) ResolveNameServiceNames(ctx context.Context,
 }
 
 func (c *Client) GetDynamicFields(
-	ctx context.Context, parentObjectId sui_types.ObjectID, cursor *sui_types.ObjectID,
+	ctx context.Context, parentObjectID sui_types.ObjectID, cursor *sui_types.ObjectID,
 	limit *uint,
 ) (*types.DynamicFieldPage, error) {
 	var resp types.DynamicFieldPage
-	return &resp, c.CallContext(ctx, &resp, getDynamicFields, parentObjectId, cursor, limit)
+	return &resp, c.CallContext(ctx, &resp, getDynamicFields, parentObjectID, cursor, limit)
 }
 
 func (c *Client) GetDynamicFieldObject(
-	ctx context.Context, parentObjectId sui_types.ObjectID,
+	ctx context.Context, parentObjectID sui_types.ObjectID,
 	name sui_types.DynamicFieldName,
 ) (*types.SuiObjectResponse, error) {
 	var resp types.SuiObjectResponse
-	return &resp, c.CallContext(ctx, &resp, getDynamicFieldObject, parentObjectId, name)
+	return &resp, c.CallContext(ctx, &resp, getDynamicFieldObject, parentObjectID, name)
 }

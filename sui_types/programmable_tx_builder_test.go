@@ -23,7 +23,7 @@ func TestTransferSui(t *testing.T) {
 	tx := NewProgrammable(
 		*recipient, []*ObjectRef{
 			{
-				ObjectId: *objectId,
+				ObjectID: *objectId,
 				Version:  14924029,
 				Digest:   *digest,
 			},

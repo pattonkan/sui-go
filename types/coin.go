@@ -20,7 +20,7 @@ const MAX_INPUT_COUNT_STAKE = 512 - 1
 
 type Coin struct {
 	CoinType     string                 `json:"coinType"`
-	CoinObjectId sui_types.ObjectID     `json:"coinObjectId"`
+	CoinObjectID sui_types.ObjectID     `json:"coinObjectID"`
 	Version      SafeSuiBigInt[uint64]  `json:"version"`
 	Digest       sui_types.ObjectDigest `json:"digest"`
 	Balance      SafeSuiBigInt[uint64]  `json:"balance"`
@@ -33,7 +33,7 @@ func (c *Coin) Reference() *sui_types.ObjectRef {
 	return &sui_types.ObjectRef{
 		Digest:   c.Digest,
 		Version:  c.Version.data,
-		ObjectId: c.CoinObjectId,
+		ObjectID: c.CoinObjectID,
 	}
 }
 
@@ -65,11 +65,11 @@ func (cs *PickedCoins) Count() int {
 }
 
 func (cs *PickedCoins) CoinIds() []sui_types.ObjectID {
-	coinIds := make([]sui_types.ObjectID, len(cs.Coins))
+	coinIDs := make([]sui_types.ObjectID, len(cs.Coins))
 	for idx, coin := range cs.Coins {
-		coinIds[idx] = coin.CoinObjectId
+		coinIDs[idx] = coin.CoinObjectID
 	}
-	return coinIds
+	return coinIDs
 }
 
 func (cs *PickedCoins) CoinRefs() []*sui_types.ObjectRef {

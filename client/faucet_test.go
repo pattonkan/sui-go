@@ -1,22 +1,27 @@
-package client
+package client_test
 
 import (
 	"testing"
 
+	"github.com/howjmay/go-sui-sdk/account"
+	"github.com/howjmay/go-sui-sdk/client"
 	"github.com/stretchr/testify/require"
 )
 
 func TestFaucetRequestFund_Devnet(t *testing.T) {
-	// addr := M1Account(t).Address
-	addr := "0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f"
-
-	res, err := FaucetRequestFund(addr, DevNetFaucetUrl)
+	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.DevnetFaucetUrl)
 	require.NoError(t, err)
-	t.Log("hash = ", res)
+	t.Log("txn digest: ", res)
 }
 
-// func TestFaucetRequestFund_Testnet(t *testing.T) {
-// 	addr := "0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f"
-// 	res, err := FaucetRequestFund(addr, TestNetFaucetUrl)
-// 	require.NoError(t, err)
-// }
+func TestFaucetRequestFund_Testnet(t *testing.T) {
+	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
+	t.Log("txn digest: ", res)
+}
+
+func TestFaucetRequestFund_Localnet(t *testing.T) {
+	res, err := client.FaucetRequestFund(account.TEST_ADDRESS.String(), client.LocalnetFaucetUrl)
+	require.NoError(t, err)
+	t.Log("txn digest: ", res)
+}

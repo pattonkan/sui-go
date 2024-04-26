@@ -9,7 +9,7 @@ type SuiObjectRef struct {
 	/** Base64 string representing the object digest */
 	Digest sui_types.TransactionDigest `json:"digest"`
 	/** Hex code as string representing the object id */
-	ObjectId string `json:"objectId"`
+	ObjectID string `json:"objectId"`
 	/** Object version */
 	Version sui_types.SequenceNumber `json:"version"`
 }
@@ -85,7 +85,7 @@ type TypeOrigin struct {
 }
 
 type SuiObjectData struct {
-	ObjectId sui_types.ObjectID                      `json:"objectId"`
+	ObjectID sui_types.ObjectID                      `json:"objectId"`
 	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	Digest   sui_types.ObjectDigest                  `json:"digest"`
 	/**
@@ -126,7 +126,7 @@ type SuiObjectData struct {
 
 func (data *SuiObjectData) Reference() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
-		ObjectId: data.ObjectId,
+		ObjectID: data.ObjectID,
 		Version:  data.Version.data,
 		Digest:   data.Digest.Data(),
 	}
@@ -151,10 +151,10 @@ type SuiObjectDataOptions struct {
 
 type SuiObjectResponseError struct {
 	NotExists *struct {
-		ObjectId sui_types.ObjectID `json:"object_id"`
+		ObjectID sui_types.ObjectID `json:"object_id"`
 	} `json:"notExists,omitempty"`
 	Deleted *struct {
-		ObjectId sui_types.ObjectID       `json:"object_id"`
+		ObjectID sui_types.ObjectID       `json:"object_id"`
 		Version  sui_types.SequenceNumber `json:"version"`
 		Digest   sui_types.ObjectDigest   `json:"digest"`
 	} `json:"deleted,omitempty"`
@@ -178,8 +178,8 @@ type SuiObjectResponse struct {
 }
 
 type CheckpointSequenceNumber = uint64
-type CheckpointedObjectId struct {
-	ObjectId     sui_types.ObjectID                       `json:"objectId"`
+type CheckpointedObjectID struct {
+	ObjectID     sui_types.ObjectID                       `json:"objectId"`
 	AtCheckpoint *SafeSuiBigInt[CheckpointSequenceNumber] `json:"atCheckpoint"`
 }
 
@@ -208,10 +208,10 @@ type SuiPastObject struct {
 	/// The object is found to be deleted with this version
 	ObjectDeleted *SuiObjectRef `json:"ObjectDeleted,omitempty"`
 	/// The object exists but not found with this version
-	VersionNotFound *struct{ ObjectId sui_types.SequenceNumber } `json:"VersionNotFound,omitempty"`
+	VersionNotFound *struct{ ObjectID sui_types.SequenceNumber } `json:"VersionNotFound,omitempty"`
 	/// The asked object version is higher than the latest
 	VersionTooHigh *struct {
-		ObjectId      sui_types.ObjectID       `json:"object_id"`
+		ObjectID      sui_types.ObjectID       `json:"object_id"`
 		AskedVersion  sui_types.SequenceNumber `json:"asked_version"`
 		LatestVersion sui_types.SequenceNumber `json:"latest_version"`
 	} `json:"VersionTooHigh,omitempty"`

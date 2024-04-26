@@ -84,12 +84,12 @@ acc, err := account.NewAccountWithMnemonic(mnemonic)
 signer, _ := types.NewAddressFromHex(acc.Address)
 
 recipient, err := types.NewAddressFromHex("0x12345678.......")
-suiObjectId, err := types.NewHexData("0x36d3176a796e167ffcbd823c94718e7db56b955f")
+suiObjectID, err := types.NewHexData("0x36d3176a796e167ffcbd823c94718e7db56b955f")
 transferAmount := uint64(10000)
 maxGasTransfer := 100
 
 cli, err := client.Dial(rpcUrl)
-txnBytes, err := cli.TransferSui(ctx, *signer, *recipient, suiObjectId, transferAmount, maxGasTransfer)
+txnBytes, err := cli.TransferSui(ctx, *signer, *recipient, suiObjectID, transferAmount, maxGasTransfer)
 
 // Sign
 signedTxn := txnBytes.SignWith(acc.PrivateKey)
