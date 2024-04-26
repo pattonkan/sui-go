@@ -16,8 +16,8 @@ import (
 )
 
 func TestClient_TransferObject(t *testing.T) {
-	cli := MainnetClient(t)
-	signer := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
+	cli := DevnetClient(t)
+	signer := account.TEST_ADDRESS
 	recipient := signer
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
