@@ -178,6 +178,7 @@ type SuiObjectResponse struct {
 }
 
 type CheckpointSequenceNumber = uint64
+
 type CheckpointedObjectID struct {
 	ObjectID     sui_types.ObjectID                       `json:"objectId"`
 	AtCheckpoint *SafeSuiBigInt[CheckpointSequenceNumber] `json:"atCheckpoint"`

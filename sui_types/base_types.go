@@ -6,8 +6,8 @@ import (
 )
 
 type SuiAddress = move_types.AccountAddress
-type SequenceNumber = uint64
 type ObjectID = move_types.AccountAddress
+type SequenceNumber = uint64
 
 func NewAddressFromHex(str string) (*SuiAddress, error) {
 	return move_types.NewAccountAddressHex(str)
@@ -24,11 +24,11 @@ type ObjectRef struct {
 	Digest   ObjectDigest   `json:"digest"`
 }
 
-type MoveObjectType_ struct {
+type MoveObjectType struct {
 	Other     *move_types.StructTag
 	GasCoin   *lib.EmptyEnum
 	StakedSui *lib.EmptyEnum
 	Coin      *move_types.TypeTag
 }
 
-func (o MoveObjectType_) IsBcsEnum() {}
+func (o MoveObjectType) IsBcsEnum() {}

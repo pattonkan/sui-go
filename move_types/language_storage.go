@@ -23,5 +23,4 @@ type TypeTag struct {
 	U256    *lib.EmptyEnum
 }
 
-func (t TypeTag) IsBcsEnum() {
-}
+func (t TypeTag) IsBcsEnum() {}

@@ -14,23 +14,20 @@ type IntentScope struct {
 	HeaderDigest            *lib.EmptyEnum // Used for narwhal authority signature on header digest.
 }
 
-func (i IntentScope) IsBcsEnum() {
-}
+func (i IntentScope) IsBcsEnum() {}
 
 type IntentVersion struct {
 	V0 *lib.EmptyEnum
 }
 
-func (i IntentVersion) IsBcsEnum() {
-}
+func (i IntentVersion) IsBcsEnum() {}
 
 type AppId struct {
 	Sui     *lib.EmptyEnum
 	Narwhal *lib.EmptyEnum
 }
 
-func (a AppId) IsBcsEnum() {
-}
+func (a AppId) IsBcsEnum() {}
 
 type Intent struct {
 	Scope   IntentScope

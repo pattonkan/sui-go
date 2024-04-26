@@ -10,9 +10,7 @@ type TransactionData struct {
 	V1 *TransactionDataV1
 }
 
-func (t TransactionData) IsBcsEnum() {
-
-}
+func (t TransactionData) IsBcsEnum() {}
 
 type TransactionDataV1 struct {
 	Kind       TransactionKind
@@ -26,8 +24,7 @@ type TransactionExpiration struct {
 	Epoch *EpochId
 }
 
-func (t TransactionExpiration) IsBcsEnum() {
-}
+func (t TransactionExpiration) IsBcsEnum() {}
 
 type GasData struct {
 	Payment []*ObjectRef
@@ -43,8 +40,7 @@ type TransactionKind struct {
 	ConsensusCommitPrologue *ConsensusCommitPrologue
 }
 
-func (t TransactionKind) IsBcsEnum() {
-}
+func (t TransactionKind) IsBcsEnum() {}
 
 type ConsensusCommitPrologue struct {
 	Epoch             uint64
@@ -87,9 +83,7 @@ type Command struct {
 	}
 }
 
-func (c Command) IsBcsEnum() {
-
-}
+func (c Command) IsBcsEnum() {}
 
 type Argument struct {
 	GasCoin      *lib.EmptyEnum
@@ -101,9 +95,7 @@ type Argument struct {
 	}
 }
 
-func (a Argument) IsBcsEnum() {
-
-}
+func (a Argument) IsBcsEnum() {}
 
 type ProgrammableMoveCall struct {
 	Package       ObjectID
@@ -125,8 +117,7 @@ type SingleTransactionKind struct {
 	Genesis        *GenesisTransaction
 }
 
-func (s SingleTransactionKind) IsBcsEnum() {
-}
+func (s SingleTransactionKind) IsBcsEnum() {}
 
 type TransferObject struct {
 	Recipient SuiAddress
@@ -194,8 +185,7 @@ type CallArg struct {
 	Object *ObjectArg
 }
 
-func (c CallArg) IsBcsEnum() {
-}
+func (c CallArg) IsBcsEnum() {}
 
 type ObjectArg struct {
 	ImmOrOwnedObject *ObjectRef
@@ -206,8 +196,7 @@ type ObjectArg struct {
 	}
 }
 
-func (o ObjectArg) IsBcsEnum() {
-}
+func (o ObjectArg) IsBcsEnum() {}
 
 func (o ObjectArg) id() ObjectID {
 	switch {

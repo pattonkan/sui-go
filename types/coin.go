@@ -13,11 +13,6 @@ const SUI_COIN_TYPE = "0x2::sui::SUI"
 const MAX_INPUT_COUNT_MERGE = 256 - 1
 const MAX_INPUT_COUNT_STAKE = 512 - 1
 
-// type LockedBalance struct {
-// 	EpochId int64 `json:"epochId"`
-// 	Number  int64 `json:"number"`
-// }
-
 type Coin struct {
 	CoinType     string                 `json:"coinType"`
 	CoinObjectID sui_types.ObjectID     `json:"coinObjectID"`

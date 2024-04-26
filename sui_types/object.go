@@ -11,11 +11,7 @@ type Data struct {
 	Package *MovePackage
 }
 
-func (d Data) IsBcsEnum() {
-
-}
-
-type MoveObjectType = MoveObjectType_
+func (d Data) IsBcsEnum() {}
 
 type MoveObject struct {
 	Type              MoveObjectType
@@ -33,8 +29,7 @@ type Owner struct {
 	Immutable *lib.EmptyEnum `json:"Immutable,omitempty"`
 }
 
-func (o Owner) IsBcsEnum() {
-}
+func (o Owner) IsBcsEnum() {}
 
 func (o Owner) Tag() string {
 	return ""

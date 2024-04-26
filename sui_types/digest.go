@@ -14,3 +14,11 @@ type CheckpointContentsDigest = Digest
 func NewDigest(str string) (*Digest, error) {
 	return lib.NewBase58(str)
 }
+
+func NewDigestMust(str string) *Digest {
+	digest, err := lib.NewBase58(str)
+	if err != nil {
+		panic(err)
+	}
+	return digest
+}
