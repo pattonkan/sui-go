@@ -29,8 +29,8 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 	require.NoError(t, err)
 	t.Logf("current epoch %v", apys.Epoch)
 	apyMap := apys.ApyMap()
-	for idx := 0; idx < 10; idx++ {
-		key := apys.Apys[idx].Address
+	for _, apy := range apys.Apys {
+		key := apy.Address
 		t.Logf("%v apy: %v", key, apyMap[key])
 	}
 }
@@ -106,7 +106,7 @@ func TestRequestAddDelegation(t *testing.T) {
 
 func TestRequestWithdrawDelegation(t *testing.T) {
 	cli := TestnetClient(t)
-	gasBudget := sui_types.SUI(0.1).Uint64()
+	gasBudget := sui_types.SUI(1).Uint64()
 
 	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)

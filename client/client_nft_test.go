@@ -1,38 +1,39 @@
 package client_test
 
-//func TestMintNFT(t *testing.T) {
-//	cli := ChainClient(t)
-//
-//	var (
-//		timeNow = time.Now().Format("06-01-02 15:04")
-//		nftName = "ComingChat NFT at " + timeNow
-//		nftDesc = "This is a NFT created by ComingChat"
-//		nftUrl  = "https://coming.chat/favicon.ico"
-//	)
-//	coins, err := cli.GetSuiCoinsOwnedByAddress(context.TODO(), *Address)
-//	require.NoError(t, err)
-//
-//	firstCoin, err := coins.PickCoinNoLess(12000)
-//	require.NoError(t, err)
-//
-//	txnBytes, err := cli.MintNFT(context.TODO(), *Address, nftName, nftDesc, nftUrl, &firstCoin.CoinObjectID, 12000)
-//	require.NoError(t, err)
-//	t.Log(txnBytes.TxBytes)
-//
-//	response, err := cli.DryRunTransaction(context.TODO(), txnBytes)
-//	require.NoError(t, err)
-//	if response.Status.Error != "" {
-//		t.Fatalf("%#v", response)
-//	}
-//	t.Logf("%#v", response)
-//}
-//
-//func TestGetDevNFTs(t *testing.T) {
-//	cli := ChainClient(t)
-//
-//	nfts, err := cli.GetNFTsOwnedByAddress(context.TODO(), *Address)
-//	require.NoError(t, err)
-//	for _, nft := range nfts {
-//		t.Log(nft.Data)
-//	}
-//}
+// FIXME implement nft contract
+
+// func TestMintNFT(t *testing.T) {
+// 	cli := TestnetClient(t)
+
+// 	var (
+// 		timeNow = time.Now().Format("06-01-02 15:04")
+// 		nftName = "ComingChat NFT at " + timeNow
+// 		nftDesc = "This is a NFT created by ComingChat"
+// 		nftUrl  = "https://coming.chat/favicon.ico"
+// 	)
+// 	coins, err := cli.GetSuiCoinsOwnedByAddress(context.TODO(), account.TEST_ADDRESS)
+// 	require.NoError(t, err)
+
+// 	firstCoin, err := coins.PickCoinNoLess(12000)
+// 	require.NoError(t, err)
+
+// 	txnBytes, err := cli.MintNFT(context.TODO(), account.TEST_ADDRESS, nftName, nftDesc, nftUrl, &firstCoin.CoinObjectID, 12000)
+// 	require.NoError(t, err)
+// 	t.Log(txnBytes.TxBytes)
+
+// 	resp, err := cli.DryRunTransaction(context.TODO(), txnBytes.TxBytes)
+// 	require.NoError(t, err)
+// 	require.True(t, resp.Effects.Data.IsSuccess())
+// 	require.Empty(t, resp.Effects.Data.V1.Status.Error)
+// 	t.Logf("%#v", resp)
+// }
+
+// func TestGetDevNFTs(t *testing.T) {
+// 	cli := TestnetClient(t)
+
+// 	nfts, err := cli.GetNFTsOwnedByAddress(context.TODO(), account.TEST_ADDRESS)
+// 	require.NoError(t, err)
+// 	for _, nft := range nfts {
+// 		t.Log(nft.Data)
+// 	}
+// }

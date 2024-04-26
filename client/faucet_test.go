@@ -21,6 +21,7 @@ func TestRequestFundFromFaucet_Testnet(t *testing.T) {
 }
 
 func TestRequestFundFromFaucet_Localnet(t *testing.T) {
+	t.Skip("only run with local node is set up")
 	res, err := client.RequestFundFromFaucet(account.TEST_ADDRESS.String(), client.LocalnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("txn digest: ", res)

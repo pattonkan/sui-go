@@ -235,7 +235,7 @@ func TestBCS_Pay(t *testing.T) {
 
 func TestBCS_MoveCall(t *testing.T) {
 	sender := account.TEST_ADDRESS
-	gasBudget := sui_types.SUI(1).Uint64()
+	gasBudget := sui_types.SUI(0.1).Uint64()
 	gasPrice := uint64(1000)
 
 	cli := TestnetClient(t)

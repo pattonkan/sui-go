@@ -227,7 +227,7 @@ func TestClient_MoveCall(t *testing.T) {
 		[]string{},
 		[]any{},
 		nil,
-		types.NewSafeSuiBigInt(uint64(10000000)),
+		types.NewSafeSuiBigInt(uint64(1000)),
 	)
 	require.NoError(t, err)
 
