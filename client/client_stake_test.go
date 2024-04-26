@@ -20,7 +20,7 @@ func TestClient_GetLatestSuiSystemState(t *testing.T) {
 	cli := MainnetClient(t)
 	state, err := cli.GetLatestSuiSystemState(context.Background())
 	require.NoError(t, err)
-	t.Logf("system state = %v", state)
+	t.Logf("system state: %v", state)
 }
 
 func TestClient_GetValidatorsApy(t *testing.T) {
@@ -31,7 +31,7 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 	apyMap := apys.ApyMap()
 	for idx := 0; idx < 10; idx++ {
 		key := apys.Apys[idx].Address
-		t.Logf("%v apy = %v", key, apyMap[key])
+		t.Logf("%v apy: %v", key, apyMap[key])
 	}
 }
 

@@ -63,11 +63,11 @@ func TestNewResourceType(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := NewResourceType(tt.str)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("NewResourceType() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("NewResourceType() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("NewResourceType() = %v, want %v", got, tt.want)
+					t.Errorf("NewResourceType(): %v, want %v", got, tt.want)
 				}
 			},
 		)
@@ -108,7 +108,7 @@ func TestResourceType_ShortString(t *testing.T) {
 		t.Run(
 			tt.name, func(t *testing.T) {
 				if got := tt.arg.ShortString(); got != tt.want {
-					t.Errorf("ResourceType.ShortString() = %v, want %v", got, tt.want)
+					t.Errorf("ResourceType.ShortString(): %v, want %v", got, tt.want)
 				}
 			},
 		)

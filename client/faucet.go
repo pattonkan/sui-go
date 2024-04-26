@@ -35,7 +35,7 @@ func FaucetRequestFund(address string, faucetUrl string) (string, error) {
 		return "", err
 	}
 	if res.StatusCode != 200 && res.StatusCode != 201 {
-		return "", fmt.Errorf("post %v response code = %v", faucetUrl, res.Status)
+		return "", fmt.Errorf("post %v response code: %v", faucetUrl, res.Status)
 	}
 	defer res.Body.Close()
 

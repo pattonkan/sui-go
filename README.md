@@ -30,9 +30,9 @@ privateKey, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25e
 acc, err := account.NewAccount(privateKey)
 
 // Get private key, public key, address
-fmt.Printf("privateKey = %x\n", acc.PrivateKey[:32])
-fmt.Printf(" publicKey = %x\n", acc.PublicKey)
-fmt.Printf("   address = %v\n", acc.Address)
+fmt.Printf("privateKey: %x\n", acc.PrivateKey[:32])
+fmt.Printf(" publicKey: %x\n", acc.PublicKey)
+fmt.Printf("   address: %v\n", acc.Address)
 
 // Sign data
 signedData := acc.Sign(data)

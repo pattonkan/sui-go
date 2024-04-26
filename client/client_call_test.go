@@ -46,11 +46,11 @@ import (
 //		t.Run(tt.name, func(t *testing.T) {
 //			got, err := tt.chain.BatchGetTransaction(tt.args.digests)
 //			if (err != nil) != tt.wantErr {
-//				t.Errorf("BatchGetTransaction() error = %v, wantErr %v", err, tt.wantErr)
+//				t.Errorf("BatchGetTransaction() error: %v, wantErr %v", err, tt.wantErr)
 //				return
 //			}
 //			if len(got) != tt.want {
-//				t.Errorf("BatchGetTransaction() got = %v, want %v", got, tt.want)
+//				t.Errorf("BatchGetTransaction() got: %v, want %v", got, tt.want)
 //			}
 //			t.Logf("%+v", got)
 //		})
@@ -221,7 +221,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := chain.GetAllCoins(tt.args.ctx, tt.args.address, tt.args.cursor, tt.args.limit)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("GetAllCoins() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GetAllCoins() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Logf("%#v", got)
@@ -321,7 +321,7 @@ func TestClient_GetObject(t *testing.T) {
 					},
 				)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("GetObject() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GetObject() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Logf("%+v", got)
@@ -405,7 +405,7 @@ func TestClient_GetTotalSupply(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := tt.chain.GetTotalSupply(tt.args.ctx, tt.args.coinType)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("GetTotalSupply() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GetTotalSupply() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Logf("%d", got)
@@ -467,14 +467,14 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 //		t.Run(tt.name, func(t *testing.T) {
 //			got, err := tt.client.Publish(tt.args.ctx, tt.args.address, tt.args.compiledModules, tt.args.gas, tt.args.gasBudget)
 //			if (err != nil) != tt.wantErr {
-//				t.Errorf("Publish() error = %v, wantErr %v", err, tt.wantErr)
+//				t.Errorf("Publish() error: %v, wantErr %v", err, tt.wantErr)
 //				return
 //			}
 //			t.Logf("%#v", got)
 //
 //			txResult, err := tt.client.DryRunTransaction(context.TODO(), got)
 //			if (err != nil) != tt.wantErr {
-//				t.Errorf("Publish() error = %v, wantErr %v", err, tt.wantErr)
+//				t.Errorf("Publish() error: %v, wantErr %v", err, tt.wantErr)
 //				return
 //			}
 //
@@ -506,7 +506,7 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 	cli := DevnetClient(t)
 	gasPrice, err := cli.GetReferenceGasPrice(context.Background())
 	require.NoError(t, err)
-	t.Logf("current gas price = %v", gasPrice)
+	t.Logf("current gas price: %v", gasPrice)
 }
 
 // func TestClient_DevInspectTransactionBlock(t *testing.T) {
@@ -578,7 +578,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 					tt.args.descendingOrder,
 				)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("QueryTransactionBlocks() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("QueryTransactionBlocks() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Logf("%#v", got)
@@ -651,7 +651,7 @@ func TestClient_QueryEvents(t *testing.T) {
 					tt.args.descendingOrder,
 				)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("QueryEvents() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("QueryEvents() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Log(got)
@@ -692,7 +692,7 @@ func TestClient_GetDynamicFields(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := chain.GetDynamicFields(tt.args.ctx, tt.args.parentObjectId, tt.args.cursor, tt.args.limit)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("GetDynamicFields() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GetDynamicFields() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Log(got)
@@ -733,7 +733,7 @@ func TestClient_GetDynamicFieldObject(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := chain.GetDynamicFieldObject(tt.args.ctx, tt.args.parentObjectId, tt.args.name)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("GetDynamicFieldObject() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("GetDynamicFieldObject() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				t.Logf("%#v", got)

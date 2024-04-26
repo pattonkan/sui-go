@@ -140,16 +140,16 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, got1, err := tt.cs.PickSUICoinsWithGas(tt.args.amount, tt.args.gasAmount, tt.args.pickMethod)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("Coins.PickSUICoinsWithGas() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("Coins.PickSUICoinsWithGas() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				if len(got) != 0 && len(tt.want) != 0 {
 					if !reflect.DeepEqual(got, tt.want) {
-						t.Errorf("Coins.PickSUICoinsWithGas() got = %v, want %v", got, tt.want)
+						t.Errorf("Coins.PickSUICoinsWithGas() got: %v, want %v", got, tt.want)
 					}
 				}
 				if !reflect.DeepEqual(got1, tt.want1) {
-					t.Errorf("Coins.PickSUICoinsWithGas() got1 = %v, want %v", got1, tt.want1)
+					t.Errorf("Coins.PickSUICoinsWithGas() got1: %v, want %v", got1, tt.want1)
 				}
 			},
 		)
@@ -231,11 +231,11 @@ func TestCoins_PickCoins(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := tt.cs.PickCoins(tt.args.amount, tt.args.pickMethod)
 				if (err != nil) != tt.wantErr {
-					t.Errorf("Coins.PickCoins() error = %v, wantErr %v", err, tt.wantErr)
+					t.Errorf("Coins.PickCoins() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
 				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("Coins.PickCoins() = %v, want %v", got, tt.want)
+					t.Errorf("Coins.PickCoins(): %v, want %v", got, tt.want)
 				}
 			},
 		)

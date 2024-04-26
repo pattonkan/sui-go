@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMyAccount(t *testing.T) {
+func TestAccount(t *testing.T) {
 	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	t.Logf("addr = %v", account.Address)
+	t.Logf("addr: %v", account.Address)
 }
 
 func Test_Signature_Marshal_Unmarshal(t *testing.T) {
