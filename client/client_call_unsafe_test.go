@@ -28,7 +28,7 @@ func TestClient_TransferObject(t *testing.T) {
 		context.Background(), *signer, *recipient,
 		coin.CoinObjectId, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -43,7 +43,7 @@ func TestClient_TransferSui(t *testing.T) {
 	amount := sui_types.SUI(0.0001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 1, 0)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	txn, err := cli.TransferSui(
 		context.Background(), *signer, *recipient,
@@ -51,7 +51,7 @@ func TestClient_TransferSui(t *testing.T) {
 		types.NewSafeSuiBigInt(amount),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -66,14 +66,14 @@ func TestClient_PayAllSui(t *testing.T) {
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	txn, err := cli.PayAllSui(
 		context.Background(), *signer, *recipient,
 		pickedCoins.CoinIds(),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -101,7 +101,7 @@ func TestClient_Pay(t *testing.T) {
 		nil,
 		types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -127,7 +127,7 @@ func TestClient_PaySui(t *testing.T) {
 		},
 		types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -150,7 +150,7 @@ func TestClient_SplitCoin(t *testing.T) {
 		splitCoins,
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, false)
 }
@@ -172,7 +172,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 		types.NewSafeSuiBigInt(uint64(2)),
 		nil, types.NewSafeSuiBigInt(gasBudget),
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -193,7 +193,7 @@ func TestClient_MergeCoins(t *testing.T) {
 		coin1.CoinObjectId, coin2.CoinObjectId,
 		&coin3.CoinObjectId, coin3.Balance,
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txn.TxBytes, true)
 }
@@ -203,7 +203,7 @@ func TestClient_Publish(t *testing.T) {
 	// cli := ChainClient(t)
 
 	// txnBytes, err := cli.Publish(context.Background(), *signer, *coin1, *coin2, nil, 10000)
-	// require.Nil(t, err)
+	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
 
@@ -212,7 +212,7 @@ func TestClient_MoveCall(t *testing.T) {
 	// cli := ChainClient(t)
 
 	// txnBytes, err := cli.MoveCall(context.Background(), *signer, *coin1, *coin2, nil, 10000)
-	// require.Nil(t, err)
+	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
 
@@ -221,7 +221,7 @@ func TestClient_BatchTransaction(t *testing.T) {
 	// cli := ChainClient(t)
 
 	// txnBytes, err := cli.BatchTransaction(context.Background(), *signer, *coin1, *coin2, nil, 10000)
-	// require.Nil(t, err)
+	// require.NoError(t, err)
 	// simulateCheck(t, cli, txnBytes, M1Account(t))
 }
 
@@ -233,12 +233,12 @@ func simulateCheck(
 	showJson bool,
 ) *types.DryRunTransactionBlockResponse {
 	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, simulate.Effects.Data.V1.Status.Error, "")
 	require.True(t, simulate.Effects.Data.IsSuccess())
 	if showJson {
 		data, err := json.Marshal(simulate)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		t.Log(string(data))
 		t.Log("gasFee = ", simulate.Effects.Data.GasFee())
 	}
@@ -253,7 +253,7 @@ func executeTxn(
 ) *types.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
 	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.True(t, simulate.Effects.Data.IsSuccess())
 
 	// sign and send

@@ -19,14 +19,14 @@ const (
 func TestClient_GetLatestSuiSystemState(t *testing.T) {
 	cli := MainnetClient(t)
 	state, err := cli.GetLatestSuiSystemState(context.Background())
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Logf("system state = %v", state)
 }
 
 func TestClient_GetValidatorsApy(t *testing.T) {
 	cli := ChainClient(t)
 	apys, err := cli.GetValidatorsApy(context.Background())
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Logf("current epoch %v", apys.Epoch)
 	apyMap := apys.ApyMap()
 	for idx := 0; idx < 10; idx++ {
@@ -39,9 +39,9 @@ func TestGetDelegatedStakes(t *testing.T) {
 	cli := ChainClient(t)
 
 	address, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	stakes, err := cli.GetStakes(context.Background(), *address)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	for _, validator := range stakes {
 		for _, stake := range validator.Stakes {
@@ -59,14 +59,15 @@ func TestGetDelegatedStakes(t *testing.T) {
 func TestGetStakesByIds(t *testing.T) {
 	cli := TestnetClient(t)
 	owner, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
+	require.NoError(t, err)
 	stakes, err := cli.GetStakes(context.Background(), *owner)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(stakes), 1)
 
 	stake1 := stakes[0].Stakes[0].Data
 	stakeId := stake1.StakedSuiId
 	stakesFromId, err := cli.GetStakesByIds(context.Background(), []sui_types.ObjectID{stakeId})
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(stakesFromId), 1)
 
 	queriedStake := stakesFromId[0].Stakes[0].Data
@@ -79,16 +80,16 @@ func TestRequestAddDelegation(t *testing.T) {
 	signer := account.TEST_ADDRESS
 
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	amount := sui_types.SUI(1).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 0, 0)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	validatorAddress := ComingChatValidatorAddress
 	validator, err := sui_types.NewAddressFromHex(validatorAddress)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	txBytes, err := client.BCS_RequestAddStake(
 		*signer,
@@ -98,7 +99,7 @@ func TestRequestAddDelegation(t *testing.T) {
 		gasBudget,
 		1000,
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txBytes, true)
 }
@@ -108,22 +109,22 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	stakes, err := cli.GetStakes(context.Background(), *signer)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.True(t, len(stakes) > 0)
 	require.True(t, len(stakes[0].Stakes) > 0)
 
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0), gasBudget, 0, 0)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
 	detail, err := cli.GetObject(context.Background(), stakeId, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	txBytes, err := client.BCS_RequestWithdrawStake(*signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	simulateCheck(t, cli, txBytes, true)
 }

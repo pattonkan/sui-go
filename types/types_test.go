@@ -21,9 +21,9 @@ func TestObjectOwnerJsonENDE(t *testing.T) {
 		jsonString := []byte(`{"owner":"Immutable"}`)
 
 		err := json.Unmarshal(jsonString, &dataStruct)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		enData, err := json.Marshal(dataStruct)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		require.Equal(t, jsonString, enData)
 	}
 	{
@@ -33,9 +33,9 @@ func TestObjectOwnerJsonENDE(t *testing.T) {
 		jsonString := []byte(`{"owner":{"AddressOwner":"0xfb1f678fcfe31c7c1924319e49614ffbe3a984842ceed559aa2d772e60a2ef8f"}}`)
 
 		err := json.Unmarshal(jsonString, &dataStruct)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		enData, err := json.Marshal(dataStruct)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		require.Equal(t, jsonString, enData)
 	}
 }

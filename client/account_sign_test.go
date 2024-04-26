@@ -18,13 +18,13 @@ func ManualTest_AccountSignAndSend(t *testing.T) {
 	unsafeMnemonic := account.TEST_MNEMONIC
 
 	account, err := account.NewAccountWithMnemonic(unsafeMnemonic)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(account.Address)
 
 	cli := TestnetClient(t)
 	signer := AddressFromStrMust(account.Address)
 	coins, err := cli.GetSuiCoinsOwnedByAddress(context.Background(), *signer)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
 
 	coinIds := make([]sui_types.ObjectID, len(coins))
@@ -33,7 +33,7 @@ func ManualTest_AccountSignAndSend(t *testing.T) {
 	}
 	gasBudget := types.NewSafeSuiBigInt(uint64(10000000))
 	txn, err := cli.PayAllSui(context.Background(), *signer, *signer, coinIds, gasBudget)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	resp := executeTxn(t, cli, txn.TxBytes, account)
 	t.Log("txn digest: ", resp.Digest)

@@ -62,7 +62,7 @@ func Test_TagJson_Owner(t *testing.T) {
 		var s lib.TagJson[sui_types.Owner]
 		data := []byte(str)
 		err := json.Unmarshal(data, &s)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		return s
 	}
 	{
@@ -99,7 +99,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := cli.DryRunTransaction(context.Background(), tx.TxBytes)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log("dry run status:", resp.Effects.Data.IsSuccess())
 	t.Log("dry run error:", resp.Effects.Data.V1.Status.Error)
 }
@@ -153,7 +153,7 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 func TestClient_GetCoinMetadata(t *testing.T) {
 	chain := ChainClient(t)
 	metadata, err := chain.GetCoinMetadata(context.TODO(), types.SuiCoinType)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Logf("%#v", metadata)
 }
 
@@ -234,7 +234,7 @@ func TestClient_GetTransaction(t *testing.T) {
 	cli := MainnetClient(t)
 	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
 	d, err := sui_types.NewDigest(digest)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	resp, err := cli.GetTransactionBlock(
 		context.Background(), *d, types.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
@@ -257,14 +257,14 @@ func TestBatchCall_GetObject(t *testing.T) {
 		// get specified object
 		idstr := "0x4ad2f0a918a241d6a19573212aeb56947bb9255a14e921a7ec78b262536826f0"
 		objId, err := sui_types.NewAddressFromHex(idstr)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		obj, err := cli.GetObject(
 			context.Background(), *objId, &types.SuiObjectDataOptions{
 				ShowType:    true,
 				ShowContent: true,
 			},
 		)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		t.Log(obj.Data)
 	}
 
@@ -275,7 +275,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 	}
 	objId := coins.Data[0].CoinObjectId
 	obj, err := cli.GetObject(context.Background(), objId, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(obj.Data)
 }
 
@@ -352,7 +352,7 @@ func TestClient_MultiGetObjects(t *testing.T) {
 			ShowStorageRebate:       true,
 		},
 	)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, len(objs), len(resp))
 	require.Equal(t, resp[0], resp[1])
 }
@@ -361,7 +361,7 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 	cli := ChainClient(t)
 
 	obj, err := sui_types.NewAddressFromHex("0x2")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	query := types.SuiObjectResponseQuery{
 		Filter: &types.SuiObjectDataFilter{
 			Package: obj,
@@ -373,7 +373,7 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 	}
 	limit := uint(1)
 	objs, err := cli.GetOwnedObjects(context.Background(), *account.TEST_ADDRESS, &query, nil, &limit)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(objs.Data), int(limit))
 }
 
@@ -416,14 +416,14 @@ func TestClient_GetTotalSupply(t *testing.T) {
 func TestClient_GetTotalTransactionBlocks(t *testing.T) {
 	cli := ChainClient(t)
 	res, err := cli.GetTotalTransactionBlocks(context.Background())
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(res)
 }
 
 func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 	cli := MainnetClient(t)
 	res, err := cli.GetLatestCheckpointSequenceNumber(context.Background())
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(res)
 }
 
@@ -486,9 +486,9 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 func TestClient_TryGetPastObject(t *testing.T) {
 	cli := ChainClient(t)
 	objId, err := sui_types.NewAddressFromHex("0x11462c88e74bb00079e3c043efb664482ee4551744ee691c7623b98503cb3f4d")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	data, err := cli.TryGetPastObject(context.Background(), *objId, 903, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(data)
 }
 
@@ -496,7 +496,7 @@ func TestClient_GetEvents(t *testing.T) {
 	cli := MainnetClient(t)
 	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
 	d, err := sui_types.NewDigest(digest)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	res, err := cli.GetEvents(context.Background(), *d)
 	require.NoError(t, err)
 	t.Log(res)
@@ -505,7 +505,7 @@ func TestClient_GetEvents(t *testing.T) {
 func TestClient_GetReferenceGasPrice(t *testing.T) {
 	cli := ChainClient(t)
 	gasPrice, err := cli.GetReferenceGasPrice(context.Background())
-	require.Nil(t, err)
+	require.NoError(t, err)
 	t.Logf("current gas price = %v", gasPrice)
 }
 
@@ -528,7 +528,7 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 // 	require.NoError(t, err)
 
 // 	resp, err := chain.DevInspectTransactionBlock(context.Background(), *signer, tx.TxBytes, price, nil)
-// 	require.Nil(t, err)
+// 	require.NoError(t, err)
 // 	t.Log(resp)
 // }
 
@@ -590,10 +590,10 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 func TestClient_ResolveNameServiceAddress(t *testing.T) {
 	c := MainnetClient(t)
 	addr, err := c.ResolveNameServiceAddress(context.Background(), "2222.sui")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, addr.String(), "0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9")
 
-	addr, err = c.ResolveNameServiceAddress(context.Background(), "2222.suijjzzww")
+	_, err = c.ResolveNameServiceAddress(context.Background(), "2222.suijjzzww")
 	require.ErrorContains(t, err, "not found")
 }
 
@@ -601,13 +601,13 @@ func TestClient_ResolveNameServiceNames(t *testing.T) {
 	c := MainnetClient(t)
 	owner := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
 	namePage, err := c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.NotEmpty(t, namePage.Data)
 	t.Log(namePage.Data)
 
 	owner = AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
 	namePage, err = c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Empty(t, namePage.Data)
 }
 
