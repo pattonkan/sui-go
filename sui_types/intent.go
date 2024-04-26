@@ -1,7 +1,7 @@
 package sui_types
 
 import (
-	"github.com/coming-chat/go-sui/v2/lib"
+	"github.com/howjmay/go-sui-sdk/lib"
 )
 
 type IntentScope struct {
@@ -10,7 +10,7 @@ type IntentScope struct {
 	CheckpointSummary       *lib.EmptyEnum // Used for an authority signature on a checkpoint summary.
 	PersonalMessage         *lib.EmptyEnum // Used for a user signature on a personal message.
 	SenderSignedTransaction *lib.EmptyEnum // Used for an authority signature on a user signed transaction.
-	ProofOfPossession       *lib.EmptyEnum // Used as a signature representing an authority's proof of possesion of its authority protocol key.
+	ProofOfPossession       *lib.EmptyEnum // Used as a signature representing an authority's proof of possession of its authority protocol key.
 	HeaderDigest            *lib.EmptyEnum // Used for narwhal authority signature on header digest.
 }
 

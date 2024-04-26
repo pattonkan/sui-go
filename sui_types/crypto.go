@@ -6,12 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/coming-chat/go-sui/v2/crypto"
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/fardream/go-bcs/bcs"
-	"golang.org/x/crypto/blake2b"
 	"hash"
 	"reflect"
+
+	"github.com/fardream/go-bcs/bcs"
+	"github.com/howjmay/go-sui-sdk/crypto"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"golang.org/x/crypto/blake2b"
 )
 
 type DefaultHash struct {
@@ -104,7 +105,7 @@ func (s *Signature) UnmarshalJSON(data []byte) error {
 			Signature: signatureBytes,
 		}
 	default:
-		return errors.New("unsupport signature")
+		return errors.New("unsupported signature")
 	}
 	return nil
 }

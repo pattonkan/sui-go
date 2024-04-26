@@ -1,14 +1,12 @@
 package sui_types
 
 import (
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/move_types"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/move_types"
 )
 
 type SuiAddress = move_types.AccountAddress
-
 type SequenceNumber = uint64
-
 type ObjectID = move_types.AccountAddress
 
 func NewAddressFromHex(str string) (*SuiAddress, error) {
@@ -33,6 +31,4 @@ type MoveObjectType_ struct {
 	Coin      *move_types.TypeTag
 }
 
-func (o MoveObjectType_) IsBcsEnum() {
-
-}
+func (o MoveObjectType_) IsBcsEnum() {}

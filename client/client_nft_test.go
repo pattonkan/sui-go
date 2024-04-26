@@ -1,4 +1,4 @@
-package client
+package client_test
 
 //func TestMintNFT(t *testing.T) {
 //	cli := ChainClient(t)

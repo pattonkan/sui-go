@@ -35,27 +35,32 @@ type BatchElem struct {
 type Client struct {
 	idCounter uint32
 
-	rpcUrl string
+	url    string
 	client *http.Client
 }
 
-func Dial(rpcUrl string) (client *Client, err error) {
-	hc := &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:    3,
-			IdleConnTimeout: 30 * time.Second,
-		},
-		Timeout: 30 * time.Second,
-	}
-	return DialWithClient(rpcUrl, hc)
-}
+const (
+	DevnetEndpointUrl   = "https://fullnode.devnet.sui.io"
+	TestnetEndpointUrl  = "https://fullnode.testnet.sui.io"
+	MainnetEndpointUrl  = "https://fullnode.mainnet.sui.io"
+	LocalnetEndpointUrl = "http://localhost:9000"
 
-func DialWithClient(rpcUrl string, c *http.Client) (client *Client, err error) {
-	client = &Client{
-		rpcUrl: strings.TrimRight(rpcUrl, "/"),
-		client: c,
+	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/gas"
+	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/gas"
+	LocalnetFaucetUrl = "http://localhost:9123/gas"
+)
+
+func Dial(url string) (client *Client) {
+	return &Client{
+		url: strings.TrimRight(url, "/"),
+		client: &http.Client{
+			Transport: &http.Transport{
+				MaxIdleConns:    3,
+				IdleConnTimeout: 30 * time.Second,
+			},
+			Timeout: 30 * time.Second,
+		},
 	}
-	return
 }
 
 // Call performs a JSON-RPC call with the given arguments and unmarshals into
@@ -168,7 +173,7 @@ func (c *Client) doRequest(ctx context.Context, msg interface{}) (io.ReadCloser,
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.rpcUrl, io.NopCloser(bytes.NewReader(body)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, io.NopCloser(bytes.NewReader(body)))
 	if err != nil {
 		return nil, err
 	}

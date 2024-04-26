@@ -3,8 +3,9 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/coming-chat/go-sui/v2/sui_types"
 	"strings"
+
+	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
 type ResourceType struct {

@@ -3,11 +3,12 @@ package sui_types
 import (
 	"errors"
 	"fmt"
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/move_types"
-	"github.com/fardream/go-bcs/bcs"
-	"github.com/mitchellh/hashstructure/v2"
 	"strconv"
+
+	"github.com/fardream/go-bcs/bcs"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/move_types"
+	"github.com/mitchellh/hashstructure/v2"
 )
 
 type BuilderArg struct {

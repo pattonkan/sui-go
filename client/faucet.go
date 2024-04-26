@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 	TestNetFaucetUrl = "https://faucet.testnet.sui.io/gas"
 )
 
-func FaucetFundAccount(address string, faucetUrl string) (string, error) {
+func FaucetRequestFund(address string, faucetUrl string) (string, error) {
 	_, err := sui_types.NewAddressFromHex(address)
 	if err != nil {
 		return "", err

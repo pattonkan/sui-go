@@ -4,16 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/sui_types"
 	"strings"
+
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
 const (
-	SuiCoinType   = "0x2::sui::SUI"
-	DevNetRpcUrl  = "https://fullnode.devnet.sui.io"
-	TestnetRpcUrl = "https://fullnode.testnet.sui.io"
-	MainnetRpcUrl = "https://fullnode.mainnet.sui.io"
+	SuiCoinType = "0x2::sui::SUI"
 )
 
 // ShortString Returns the address with leading zeros trimmed, e.g. 0x2

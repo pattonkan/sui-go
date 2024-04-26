@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
 type StakeStatus = lib.TagJson[Status]
@@ -81,7 +81,7 @@ type DelegatedStake struct {
 }
 
 type SuiValidatorSummary struct {
-	SuiAddress             sui_types.SuiAddress `json:"suiAddress"`
+	SuiAddress             sui_types.SuiAddress `json:"sui_types.SuiAddress"`
 	ProtocolPubkeyBytes    lib.Base64Data       `json:"protocolPubkeyBytes"`
 	NetworkPubkeyBytes     lib.Base64Data       `json:"networkPubkeyBytes"`
 	WorkerPubkeyBytes      lib.Base64Data       `json:"workerPubkeyBytes"`

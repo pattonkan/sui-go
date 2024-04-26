@@ -1,12 +1,14 @@
-package client
+package client_test
 
 import (
 	"context"
 	"math/big"
 	"testing"
 
-	"github.com/coming-chat/go-sui/v2/sui_types"
-	"github.com/coming-chat/go-sui/v2/types"
+	"github.com/howjmay/go-sui-sdk/account"
+	"github.com/howjmay/go-sui-sdk/client"
+	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -63,7 +65,7 @@ func TestGetStakesByIds(t *testing.T) {
 
 	stake1 := stakes[0].Stakes[0].Data
 	stakeId := stake1.StakedSuiId
-	stakesFromId, err := cli.GetStakesByIds(context.Background(), []suiObjectID{stakeId})
+	stakesFromId, err := cli.GetStakesByIds(context.Background(), []sui_types.ObjectID{stakeId})
 	require.Nil(t, err)
 	require.GreaterOrEqual(t, len(stakesFromId), 1)
 
@@ -74,13 +76,13 @@ func TestGetStakesByIds(t *testing.T) {
 
 func TestRequestAddDelegation(t *testing.T) {
 	cli := TestnetClient(t)
-	signer := Address
+	signer := account.TEST_ADDRESS
 
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.Nil(t, err)
 
-	amount := SUI(1).Uint64()
-	gasBudget := SUI(0.01).Uint64()
+	amount := sui_types.SUI(1).Uint64()
+	gasBudget := sui_types.SUI(0.01).Uint64()
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 0, 0)
 	require.Nil(t, err)
 
@@ -88,7 +90,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	validator, err := sui_types.NewAddressFromHex(validatorAddress)
 	require.Nil(t, err)
 
-	txBytes, err := BCS_RequestAddStake(
+	txBytes, err := client.BCS_RequestAddStake(
 		*signer,
 		pickedCoins.CoinRefs(),
 		types.NewSafeSuiBigInt(amount),
@@ -103,7 +105,7 @@ func TestRequestAddDelegation(t *testing.T) {
 
 func TestRequestWithdrawDelegation(t *testing.T) {
 	cli := TestnetClient(t)
-	gasBudget := SUI(0.1).Uint64()
+	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.Nil(t, err)
@@ -120,7 +122,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
 	detail, err := cli.GetObject(context.Background(), stakeId, nil)
 	require.Nil(t, err)
-	txBytes, err := BCS_RequestWithdrawStake(*signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
+	txBytes, err := client.BCS_RequestWithdrawStake(*signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.Nil(t, err)
 
 	simulateCheck(t, cli, txBytes, true)

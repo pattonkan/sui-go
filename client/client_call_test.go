@@ -1,4 +1,4 @@
-package client
+package client_test
 
 import (
 	"context"
@@ -7,10 +7,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/account"
+	"github.com/howjmay/go-sui-sdk/client"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 
-	"github.com/coming-chat/go-sui/v2/types"
+	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,7 +27,7 @@ import (
 //	}
 //	tests := []struct {
 //		name    string
-//		chain   *Client
+//		chain   *client.Client
 //		args    args
 //		want    int
 //		wantErr bool
@@ -81,12 +83,12 @@ func Test_TagJson_Owner(t *testing.T) {
 
 func TestClient_DryRunTransaction(t *testing.T) {
 	cli := ChainClient(t)
-	signer := Address
+	signer := account.TEST_ADDRESS
 	coins, err := cli.GetCoins(context.Background(), *signer, nil, nil, 10)
 	require.NoError(t, err)
 
-	amount := SUI(0.01).Uint64()
-	gasBudget := SUI(0.01).Uint64()
+	amount := sui_types.SUI(0.01).Uint64()
+	gasBudget := sui_types.SUI(0.01).Uint64()
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 	tx, err := cli.PayAllSui(
@@ -143,7 +145,7 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 		ShowContent: true,
 	}
 	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", types.SuiCoinType)
-	filterObject, err := cli.BatchGetObjectsOwnedByAddress(context.TODO(), *Address, options, coinType)
+	filterObject, err := cli.BatchGetObjectsOwnedByAddress(context.TODO(), *account.TEST_ADDRESS, options, coinType)
 	require.NoError(t, err)
 	t.Log(filterObject)
 }
@@ -157,7 +159,7 @@ func TestClient_GetCoinMetadata(t *testing.T) {
 
 func TestClient_GetAllBalances(t *testing.T) {
 	chain := ChainClient(t)
-	balances, err := chain.GetAllBalances(context.TODO(), *Address)
+	balances, err := chain.GetAllBalances(context.TODO(), *account.TEST_ADDRESS)
 	require.NoError(t, err)
 	for _, balance := range balances {
 		t.Logf(
@@ -170,7 +172,7 @@ func TestClient_GetAllBalances(t *testing.T) {
 
 func TestClient_GetBalance(t *testing.T) {
 	chain := ChainClient(t)
-	balance, err := chain.GetBalance(context.TODO(), *Address, "")
+	balance, err := chain.GetBalance(context.TODO(), *account.TEST_ADDRESS, "")
 	require.NoError(t, err)
 	t.Logf(
 		"Coin Name: %v, Count: %v, Total: %v, Locked: %v",
@@ -182,7 +184,7 @@ func TestClient_GetBalance(t *testing.T) {
 func TestClient_GetCoins(t *testing.T) {
 	chain := ChainClient(t)
 	defaultCoinType := types.SuiCoinType
-	coins, err := chain.GetCoins(context.TODO(), *Address, &defaultCoinType, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, &defaultCoinType, nil, 1)
 	require.NoError(t, err)
 	t.Logf("%#v", coins)
 }
@@ -191,13 +193,13 @@ func TestClient_GetAllCoins(t *testing.T) {
 	chain := ChainClient(t)
 	type args struct {
 		ctx     context.Context
-		address suiAddress
-		cursor  *suiObjectID
+		address sui_types.SuiAddress
+		cursor  *sui_types.ObjectID
 		limit   uint
 	}
 	tests := []struct {
 		name    string
-		chain   *Client
+		chain   *client.Client
 		args    args
 		want    *types.CoinPage
 		wantErr bool
@@ -207,7 +209,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 			chain: chain,
 			args: args{
 				ctx:     context.TODO(),
-				address: *Address,
+				address: *account.TEST_ADDRESS,
 				cursor:  nil,
 				limit:   3,
 			},
@@ -252,7 +254,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 	cli := ChainClient(t)
 
 	if false {
-		// get sepcified object
+		// get specified object
 		idstr := "0x4ad2f0a918a241d6a19573212aeb56947bb9255a14e921a7ec78b262536826f0"
 		objId, err := sui_types.NewAddressFromHex(idstr)
 		require.Nil(t, err)
@@ -266,7 +268,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 		t.Log(obj.Data)
 	}
 
-	coins, err := cli.GetCoins(context.TODO(), *Address, nil, nil, 3)
+	coins, err := cli.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 3)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		return
@@ -280,15 +282,15 @@ func TestBatchCall_GetObject(t *testing.T) {
 func TestClient_GetObject(t *testing.T) {
 	type args struct {
 		ctx   context.Context
-		objID suiObjectID
+		objID sui_types.ObjectID
 	}
 	chain := ChainClient(t)
-	coins, err := chain.GetCoins(context.TODO(), *Address, nil, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 
 	tests := []struct {
 		name    string
-		chain   *Client
+		chain   *client.Client
 		args    args
 		want    int
 		wantErr bool
@@ -330,7 +332,7 @@ func TestClient_GetObject(t *testing.T) {
 
 func TestClient_MultiGetObjects(t *testing.T) {
 	chain := ChainClient(t)
-	coins, err := chain.GetCoins(context.TODO(), *Address, nil, nil, 1)
+	coins, err := chain.GetCoins(context.TODO(), *account.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		t.Log("Warning: No Object Id for test.")
@@ -338,7 +340,7 @@ func TestClient_MultiGetObjects(t *testing.T) {
 	}
 
 	obj := coins.Data[0].CoinObjectId
-	objs := []suiObjectID{obj, obj}
+	objs := []sui_types.ObjectID{obj, obj}
 	resp, err := chain.MultiGetObjects(
 		context.Background(), objs, &types.SuiObjectDataOptions{
 			ShowType:                true,
@@ -370,7 +372,7 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 		},
 	}
 	limit := uint(1)
-	objs, err := cli.GetOwnedObjects(context.Background(), *Address, &query, nil, &limit)
+	objs, err := cli.GetOwnedObjects(context.Background(), *account.TEST_ADDRESS, &query, nil, &limit)
 	require.Nil(t, err)
 	require.GreaterOrEqual(t, len(objs.Data), int(limit))
 }
@@ -383,7 +385,7 @@ func TestClient_GetTotalSupply(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		chain   *Client
+		chain   *client.Client
 		args    args
 		want    uint64
 		wantErr bool
@@ -444,7 +446,7 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 //	}
 //	tests := []struct {
 //		name    string
-//		client  *Client
+//		client  *client.Client
 //		args    args
 //		want    *types.TransactionBytes
 //		wantErr bool
@@ -536,7 +538,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 	type args struct {
 		ctx             context.Context
 		query           types.SuiTransactionBlockResponseQuery
-		cursor          *suiDigest
+		cursor          *sui_types.TransactionDigest
 		limit           *uint
 		descendingOrder bool
 	}
@@ -552,7 +554,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 				ctx: context.TODO(),
 				query: types.SuiTransactionBlockResponseQuery{
 					Filter: &types.TransactionFilter{
-						FromAddress: Address,
+						FromAddress: account.TEST_ADDRESS,
 					},
 					Options: &types.SuiTransactionBlockResponseOptions{
 						ShowInput:   true,
@@ -597,13 +599,13 @@ func TestClient_ResolveNameServiceAddress(t *testing.T) {
 
 func TestClient_ResolveNameServiceNames(t *testing.T) {
 	c := MainnetClient(t)
-	owner := SuiAddressNoErr("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
+	owner := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
 	namePage, err := c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
 	require.Nil(t, err)
 	require.NotEmpty(t, namePage.Data)
 	t.Log(namePage.Data)
 
-	owner = SuiAddressNoErr("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
+	owner = AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
 	namePage, err = c.ResolveNameServiceNames(context.Background(), *owner, nil, nil)
 	require.Nil(t, err)
 	require.Empty(t, namePage.Data)
@@ -630,7 +632,7 @@ func TestClient_QueryEvents(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				query: types.EventFilter{
-					Sender: Address,
+					Sender: account.TEST_ADDRESS,
 				},
 				cursor:          nil,
 				limit:           &limit,
@@ -665,8 +667,8 @@ func TestClient_GetDynamicFields(t *testing.T) {
 	limit := uint(5)
 	type args struct {
 		ctx            context.Context
-		parentObjectId suiObjectID
-		cursor         *suiObjectID
+		parentObjectId sui_types.ObjectID
+		cursor         *sui_types.ObjectID
 		limit          *uint
 	}
 	tests := []struct {
@@ -705,7 +707,7 @@ func TestClient_GetDynamicFieldObject(t *testing.T) {
 	require.NoError(t, err)
 	type args struct {
 		ctx            context.Context
-		parentObjectId suiObjectID
+		parentObjectId sui_types.ObjectID
 		name           sui_types.DynamicFieldName
 	}
 	tests := []struct {

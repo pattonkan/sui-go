@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/stretchr/testify/require"
 )
 
-func AddressFromHex(t *testing.T, hex string) *suiAddress {
+func AddressFromHex(t *testing.T, hex string) *sui_types.SuiAddress {
 	addr, err := sui_types.NewAddressFromHex(hex)
 	require.NoError(t, err)
 	return addr
@@ -38,7 +38,7 @@ func TestNewResourceType(t *testing.T) {
 			},
 		},
 		{
-			name:    "error addrress",
+			name:    "error address",
 			str:     "0x123abcg::coin::Xxxx",
 			wantErr: true,
 		},

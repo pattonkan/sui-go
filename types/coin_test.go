@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/stretchr/testify/require"
 )
 
-type suiAddress = sui_types.SuiAddress
-type suiObjectID = sui_types.ObjectID
+// type sui_types.SuiAddress = sui_types.SuiAddress
+// type sui_types.ObjectID = sui_types.ObjectID
 
 func balanceObject(val uint64) SafeSuiBigInt[uint64] {
 	return NewSafeSuiBigInt(val)
@@ -263,7 +263,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "moreCount = 3",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
@@ -282,7 +282,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "large gas",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
@@ -302,7 +302,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "ErrNoCoinsFound",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{},
 				},
 				targetAmount: *big.NewInt(101000),
@@ -312,7 +312,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "ErrInsufficientBalance",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
@@ -324,7 +324,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "ErrNeedMergeCoin 1",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
@@ -337,7 +337,7 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "ErrNeedMergeCoin 2",
 			args: args{
-				inputCoins: &Page[Coin, suiObjectID]{
+				inputCoins: &Page[Coin, sui_types.ObjectID]{
 					Data: []Coin{
 						coin(1e5), coin(1e6), coin(1e4), coin(1e5),
 					},

@@ -1,11 +1,12 @@
-package client
+package client_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/coming-chat/go-sui/v2/account"
-	"github.com/coming-chat/go-sui/v2/types"
+	"github.com/howjmay/go-sui-sdk/account"
+	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,19 +15,19 @@ func TestAccountSignAndSend(t *testing.T) {
 }
 
 func ManualTest_AccountSignAndSend(t *testing.T) {
-	unsafeMnemonic := M1Mnemonic
+	unsafeMnemonic := account.TEST_MNEMONIC
 
 	account, err := account.NewAccountWithMnemonic(unsafeMnemonic)
 	require.Nil(t, err)
 	t.Log(account.Address)
 
 	cli := TestnetClient(t)
-	signer := SuiAddressNoErr(account.Address)
+	signer := AddressFromStrMust(account.Address)
 	coins, err := cli.GetSuiCoinsOwnedByAddress(context.Background(), *signer)
 	require.Nil(t, err)
-	require.Greater(t, coins.TotalBalance().Int64(), SUI(0.01).Int64(), "insufficient balance")
+	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
 
-	coinIds := make([]suiObjectID, len(coins))
+	coinIds := make([]sui_types.ObjectID, len(coins))
 	for i, c := range coins {
 		coinIds[i] = c.CoinObjectId
 	}
@@ -35,5 +36,5 @@ func ManualTest_AccountSignAndSend(t *testing.T) {
 	require.Nil(t, err)
 
 	resp := executeTxn(t, cli, txn.TxBytes, account)
-	t.Log("txn digest =", resp.Digest)
+	t.Log("txn digest: ", resp.Digest)
 }

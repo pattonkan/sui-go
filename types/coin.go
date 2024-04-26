@@ -2,9 +2,10 @@ package types
 
 import (
 	"errors"
-	"github.com/coming-chat/go-sui/v2/sui_types"
 	"math/big"
 	"sort"
+
+	"github.com/howjmay/go-sui-sdk/sui_types"
 )
 
 const SUI_COIN_TYPE = "0x2::sui::SUI"
@@ -91,7 +92,7 @@ func (cs *PickedCoins) SuggestMaxGasBudget() uint64 {
 }
 
 // Select coins that match the target amount.
-// @param inputCoins queried page coin datas
+// @param inputCoins queried page coin data
 // @param targetAmount total amount of coins to be selected from inputCoins
 // @param gasBudget the transaction gas budget
 // @param limit the max number of coins selected, default is `MAX_INPUT_COUNT_MERGE`

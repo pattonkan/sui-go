@@ -3,11 +3,11 @@ package client
 import (
 	"context"
 
-	"github.com/coming-chat/go-sui/v2/lib"
-	"github.com/coming-chat/go-sui/v2/sui_types"
-	"github.com/coming-chat/go-sui/v2/sui_types/sui_system_state"
-	"github.com/coming-chat/go-sui/v2/types"
 	"github.com/fardream/go-bcs/bcs"
+	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/go-sui-sdk/sui_types/sui_system_state"
+	"github.com/howjmay/go-sui-sdk/types"
 )
 
 func (c *Client) GetLatestSuiSystemState(ctx context.Context) (*types.SuiSystemStateSummary, error) {
@@ -20,23 +20,23 @@ func (c *Client) GetValidatorsApy(ctx context.Context) (*types.ValidatorsApy, er
 	return &resp, c.CallContext(ctx, &resp, getValidatorsApy)
 }
 
-func (c *Client) GetStakes(ctx context.Context, owner suiAddress) ([]types.DelegatedStake, error) {
+func (c *Client) GetStakes(ctx context.Context, owner sui_types.SuiAddress) ([]types.DelegatedStake, error) {
 	var resp []types.DelegatedStake
 	return resp, c.CallContext(ctx, &resp, getStakes, owner)
 }
 
-func (c *Client) GetStakesByIds(ctx context.Context, stakedSuiIds []suiObjectID) ([]types.DelegatedStake, error) {
+func (c *Client) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]types.DelegatedStake, error) {
 	var resp []types.DelegatedStake
 	return resp, c.CallContext(ctx, &resp, getStakesByIds, stakedSuiIds)
 }
 
 func (c *Client) RequestAddStake(
 	ctx context.Context,
-	signer suiAddress,
-	coins []suiObjectID,
+	signer sui_types.SuiAddress,
+	coins []sui_types.ObjectID,
 	amount types.SuiBigInt,
-	validator suiAddress,
-	gas *suiObjectID,
+	validator sui_types.SuiAddress,
+	gas *sui_types.ObjectID,
 	gasBudget types.SuiBigInt,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
@@ -45,9 +45,9 @@ func (c *Client) RequestAddStake(
 
 func (c *Client) RequestWithdrawStake(
 	ctx context.Context,
-	signer suiAddress,
-	stakedSuiId suiObjectID,
-	gas *suiObjectID,
+	signer sui_types.SuiAddress,
+	stakedSuiId sui_types.ObjectID,
+	gas *sui_types.ObjectID,
 	gasBudget types.SuiBigInt,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
@@ -55,10 +55,10 @@ func (c *Client) RequestWithdrawStake(
 }
 
 func BCS_RequestAddStake(
-	signer suiAddress,
+	signer sui_types.SuiAddress,
 	coins []*sui_types.ObjectRef,
 	amount types.SafeSuiBigInt[uint64],
-	validator suiAddress,
+	validator sui_types.SuiAddress,
 	gasBudget, gasPrice uint64,
 ) ([]byte, error) {
 	// build with BCS
@@ -106,7 +106,7 @@ func BCS_RequestAddStake(
 	return bcs.Marshal(tx)
 }
 
-func BCS_RequestWithdrawStake(signer suiAddress, stakedSuiRef sui_types.ObjectRef, gas []*sui_types.ObjectRef, gasBudget, gasPrice uint64) ([]byte, error) {
+func BCS_RequestWithdrawStake(signer sui_types.SuiAddress, stakedSuiRef sui_types.ObjectRef, gas []*sui_types.ObjectRef, gasBudget, gasPrice uint64) ([]byte, error) {
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 	arg0, err := ptb.Obj(sui_types.SuiSystemMutObj)

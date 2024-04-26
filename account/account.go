@@ -5,14 +5,17 @@ import (
 	"encoding/hex"
 
 	"github.com/coming-chat/go-aptos/crypto/derivation"
-	"github.com/coming-chat/go-sui/v2/sui_types"
+	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
 )
 
 const (
 	ADDRESS_LENGTH = 64
+	TEST_MNEMONIC  = "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
 )
+
+var TEST_ADDRESS, _ = sui_types.NewAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
 
 type Account struct {
 	KeyPair sui_types.SuiKeyPair
