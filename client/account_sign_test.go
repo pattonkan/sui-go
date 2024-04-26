@@ -11,10 +11,6 @@ import (
 )
 
 func TestAccountSignAndSend(t *testing.T) {
-	// ManualTest_AccountSignAndSend(t)
-}
-
-func ManualTest_AccountSignAndSend(t *testing.T) {
 	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
 	require.NoError(t, err)
 	t.Log(account.Address)
