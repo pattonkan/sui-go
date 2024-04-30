@@ -1,89 +1,95 @@
 package client
 
-const (
-	SuiXPrefix   = "suix_"
-	SuiPrefix    = "sui_"
-	UnsafePrefix = "unsafe_"
-)
-
-type Method interface {
+type JsonRpcMethod interface {
 	String() string
 }
 
 type SuiMethod string
 
 func (s SuiMethod) String() string {
-	return SuiPrefix + string(s)
+	return string(s)
 }
 
 type SuiXMethod string
 
 func (s SuiXMethod) String() string {
-	return SuiXPrefix + string(s)
+	return string(s)
 }
 
 type UnsafeMethod string
 
 func (u UnsafeMethod) String() string {
-	return UnsafePrefix + string(u)
+	return string(u)
 }
 
 const (
-	devInspectTransactionBlock        SuiMethod    = "devInspectTransactionBlock"
-	dryRunTransactionBlock            SuiMethod    = "dryRunTransactionBlock"
-	executeTransactionBlock           SuiMethod    = "executeTransactionBlock"
-	getCheckpoint                     SuiMethod    = "getCheckpoint"
-	getCheckpoints                    SuiMethod    = "getCheckpoints"
-	getEvents                         SuiMethod    = "getEvents"
-	getLatestCheckpointSequenceNumber SuiMethod    = "getLatestCheckpointSequenceNumber"
-	getMoveFunctionArgTypes           SuiMethod    = "getMoveFunctionArgTypes"
-	getNormalizedMoveFunction         SuiMethod    = "getNormalizedMoveFunction"
-	getNormalizedMoveModule           SuiMethod    = "getNormalizedMoveModule"
-	getNormalizedMoveModulesByPackage SuiMethod    = "getNormalizedMoveModulesByPackage"
-	getNormalizedMoveStruct           SuiMethod    = "getNormalizedMoveStruct"
-	getObject                         SuiMethod    = "getObject"
-	getTotalTransactionBlocks         SuiMethod    = "getTotalTransactionBlocks"
-	getTransactionBlock               SuiMethod    = "getTransactionBlock"
-	multiGetObjects                   SuiMethod    = "multiGetObjects"
-	multiGetTransactionBlocks         SuiMethod    = "multiGetTransactionBlocks"
-	tryGetPastObject                  SuiMethod    = "tryGetPastObject"
-	tryMultiGetPastObjects            SuiMethod    = "tryMultiGetPastObjects"
-	getAllBalances                    SuiXMethod   = "getAllBalances"
-	getAllCoins                       SuiXMethod   = "getAllCoins"
-	getBalance                        SuiXMethod   = "getBalance"
-	getCoinMetadata                   SuiXMethod   = "getCoinMetadata"
-	getCoins                          SuiXMethod   = "getCoins"
-	getCommitteeInfo                  SuiXMethod   = "getCommitteeInfo"
-	getCurrentEpoch                   SuiXMethod   = "getCurrentEpoch"
-	getDynamicFieldObject             SuiXMethod   = "getDynamicFieldObject"
-	getDynamicFields                  SuiXMethod   = "getDynamicFields"
-	getEpochs                         SuiXMethod   = "getEpochs"
-	getLatestSuiSystemState           SuiXMethod   = "getLatestSuiSystemState"
-	getMoveCallMetrics                SuiXMethod   = "getMoveCallMetrics"
-	getNetworkMetrics                 SuiXMethod   = "getNetworkMetrics"
-	getOwnedObjects                   SuiXMethod   = "getOwnedObjects"
-	getReferenceGasPrice              SuiXMethod   = "getReferenceGasPrice"
-	getStakes                         SuiXMethod   = "getStakes"
-	getStakesByIds                    SuiXMethod   = "getStakesByIds"
-	getTotalSupply                    SuiXMethod   = "getTotalSupply"
-	getValidatorsApy                  SuiXMethod   = "getValidatorsApy"
-	queryEvents                       SuiXMethod   = "queryEvents"
-	queryObjects                      SuiXMethod   = "queryObjects"
-	queryTransactionBlocks            SuiXMethod   = "queryTransactionBlocks"
-	resolveNameServiceAddress         SuiXMethod   = "resolveNameServiceAddress"
-	resolveNameServiceNames           SuiXMethod   = "resolveNameServiceNames"
-	subscribeEvent                    SuiXMethod   = "subscribeEvent"
-	batchTransaction                  UnsafeMethod = "batchTransaction"
-	mergeCoins                        UnsafeMethod = "mergeCoins"
-	moveCall                          UnsafeMethod = "moveCall"
-	pay                               UnsafeMethod = "pay"
-	payAllSui                         UnsafeMethod = "payAllSui"
-	paySui                            UnsafeMethod = "paySui"
-	publish                           UnsafeMethod = "publish"
-	requestAddStake                   UnsafeMethod = "requestAddStake"
-	requestWithdrawStake              UnsafeMethod = "requestWithdrawStake"
-	splitCoin                         UnsafeMethod = "splitCoin"
-	splitCoinEqual                    UnsafeMethod = "splitCoinEqual"
-	transferObject                    UnsafeMethod = "transferObject"
-	transferSui                       UnsafeMethod = "transferSui"
+	// Coin Query API
+	getAllBalances  SuiXMethod = "suix_getAllBalances"
+	getAllCoins     SuiXMethod = "suix_getAllCoins"
+	getBalance      SuiXMethod = "suix_getBalance"
+	getCoinMetadata SuiXMethod = "suix_getCoinMetadata"
+	getCoins        SuiXMethod = "suix_getCoins"
+	getTotalSupply  SuiXMethod = "suix_getTotalSupply"
+
+	// Extended API
+	getDynamicFieldObject     SuiXMethod = "suix_getDynamicFieldObject"
+	getDynamicFields          SuiXMethod = "suix_getDynamicFields"
+	getOwnedObjects           SuiXMethod = "suix_getOwnedObjects"
+	queryEvents               SuiXMethod = "suix_queryEvents"
+	queryTransactionBlocks    SuiXMethod = "suix_queryTransactionBlocks"
+	resolveNameServiceAddress SuiXMethod = "suix_resolveNameServiceAddress"
+	resolveNameServiceNames   SuiXMethod = "suix_resolveNameServiceNames"
+	subscribeEvent            SuiXMethod = "suix_subscribeEvent"       // TODO
+	subscribeTransaction      SuiXMethod = "suix_subscribeTransaction" // TODO
+
+	// Governance Read API
+	getCommitteeInfo        SuiXMethod = "suix_getCommitteeInfo" // TODO
+	getLatestSuiSystemState SuiXMethod = "suix_getLatestSuiSystemState"
+	getReferenceGasPrice    SuiXMethod = "suix_getReferenceGasPrice"
+	getStakes               SuiXMethod = "suix_getStakes"
+	getStakesByIds          SuiXMethod = "suix_getStakesByIds"
+	getValidatorsApy        SuiXMethod = "suix_getValidatorsApy"
+
+	// Move Utils
+	getMoveFunctionArgTypes           SuiMethod = "sui_getMoveFunctionArgTypes"           // TODO
+	getNormalizedMoveFunction         SuiMethod = "sui_getNormalizedMoveFunction"         // TODO
+	getNormalizedMoveModule           SuiMethod = "sui_getNormalizedMoveModule"           // TODO
+	getNormalizedMoveModulesByPackage SuiMethod = "sui_getNormalizedMoveModulesByPackage" // TODO
+	getNormalizedMoveStruct           SuiMethod = "sui_getNormalizedMoveStruct"           // TODO
+
+	// Read API
+	getChainIdentifier                SuiMethod = "sui_getChainIdentifier" // TODO
+	getCheckpoint                     SuiMethod = "sui_getCheckpoint"      // TODO
+	getCheckpoints                    SuiMethod = "sui_getCheckpoints"     // TODO
+	getEvents                         SuiMethod = "sui_getEvents"
+	getLatestCheckpointSequenceNumber SuiMethod = "sui_getLatestCheckpointSequenceNumber"
+	getLoadedChildObjects             SuiMethod = "sui_getLoadedChildObjects" // TODO
+	getObject                         SuiMethod = "sui_getObject"
+	getProtocolConfig                 SuiMethod = "sui_getProtocolConfig" // TODO
+	getTotalTransactionBlocks         SuiMethod = "sui_getTotalTransactionBlocks"
+	getTransactionBlock               SuiMethod = "sui_getTransactionBlock"
+	multiGetObjects                   SuiMethod = "sui_multiGetObjects"
+	multiGetTransactionBlocks         SuiMethod = "sui_multiGetTransactionBlocks" // TODO
+	tryGetPastObject                  SuiMethod = "sui_tryGetPastObject"
+	tryMultiGetPastObjects            SuiMethod = "sui_tryMultiGetPastObjects" // TODO
+
+	// Transaction Builder API
+	batchTransaction     UnsafeMethod = "unsafe_batchTransaction"
+	mergeCoins           UnsafeMethod = "unsafe_mergeCoins"
+	moveCall             UnsafeMethod = "unsafe_moveCall"
+	pay                  UnsafeMethod = "unsafe_pay"
+	payAllSui            UnsafeMethod = "unsafe_payAllSui"
+	paySui               UnsafeMethod = "unsafe_paySui"
+	publish              UnsafeMethod = "unsafe_publish"
+	requestAddStake      UnsafeMethod = "unsafe_requestAddStake"
+	requestWithdrawStake UnsafeMethod = "unsafe_requestWithdrawStake"
+	splitCoin            UnsafeMethod = "unsafe_splitCoin"
+	splitCoinEqual       UnsafeMethod = "unsafe_splitCoinEqual"
+	transferObject       UnsafeMethod = "unsafe_transferObject"
+	transferSui          UnsafeMethod = "unsafe_transferSui"
+
+	// Write API
+	devInspectTransactionBlock SuiMethod = "sui_devInspectTransactionBlock"
+	dryRunTransactionBlock     SuiMethod = "sui_dryRunTransactionBlock"
+	executeTransactionBlock    SuiMethod = "sui_executeTransactionBlock"
 )

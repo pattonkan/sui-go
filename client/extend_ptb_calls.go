@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strings"
 
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/howjmay/go-sui-sdk/lib"
@@ -10,49 +11,66 @@ import (
 	"github.com/howjmay/go-sui-sdk/types"
 )
 
-func (c *Client) GetLatestSuiSystemState(ctx context.Context) (*types.SuiSystemStateSummary, error) {
-	var resp types.SuiSystemStateSummary
-	return &resp, c.CallContext(ctx, &resp, getLatestSuiSystemState)
+// NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
+const QUERY_MAX_RESULT_LIMIT = 50
+
+type suiBase64Data = lib.Base64Data
+
+// GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
+func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (types.Coins, error) {
+	coinType := types.SuiCoinType
+	page, err := c.GetCoins(ctx, address, &coinType, nil, 200)
+	if err != nil {
+		return nil, err
+	}
+	return page.Data, nil
 }
 
-func (c *Client) GetValidatorsApy(ctx context.Context) (*types.ValidatorsApy, error) {
-	var resp types.ValidatorsApy
-	return &resp, c.CallContext(ctx, &resp, getValidatorsApy)
-}
-
-func (c *Client) GetStakes(ctx context.Context, owner *sui_types.SuiAddress) ([]types.DelegatedStake, error) {
-	var resp []types.DelegatedStake
-	return resp, c.CallContext(ctx, &resp, getStakes, owner)
-}
-
-func (c *Client) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]types.DelegatedStake, error) {
-	var resp []types.DelegatedStake
-	return resp, c.CallContext(ctx, &resp, getStakesByIds, stakedSuiIds)
-}
-
-func (c *Client) RequestAddStake(
+// BatchGetObjectsOwnedByAddress @param filterType You can specify filtering out the specified resources, this will fetch all resources if it is not empty ""
+func (c *Client) BatchGetObjectsOwnedByAddress(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	coins []sui_types.ObjectID,
-	amount types.SuiBigInt,
-	validator *sui_types.SuiAddress,
-	gas *sui_types.ObjectID,
-	gasBudget types.SuiBigInt,
-) (*types.TransactionBytes, error) {
-	var resp types.TransactionBytes
-	return &resp, c.CallContext(ctx, &resp, requestAddStake, signer, coins, amount, validator, gas, gasBudget)
+	address *sui_types.SuiAddress,
+	options *types.SuiObjectDataOptions,
+	filterType string,
+) ([]types.SuiObjectResponse, error) {
+	filterType = strings.TrimSpace(filterType)
+	return c.BatchGetFilteredObjectsOwnedByAddress(
+		ctx, address, options, func(sod *types.SuiObjectData) bool {
+			return filterType == "" || filterType == *sod.Type
+		},
+	)
 }
 
-func (c *Client) RequestWithdrawStake(
+func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	stakedSuiId sui_types.ObjectID,
-	gas *sui_types.ObjectID,
-	gasBudget types.SuiBigInt,
-) (*types.TransactionBytes, error) {
-	var resp types.TransactionBytes
-	return &resp, c.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
+	address *sui_types.SuiAddress,
+	options *types.SuiObjectDataOptions,
+	filter func(*types.SuiObjectData) bool,
+) ([]types.SuiObjectResponse, error) {
+	query := types.SuiObjectResponseQuery{
+		Options: &types.SuiObjectDataOptions{
+			ShowType: true,
+		},
+	}
+	filteringObjs, err := c.GetOwnedObjects(ctx, address, &query, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	objIds := make([]sui_types.ObjectID, 0)
+	for _, obj := range filteringObjs.Data {
+		if obj.Data == nil {
+			continue // error obj
+		}
+		if filter != nil && !filter(obj.Data) {
+			continue // ignore objects if non-specified type
+		}
+		objIds = append(objIds, obj.Data.ObjectID)
+	}
+
+	return c.MultiGetObjects(ctx, objIds, options)
 }
+
+// PTB impl
 
 func BCS_RequestAddStake(
 	signer *sui_types.SuiAddress,
