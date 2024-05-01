@@ -11,7 +11,6 @@ import (
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,10 +27,10 @@ func TestnetClient(t *testing.T) *conn.HttpClient {
 func DevnetClient(t *testing.T) *conn.HttpClient {
 	c := conn.Dial(conn.DevnetEndpointUrl)
 	api := sui.NewSuiClient(c)
-	balance, err := api.GetBalance(context.Background(), account.TEST_ADDRESS, types.SUI_COIN_TYPE)
+	balance, err := api.GetBalance(context.Background(), sui_types.TEST_ADDRESS, types.SUI_COIN_TYPE)
 	require.NoError(t, err)
 	if balance.TotalBalance.BigInt().Uint64() < sui_types.SUI(0.3).Uint64() {
-		_, err = sui.RequestFundFromFaucet(account.TEST_ADDRESS.String(), conn.DevnetFaucetUrl)
+		_, err = sui.RequestFundFromFaucet(sui_types.TEST_ADDRESS.String(), conn.DevnetFaucetUrl)
 		require.NoError(t, err)
 	}
 	return c
@@ -71,7 +70,7 @@ func executeTxn(
 	t *testing.T,
 	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
-	acc *account.Account,
+	acc *sui_types.Account,
 ) *types.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
 	simulate, err := api.DryRunTransaction(context.Background(), txBytes)

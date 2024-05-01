@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/sui"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
@@ -12,7 +11,7 @@ import (
 )
 
 func TestAccountSignAndSend(t *testing.T) {
-	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 	t.Log(account.Address)
 

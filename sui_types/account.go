@@ -1,4 +1,4 @@
-package account
+package sui_types
 
 import (
 	"encoding/base64"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/coming-chat/go-aptos/crypto/derivation"
 	"github.com/howjmay/go-sui-sdk/move_types"
-	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
 )
@@ -16,15 +15,15 @@ const (
 	TEST_MNEMONIC  = "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
 )
 
-var TEST_ADDRESS, _ = sui_types.NewAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
+var TEST_ADDRESS, _ = NewAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
 
 type Account struct {
-	KeyPair sui_types.SuiKeyPair
+	KeyPair SuiKeyPair
 	Address string
 }
 
-func NewAccount(scheme sui_types.SignatureScheme, seed []byte) *Account {
-	suiKeyPair := sui_types.NewSuiKeyPair(scheme, seed)
+func NewAccount(scheme SignatureScheme, seed []byte) *Account {
+	suiKeyPair := NewSuiKeyPair(scheme, seed)
 	tmp := []byte{scheme.Flag()}
 	tmp = append(tmp, suiKeyPair.PublicKey()...)
 	addrBytes := blake2b.Sum256(tmp)
@@ -52,7 +51,7 @@ func NewAccountWithKeystore(keystore string) (*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	scheme, err := sui_types.NewSignatureScheme(ksByte[0])
+	scheme, err := NewSignatureScheme(ksByte[0])
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +67,7 @@ func NewAccountWithMnemonic(mnemonic string) (*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	scheme, err := sui_types.NewSignatureScheme(0)
+	scheme, err := NewSignatureScheme(0)
 	if err != nil {
 		return nil, err
 	}
@@ -84,11 +83,11 @@ func (a *Account) Sign(data []byte) []byte {
 	}
 }
 
-func (a *Account) SignSecureWithoutEncode(txnBytes []byte, intent sui_types.Intent) (sui_types.Signature, error) {
-	message := sui_types.NewIntentMessage(intent, bcsBytes(txnBytes))
-	signature, err := sui_types.NewSignatureSecure(message, &a.KeyPair)
+func (a *Account) SignSecureWithoutEncode(txnBytes []byte, intent Intent) (Signature, error) {
+	message := NewIntentMessage(intent, bcsBytes(txnBytes))
+	signature, err := NewSignatureSecure(message, &a.KeyPair)
 	if err != nil {
-		return sui_types.Signature{}, err
+		return Signature{}, err
 	}
 	return signature, nil
 }

@@ -5,7 +5,6 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	sui "github.com/howjmay/go-sui-sdk/sui"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
@@ -77,7 +76,7 @@ func TestGetStakesByIds(t *testing.T) {
 
 func TestRequestAddDelegation(t *testing.T) {
 	api := sui.NewSuiClient(TestnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)

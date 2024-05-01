@@ -2,8 +2,7 @@ package lib
 
 import "io"
 
-type EmptyEnum struct {
-}
+type EmptyEnum struct{}
 
 func (e EmptyEnum) MarshalBCS() ([]byte, error) {
 	return []byte{}, nil

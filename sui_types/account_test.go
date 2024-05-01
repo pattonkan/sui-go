@@ -1,23 +1,22 @@
-package account_test
+package sui_types_test
 
 import (
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAccount(t *testing.T) {
-	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 
 	t.Logf("addr: %v", account.Address)
 }
 
 func Test_Signature_Marshal_Unmarshal(t *testing.T) {
-	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 
 	msg := "Coming chat is very good jopfpzf"

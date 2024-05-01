@@ -10,14 +10,13 @@ import (
 	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestClient_TransferObject(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -35,7 +34,7 @@ func TestClient_TransferObject(t *testing.T) {
 
 func TestClient_TransferSui(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -58,7 +57,7 @@ func TestClient_TransferSui(t *testing.T) {
 
 func TestClient_PayAllSui(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -80,8 +79,8 @@ func TestClient_PayAllSui(t *testing.T) {
 
 func TestClient_Pay(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
+	recipient := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	limit := len(coins.Data) - 1 // need reserve a coin for gas
@@ -108,8 +107,8 @@ func TestClient_Pay(t *testing.T) {
 
 func TestClient_PaySui(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
+	recipient := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
@@ -134,7 +133,7 @@ func TestClient_PaySui(t *testing.T) {
 
 func TestClient_SplitCoin(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
@@ -157,7 +156,7 @@ func TestClient_SplitCoin(t *testing.T) {
 
 func TestClient_SplitCoinEqual(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
@@ -179,7 +178,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 
 func TestClient_MergeCoins(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= 3)
@@ -209,7 +208,7 @@ func TestClient_Publish(t *testing.T) {
 
 func TestClient_MoveCall(t *testing.T) {
 	api := sui.NewSuiClient(TestnetClient(t))
-	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 
 	t.Log("signer: ", account.Address)

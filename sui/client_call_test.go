@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/lib"
 	"github.com/howjmay/go-sui-sdk/sui"
 	"github.com/howjmay/go-sui-sdk/sui_types"
@@ -42,7 +41,7 @@ func Test_TagJson_Owner(t *testing.T) {
 
 func TestClient_DryRunTransaction(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	signer := account.TEST_ADDRESS
+	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
@@ -104,7 +103,7 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 		ShowContent: true,
 	}
 	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", types.SuiCoinType)
-	filterObject, err := api.BatchGetObjectsOwnedByAddress(context.TODO(), account.TEST_ADDRESS, &options, coinType)
+	filterObject, err := api.BatchGetObjectsOwnedByAddress(context.TODO(), sui_types.TEST_ADDRESS, &options, coinType)
 	require.NoError(t, err)
 	t.Log(filterObject)
 }
@@ -118,7 +117,7 @@ func TestClient_GetCoinMetadata(t *testing.T) {
 
 func TestClient_GetAllBalances(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	balances, err := api.GetAllBalances(context.TODO(), account.TEST_ADDRESS)
+	balances, err := api.GetAllBalances(context.TODO(), sui_types.TEST_ADDRESS)
 	require.NoError(t, err)
 	for _, balance := range balances {
 		t.Logf(
@@ -131,7 +130,7 @@ func TestClient_GetAllBalances(t *testing.T) {
 
 func TestClient_GetBalance(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	balance, err := api.GetBalance(context.TODO(), account.TEST_ADDRESS, "")
+	balance, err := api.GetBalance(context.TODO(), sui_types.TEST_ADDRESS, "")
 	require.NoError(t, err)
 	t.Logf(
 		"Coin Name: %v, Count: %v, Total: %v, Locked: %v",
@@ -143,7 +142,7 @@ func TestClient_GetBalance(t *testing.T) {
 func TestClient_GetCoins(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
 	defaultCoinType := types.SuiCoinType
-	coins, err := api.GetCoins(context.TODO(), account.TEST_ADDRESS, &defaultCoinType, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, &defaultCoinType, nil, 1)
 	require.NoError(t, err)
 	t.Logf("%#v", coins)
 }
@@ -167,7 +166,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 			a:    sui.NewSuiClient(DevnetClient(t)),
 			args: args{
 				ctx:     context.TODO(),
-				address: account.TEST_ADDRESS,
+				address: sui_types.TEST_ADDRESS,
 				cursor:  nil,
 				limit:   3,
 			},
@@ -225,7 +224,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 		t.Log(obj.Data)
 	}
 
-	coins, err := api.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 3)
+	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, nil, nil, 3)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		return
@@ -242,7 +241,7 @@ func TestClient_GetObject(t *testing.T) {
 		objID *sui_types.ObjectID
 	}
 	api := sui.NewSuiClient(DevnetClient(t))
-	coins, err := api.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -289,7 +288,7 @@ func TestClient_GetObject(t *testing.T) {
 
 func TestClient_MultiGetObjects(t *testing.T) {
 	api := sui.NewSuiClient(DevnetClient(t))
-	coins, err := api.GetCoins(context.TODO(), account.TEST_ADDRESS, nil, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		t.Log("Warning: No Object Id for test.")
@@ -328,7 +327,7 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 		},
 	}
 	limit := uint(1)
-	objs, err := api.GetOwnedObjects(context.Background(), account.TEST_ADDRESS, &query, nil, &limit)
+	objs, err := api.GetOwnedObjects(context.Background(), sui_types.TEST_ADDRESS, &query, nil, &limit)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(objs.Data), int(limit))
 }
@@ -509,7 +508,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 				ctx: context.TODO(),
 				query: types.SuiTransactionBlockResponseQuery{
 					Filter: &types.TransactionFilter{
-						FromAddress: account.TEST_ADDRESS,
+						FromAddress: sui_types.TEST_ADDRESS,
 					},
 					Options: &types.SuiTransactionBlockResponseOptions{
 						ShowInput:   true,
@@ -587,7 +586,7 @@ func TestClient_QueryEvents(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				query: types.EventFilter{
-					Sender: account.TEST_ADDRESS,
+					Sender: sui_types.TEST_ADDRESS,
 				},
 				cursor:          nil,
 				limit:           &limit,

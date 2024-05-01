@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/lib"
 	"github.com/howjmay/go-sui-sdk/sui"
 	"github.com/howjmay/go-sui-sdk/sui/conn"
@@ -16,7 +15,7 @@ import (
 )
 
 func TestPTB_PaySui(t *testing.T) {
-	sender := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
 	recipient, _ := sui_types.NewAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
@@ -60,8 +59,8 @@ func TestPTB_PaySui(t *testing.T) {
 }
 
 func TestPTB_TransferObject(t *testing.T) {
-	sender := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
+	recipient := sui_types.TEST_ADDRESS
 	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	api := sui.NewSuiClient(TestnetClient(t))
@@ -101,7 +100,7 @@ func TestPTB_TransferObject(t *testing.T) {
 }
 
 func TestPTB_TransferSui(t *testing.T) {
-	sender := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
 	recipient := sender
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
@@ -141,7 +140,7 @@ func TestPTB_TransferSui(t *testing.T) {
 }
 
 func TestPTB_PayAllSui(t *testing.T) {
-	sender := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
 	recipient := sender
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -184,7 +183,7 @@ func TestPTB_PayAllSui(t *testing.T) {
 }
 
 func TestPTB_Pay(t *testing.T) {
-	sender := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
 	recipient, _ := sui_types.NewAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
@@ -235,7 +234,7 @@ func TestPTB_Pay(t *testing.T) {
 }
 
 func TestPTB_MoveCall(t *testing.T) {
-	sender := account.TEST_ADDRESS
+	sender := sui_types.TEST_ADDRESS
 	gasBudget := sui_types.SUI(0.1).Uint64()
 	gasPrice := uint64(1000)
 
