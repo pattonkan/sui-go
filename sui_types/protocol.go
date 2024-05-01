@@ -1,3 +1,3 @@
-package sui_protocol
+package sui_types
 
 type ProtocolVersion = uint64

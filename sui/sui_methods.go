@@ -1,8 +1,4 @@
-package client
-
-type JsonRpcMethod interface {
-	String() string
-}
+package sui
 
 type SuiMethod string
 

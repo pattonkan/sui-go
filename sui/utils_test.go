@@ -1,12 +1,13 @@
-package client_test
+package sui_test
 
 import (
 	"context"
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/client"
 	"github.com/howjmay/go-sui-sdk/lib"
+	"github.com/howjmay/go-sui-sdk/sui"
+	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 
@@ -14,30 +15,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func MainnetClient(t *testing.T) *client.Client {
-	c := client.Dial(client.MainnetEndpointUrl)
+func MainnetClient(t *testing.T) *conn.HttpClient {
+	c := conn.Dial(conn.MainnetEndpointUrl)
 	return c
 }
 
-func TestnetClient(t *testing.T) *client.Client {
-	c := client.Dial(client.TestnetEndpointUrl)
+func TestnetClient(t *testing.T) *conn.HttpClient {
+	c := conn.Dial(conn.TestnetEndpointUrl)
 	return c
 }
 
-func DevnetClient(t *testing.T) *client.Client {
-	c := client.Dial(client.DevnetEndpointUrl)
-
-	balance, err := c.GetBalance(context.Background(), account.TEST_ADDRESS, types.SUI_COIN_TYPE)
+func DevnetClient(t *testing.T) *conn.HttpClient {
+	c := conn.Dial(conn.DevnetEndpointUrl)
+	api := sui.NewSuiClient(c)
+	balance, err := api.GetBalance(context.Background(), account.TEST_ADDRESS, types.SUI_COIN_TYPE)
 	require.NoError(t, err)
 	if balance.TotalBalance.BigInt().Uint64() < sui_types.SUI(0.3).Uint64() {
-		_, err = client.RequestFundFromFaucet(account.TEST_ADDRESS.String(), client.DevnetFaucetUrl)
+		_, err = sui.RequestFundFromFaucet(account.TEST_ADDRESS.String(), conn.DevnetFaucetUrl)
 		require.NoError(t, err)
 	}
 	return c
 }
 
-func LocalnetClient(t *testing.T) *client.Client {
-	c := client.Dial(client.LocalnetEndpointUrl)
+func LocalnetClient(t *testing.T) *conn.HttpClient {
+	c := conn.Dial(conn.LocalnetEndpointUrl)
 	return c
 }
 
@@ -49,11 +50,11 @@ func AddressFromStrMust(str string) *sui_types.SuiAddress {
 // @return types.DryRunTransactionBlockResponse
 func dryRunTxn(
 	t *testing.T,
-	cli *client.Client,
+	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
 	showJson bool,
 ) *types.DryRunTransactionBlockResponse {
-	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
+	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
 	require.Equal(t, "", simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
@@ -68,12 +69,12 @@ func dryRunTxn(
 
 func executeTxn(
 	t *testing.T,
-	cli *client.Client,
+	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
 	acc *account.Account,
 ) *types.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
-	simulate, err := cli.DryRunTransaction(context.Background(), txBytes)
+	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
 	require.True(t, simulate.Effects.Data.IsSuccess())
 
@@ -83,7 +84,7 @@ func executeTxn(
 	options := types.SuiTransactionBlockResponseOptions{
 		ShowEffects: true,
 	}
-	resp, err := cli.ExecuteTransactionBlock(
+	resp, err := api.ExecuteTransactionBlock(
 		context.TODO(), txBytes, []any{signature}, &options,
 		types.TxnRequestTypeWaitForLocalExecution,
 	)

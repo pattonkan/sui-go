@@ -1,4 +1,4 @@
-package client
+package conn
 
 import (
 	"encoding/json"
@@ -39,4 +39,8 @@ func (err *jsonError) ErrorCode() int {
 
 func (err *jsonError) ErrorData() interface{} {
 	return err.Data
+}
+
+type JsonRpcMethod interface {
+	String() string
 }

@@ -1,4 +1,4 @@
-package client
+package sui
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/howjmay/go-sui-sdk/types"
 )
 
-func (c *Client) DevInspectTransactionBlock(
+func (s *ImplSuiAPI) DevInspectTransactionBlock(
 	ctx context.Context,
 	senderAddress *sui_types.SuiAddress,
 	txByte suiBase64Data,
@@ -15,21 +15,21 @@ func (c *Client) DevInspectTransactionBlock(
 	epoch *uint64,
 ) (*types.DevInspectResults, error) {
 	var resp types.DevInspectResults
-	return &resp, c.CallContext(ctx, &resp, devInspectTransactionBlock, senderAddress, txByte, gasPrice, epoch)
+	return &resp, s.http.CallContext(ctx, &resp, devInspectTransactionBlock, senderAddress, txByte, gasPrice, epoch)
 }
 
-func (c *Client) DryRunTransaction(
+func (s *ImplSuiAPI) DryRunTransaction(
 	ctx context.Context,
 	txBytes suiBase64Data,
 ) (*types.DryRunTransactionBlockResponse, error) {
 	var resp types.DryRunTransactionBlockResponse
-	return &resp, c.CallContext(ctx, &resp, dryRunTransactionBlock, txBytes)
+	return &resp, s.http.CallContext(ctx, &resp, dryRunTransactionBlock, txBytes)
 }
 
-func (c *Client) ExecuteTransactionBlock(
+func (s *ImplSuiAPI) ExecuteTransactionBlock(
 	ctx context.Context, txBytes suiBase64Data, signatures []any,
 	options *types.SuiTransactionBlockResponseOptions, requestType types.ExecuteTransactionRequestType,
 ) (*types.SuiTransactionBlockResponse, error) {
 	resp := types.SuiTransactionBlockResponse{}
-	return &resp, c.CallContext(ctx, &resp, executeTransactionBlock, txBytes, signatures, options, requestType)
+	return &resp, s.http.CallContext(ctx, &resp, executeTransactionBlock, txBytes, signatures, options, requestType)
 }

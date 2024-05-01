@@ -1,4 +1,4 @@
-package client
+package sui
 
 import (
 	"context"
@@ -17,9 +17,9 @@ const QUERY_MAX_RESULT_LIMIT = 50
 type suiBase64Data = lib.Base64Data
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
-func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (types.Coins, error) {
+func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (types.Coins, error) {
 	coinType := types.SuiCoinType
-	page, err := c.GetCoins(ctx, address, &coinType, nil, 200)
+	page, err := s.GetCoins(ctx, address, &coinType, nil, 200)
 	if err != nil {
 		return nil, err
 	}
@@ -27,21 +27,21 @@ func (c *Client) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_typ
 }
 
 // BatchGetObjectsOwnedByAddress @param filterType You can specify filtering out the specified resources, this will fetch all resources if it is not empty ""
-func (c *Client) BatchGetObjectsOwnedByAddress(
+func (s *ImplSuiAPI) BatchGetObjectsOwnedByAddress(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
 	options *types.SuiObjectDataOptions,
 	filterType string,
 ) ([]types.SuiObjectResponse, error) {
 	filterType = strings.TrimSpace(filterType)
-	return c.BatchGetFilteredObjectsOwnedByAddress(
+	return s.BatchGetFilteredObjectsOwnedByAddress(
 		ctx, address, options, func(sod *types.SuiObjectData) bool {
 			return filterType == "" || filterType == *sod.Type
 		},
 	)
 }
 
-func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
+func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
 	options *types.SuiObjectDataOptions,
@@ -52,7 +52,7 @@ func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 			ShowType: true,
 		},
 	}
-	filteringObjs, err := c.GetOwnedObjects(ctx, address, &query, nil, nil)
+	filteringObjs, err := s.GetOwnedObjects(ctx, address, &query, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *Client) BatchGetFilteredObjectsOwnedByAddress(
 		objIds = append(objIds, obj.Data.ObjectID)
 	}
 
-	return c.MultiGetObjects(ctx, objIds, options)
+	return s.MultiGetObjects(ctx, objIds, options)
 }
 
 // PTB impl

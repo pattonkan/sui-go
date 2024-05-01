@@ -1,4 +1,4 @@
-package client
+package conn
 
 import (
 	"bytes"
@@ -32,7 +32,7 @@ type BatchElem struct {
 	Error error
 }
 
-type Client struct {
+type HttpClient struct {
 	idCounter uint32
 
 	url    string
@@ -50,8 +50,8 @@ const (
 	LocalnetFaucetUrl = "http://localhost:9123/gas"
 )
 
-func Dial(url string) (client *Client) {
-	return &Client{
+func Dial(url string) (client *HttpClient) {
+	return &HttpClient{
 		url: strings.TrimRight(url, "/"),
 		client: &http.Client{
 			Transport: &http.Transport{
@@ -68,7 +68,7 @@ func Dial(url string) (client *Client) {
 //
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
-func (c *Client) Call(result interface{}, method JsonRpcMethod, args ...interface{}) error {
+func (c *HttpClient) Call(result interface{}, method JsonRpcMethod, args ...interface{}) error {
 	ctx := context.Background()
 	return c.CallContext(ctx, result, method, args...)
 }
@@ -78,7 +78,7 @@ func (c *Client) Call(result interface{}, method JsonRpcMethod, args ...interfac
 //
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
-func (c *Client) CallContext(ctx context.Context, result interface{}, method JsonRpcMethod, args ...interface{}) error {
+func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method JsonRpcMethod, args ...interface{}) error {
 	if result != nil && reflect.TypeOf(result).Kind() != reflect.Ptr {
 		return fmt.Errorf("call result parameter must be pointer or nil interface: %v", result)
 	}
@@ -107,14 +107,14 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method Jso
 
 // BatchCall sends all given requests as a single batch and waits for the server
 // to return a response for all of them.
-func (c *Client) BatchCall(b []BatchElem) error {
+func (c *HttpClient) BatchCall(b []BatchElem) error {
 	return c.BatchCallContext(context.Background(), b)
 }
 
 // BatchCallContext sends all given requests as a single batch and waits for the server
 // to return a response for all of them. The wait duration is bounded by the
 // context's deadline.
-func (c *Client) BatchCallContext(ctx context.Context, b []BatchElem) error {
+func (c *HttpClient) BatchCallContext(ctx context.Context, b []BatchElem) error {
 	var (
 		msgs = make([]*jsonrpcMessage, len(b))
 		byID = make(map[string]int, len(b))
@@ -152,12 +152,12 @@ func (c *Client) BatchCallContext(ctx context.Context, b []BatchElem) error {
 	return nil
 }
 
-func (c *Client) nextID() json.RawMessage {
+func (c *HttpClient) nextID() json.RawMessage {
 	id := atomic.AddUint32(&c.idCounter, 1)
 	return strconv.AppendUint(nil, uint64(id), 10)
 }
 
-func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
+func (c *HttpClient) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
 	msg := &jsonrpcMessage{Version: version, ID: c.nextID(), Method: method}
 	if paramsIn != nil { // prevent sending "params":null
 		var err error
@@ -168,7 +168,7 @@ func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMes
 	return msg, nil
 }
 
-func (c *Client) doRequest(ctx context.Context, msg interface{}) (io.ReadCloser, error) {
+func (c *HttpClient) doRequest(ctx context.Context, msg interface{}) (io.ReadCloser, error) {
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err
