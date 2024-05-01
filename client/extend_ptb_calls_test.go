@@ -14,88 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBCS_TransferObject(t *testing.T) {
-	sender := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
-	gasBudget := sui_types.SUI(0.1).Uint64()
-
-	cli := TestnetClient(t)
-	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
-	require.NoError(t, err)
-	coins := getCoins(t, cli, sender, 2)
-	coin, gas := coins[0], coins[1]
-
-	gasPrice := uint64(1000)
-	// gasPrice, err := cli.GetReferenceGasPrice(context.Background())
-
-	// build with BCS
-	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.TransferObject(recipient, []*sui_types.ObjectRef{coin.Reference()})
-	require.NoError(t, err)
-	pt := ptb.Finish()
-	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
-			gas.Reference(),
-		},
-		pt, gasBudget, gasPrice,
-	)
-	txBytesBCS, err := bcs.Marshal(tx)
-	require.NoError(t, err)
-
-	// build with remote rpc
-	txn, err := cli.TransferObject(
-		context.Background(), sender, recipient,
-		&coin.CoinObjectID,
-		&gas.CoinObjectID,
-		types.NewSafeSuiBigInt(gasBudget),
-	)
-	require.NoError(t, err)
-	txBytesRemote := txn.TxBytes.Data()
-
-	require.Equal(t, txBytesBCS, txBytesRemote)
-}
-
-func TestBCS_TransferSui(t *testing.T) {
-	sender := account.TEST_ADDRESS
-	recipient := sender
-	amount := sui_types.SUI(0.001).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-
-	cli := TestnetClient(t)
-	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
-	require.NoError(t, err)
-	coin := getCoins(t, cli, sender, 1)[0]
-
-	gasPrice := uint64(1000)
-	// gasPrice, err := cli.GetReferenceGasPrice(context.Background())
-
-	// build with BCS
-	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.TransferSui(recipient, &amount)
-	require.NoError(t, err)
-	pt := ptb.Finish()
-	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
-			coin.Reference(),
-		},
-		pt, gasBudget, gasPrice,
-	)
-	txBytesBCS, err := bcs.Marshal(tx)
-	require.NoError(t, err)
-
-	// build with remote rpc
-	txn, err := cli.TransferSui(
-		context.Background(), sender, recipient, &coin.CoinObjectID,
-		types.NewSafeSuiBigInt(amount),
-		types.NewSafeSuiBigInt(gasBudget),
-	)
-	require.NoError(t, err)
-	txBytesRemote := txn.TxBytes.Data()
-
-	require.Equal(t, txBytesBCS, txBytesRemote)
-}
-
-func TestBCS_PaySui(t *testing.T) {
+func TestPTB_PaySui(t *testing.T) {
 	sender := account.TEST_ADDRESS
 	recipient, _ := sui_types.NewAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
@@ -139,7 +58,88 @@ func TestBCS_PaySui(t *testing.T) {
 	// require.Equal(t, txBytesBCS, txBytesRemote)
 }
 
-func TestBCS_PayAllSui(t *testing.T) {
+func TestPTB_TransferObject(t *testing.T) {
+	sender := account.TEST_ADDRESS
+	recipient := account.TEST_ADDRESS
+	gasBudget := sui_types.SUI(0.1).Uint64()
+
+	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
+	coins := getCoins(t, cli, sender, 2)
+	coin, gas := coins[0], coins[1]
+
+	gasPrice := uint64(1000)
+	// gasPrice, err := cli.GetReferenceGasPrice(context.Background())
+
+	// build with BCS
+	ptb := sui_types.NewProgrammableTransactionBuilder()
+	err = ptb.TransferObject(recipient, []*sui_types.ObjectRef{coin.Reference()})
+	require.NoError(t, err)
+	pt := ptb.Finish()
+	tx := sui_types.NewProgrammable(
+		*sender, []*sui_types.ObjectRef{
+			gas.Reference(),
+		},
+		pt, gasBudget, gasPrice,
+	)
+	txBytesBCS, err := bcs.Marshal(tx)
+	require.NoError(t, err)
+
+	// build with remote rpc
+	txn, err := cli.TransferObject(
+		context.Background(), sender, recipient,
+		&coin.CoinObjectID,
+		&gas.CoinObjectID,
+		types.NewSafeSuiBigInt(gasBudget),
+	)
+	require.NoError(t, err)
+	txBytesRemote := txn.TxBytes.Data()
+
+	require.Equal(t, txBytesBCS, txBytesRemote)
+}
+
+func TestPTB_TransferSui(t *testing.T) {
+	sender := account.TEST_ADDRESS
+	recipient := sender
+	amount := sui_types.SUI(0.001).Uint64()
+	gasBudget := sui_types.SUI(0.01).Uint64()
+
+	cli := TestnetClient(t)
+	_, err := client.RequestFundFromFaucet(sender.String(), client.TestnetFaucetUrl)
+	require.NoError(t, err)
+	coin := getCoins(t, cli, sender, 1)[0]
+
+	gasPrice := uint64(1000)
+	// gasPrice, err := cli.GetReferenceGasPrice(context.Background())
+
+	// build with BCS
+	ptb := sui_types.NewProgrammableTransactionBuilder()
+	err = ptb.TransferSui(recipient, &amount)
+	require.NoError(t, err)
+	pt := ptb.Finish()
+	tx := sui_types.NewProgrammable(
+		*sender, []*sui_types.ObjectRef{
+			coin.Reference(),
+		},
+		pt, gasBudget, gasPrice,
+	)
+	txBytesBCS, err := bcs.Marshal(tx)
+	require.NoError(t, err)
+
+	// build with remote rpc
+	txn, err := cli.TransferSui(
+		context.Background(), sender, recipient, &coin.CoinObjectID,
+		types.NewSafeSuiBigInt(amount),
+		types.NewSafeSuiBigInt(gasBudget),
+	)
+	require.NoError(t, err)
+	txBytesRemote := txn.TxBytes.Data()
+
+	require.Equal(t, txBytesBCS, txBytesRemote)
+}
+
+func TestPTB_PayAllSui(t *testing.T) {
 	sender := account.TEST_ADDRESS
 	recipient := sender
 	gasBudget := sui_types.SUI(0.01).Uint64()
@@ -182,7 +182,7 @@ func TestBCS_PayAllSui(t *testing.T) {
 	require.Equal(t, txBytesBCS, txBytesRemote)
 }
 
-func TestBCS_Pay(t *testing.T) {
+func TestPTB_Pay(t *testing.T) {
 	sender := account.TEST_ADDRESS
 	recipient, _ := sui_types.NewAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
@@ -233,7 +233,7 @@ func TestBCS_Pay(t *testing.T) {
 	// require.Equal(t, txBytesBCS, txBytesRemote)
 }
 
-func TestBCS_MoveCall(t *testing.T) {
+func TestPTB_MoveCall(t *testing.T) {
 	sender := account.TEST_ADDRESS
 	gasBudget := sui_types.SUI(0.1).Uint64()
 	gasPrice := uint64(1000)
