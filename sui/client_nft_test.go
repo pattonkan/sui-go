@@ -1,9 +1,9 @@
-package client_test
+package sui_test
 
 // FIXME implement nft contract
 
 // func TestMintNFT(t *testing.T) {
-// 	cli := TestnetClient(t)
+// 	api := sui.NewSuiClient(TestnetClient(t))
 
 // 	var (
 // 		timeNow = time.Now().Format("06-01-02 15:04")
@@ -29,7 +29,7 @@ package client_test
 // }
 
 // func TestGetDevNFTs(t *testing.T) {
-// 	cli := TestnetClient(t)
+// 	api := sui.NewSuiClient(TestnetClient(t))
 
 // 	nfts, err := cli.GetNFTsOwnedByAddress(context.TODO(), account.TEST_ADDRESS)
 // 	require.NoError(t, err)

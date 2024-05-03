@@ -1,4 +1,4 @@
-package client
+package sui
 
 // TODO GetMoveFunctionArgTypes
 

@@ -1,4 +1,4 @@
-package client
+package sui
 
 import (
 	"context"
@@ -13,62 +13,62 @@ import (
 
 // TODO getCheckpoints
 
-func (c *Client) GetEvents(ctx context.Context, digest sui_types.TransactionDigest) ([]types.SuiEvent, error) {
+func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest sui_types.TransactionDigest) ([]types.SuiEvent, error) {
 	var resp []types.SuiEvent
-	return resp, c.CallContext(ctx, &resp, getEvents, digest)
+	return resp, s.http.CallContext(ctx, &resp, getEvents, digest)
 }
 
-func (c *Client) GetLatestCheckpointSequenceNumber(ctx context.Context) (string, error) {
+func (s *ImplSuiAPI) GetLatestCheckpointSequenceNumber(ctx context.Context) (string, error) {
 	var resp string
-	return resp, c.CallContext(ctx, &resp, getLatestCheckpointSequenceNumber)
+	return resp, s.http.CallContext(ctx, &resp, getLatestCheckpointSequenceNumber)
 }
 
 // TODO getLoadedChildObjects
 
-func (c *Client) GetObject(
+func (s *ImplSuiAPI) GetObject(
 	ctx context.Context,
 	objID *sui_types.ObjectID,
 	options *types.SuiObjectDataOptions,
 ) (*types.SuiObjectResponse, error) {
 	var resp types.SuiObjectResponse
-	return &resp, c.CallContext(ctx, &resp, getObject, objID, options)
+	return &resp, s.http.CallContext(ctx, &resp, getObject, objID, options)
 }
 
 // TODO getProtocolConfig
 
-func (c *Client) GetTotalTransactionBlocks(ctx context.Context) (string, error) {
+func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, error) {
 	var resp string
-	return resp, c.CallContext(ctx, &resp, getTotalTransactionBlocks)
+	return resp, s.http.CallContext(ctx, &resp, getTotalTransactionBlocks)
 }
 
-func (c *Client) GetTransactionBlock(
+func (s *ImplSuiAPI) GetTransactionBlock(
 	ctx context.Context,
 	digest sui_types.TransactionDigest,
 	options types.SuiTransactionBlockResponseOptions,
 ) (*types.SuiTransactionBlockResponse, error) {
 	resp := types.SuiTransactionBlockResponse{}
-	return &resp, c.CallContext(ctx, &resp, getTransactionBlock, digest, options)
+	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, digest, options)
 }
 
-func (c *Client) MultiGetObjects(
+func (s *ImplSuiAPI) MultiGetObjects(
 	ctx context.Context,
 	objIDs []sui_types.ObjectID,
 	options *types.SuiObjectDataOptions,
 ) ([]types.SuiObjectResponse, error) {
 	var resp []types.SuiObjectResponse
-	return resp, c.CallContext(ctx, &resp, multiGetObjects, objIDs, options)
+	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, objIDs, options)
 }
 
 // TODO multiGetTransactionBlocks
 
-func (c *Client) TryGetPastObject(
+func (s *ImplSuiAPI) TryGetPastObject(
 	ctx context.Context,
 	objectId *sui_types.ObjectID,
 	version uint64,
 	options *types.SuiObjectDataOptions,
 ) (*types.SuiPastObjectResponse, error) {
 	var resp types.SuiPastObjectResponse
-	return &resp, c.CallContext(ctx, &resp, tryGetPastObject, objectId, version, options)
+	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, objectId, version, options)
 }
 
 // TODO tryMultiGetPastObjects

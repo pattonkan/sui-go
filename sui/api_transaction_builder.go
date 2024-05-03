@@ -1,4 +1,4 @@
-package client
+package sui
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
-func (c *Client) BatchTransaction(
+func (s *ImplSuiAPI) BatchTransaction(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	txnParams []map[string]interface{},
@@ -16,11 +16,11 @@ func (c *Client) BatchTransaction(
 	gasBudget uint64,
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, batchTransaction, signer, txnParams, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, batchTransaction, signer, txnParams, gas, gasBudget)
 }
 
 // MergeCoins Create an unsigned transaction to merge multiple coins into one coin.
-func (c *Client) MergeCoins(
+func (s *ImplSuiAPI) MergeCoins(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	primaryCoin, coinToMerge *sui_types.ObjectID,
@@ -28,14 +28,14 @@ func (c *Client) MergeCoins(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, mergeCoins, signer, primaryCoin, coinToMerge, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, mergeCoins, signer, primaryCoin, coinToMerge, gas, gasBudget)
 }
 
 // MoveCall Create an unsigned transaction to execute a Move call on the network, by calling the specified function in the module of a given package.
 // TODO: not support param `typeArguments` yet.
 // So now only methods with `typeArguments` are supported
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
-func (c *Client) MoveCall(
+func (s *ImplSuiAPI) MoveCall(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	packageId *sui_types.ObjectID,
@@ -46,7 +46,7 @@ func (c *Client) MoveCall(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(
+	return &resp, s.http.CallContext(
 		ctx,
 		&resp,
 		moveCall,
@@ -61,7 +61,7 @@ func (c *Client) MoveCall(
 	)
 }
 
-func (c *Client) Pay(
+func (s *ImplSuiAPI) Pay(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
@@ -71,21 +71,21 @@ func (c *Client) Pay(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, pay, signer, inputCoins, recipients, amount, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, pay, signer, inputCoins, recipients, amount, gas, gasBudget)
 }
 
 // PayAllSui Create an unsigned transaction to send all SUI coins to one recipient.
-func (c *Client) PayAllSui(
+func (s *ImplSuiAPI) PayAllSui(
 	ctx context.Context,
 	signer, recipient *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
 }
 
-func (c *Client) PaySui(
+func (s *ImplSuiAPI) PaySui(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
@@ -94,10 +94,10 @@ func (c *Client) PaySui(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, paySui, signer, inputCoins, recipients, amount, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, paySui, signer, inputCoins, recipients, amount, gasBudget)
 }
 
-func (c *Client) Publish(
+func (s *ImplSuiAPI) Publish(
 	ctx context.Context,
 	sender *sui_types.SuiAddress,
 	compiledModules []*suiBase64Data,
@@ -106,10 +106,10 @@ func (c *Client) Publish(
 	gasBudget uint,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
-	return &resp, c.CallContext(ctx, &resp, publish, sender, compiledModules, dependencies, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, publish, sender, compiledModules, dependencies, gas, gasBudget)
 }
 
-func (c *Client) RequestAddStake(
+func (s *ImplSuiAPI) RequestAddStake(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	coins []sui_types.ObjectID,
@@ -119,10 +119,10 @@ func (c *Client) RequestAddStake(
 	gasBudget types.SuiBigInt,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
-	return &resp, c.CallContext(ctx, &resp, requestAddStake, signer, coins, amount, validator, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, requestAddStake, signer, coins, amount, validator, gas, gasBudget)
 }
 
-func (c *Client) RequestWithdrawStake(
+func (s *ImplSuiAPI) RequestWithdrawStake(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	stakedSuiId sui_types.ObjectID,
@@ -130,11 +130,11 @@ func (c *Client) RequestWithdrawStake(
 	gasBudget types.SuiBigInt,
 ) (*types.TransactionBytes, error) {
 	var resp types.TransactionBytes
-	return &resp, c.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
 }
 
 // SplitCoin Create an unsigned transaction to split a coin object into multiple coins.
-func (c *Client) SplitCoin(
+func (s *ImplSuiAPI) SplitCoin(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	Coin *sui_types.ObjectID,
@@ -143,11 +143,11 @@ func (c *Client) SplitCoin(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, splitCoin, signer, Coin, splitAmounts, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, splitCoin, signer, Coin, splitAmounts, gas, gasBudget)
 }
 
 // SplitCoinEqual Create an unsigned transaction to split a coin object into multiple equal-size coins.
-func (c *Client) SplitCoinEqual(
+func (s *ImplSuiAPI) SplitCoinEqual(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	Coin *sui_types.ObjectID,
@@ -156,11 +156,11 @@ func (c *Client) SplitCoinEqual(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, splitCoinEqual, signer, Coin, splitCount, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, splitCoinEqual, signer, Coin, splitCount, gas, gasBudget)
 }
 
 // TransferObject Create an unsigned transaction to transfer an object from one address to another. The object's type must allow public transfers
-func (c *Client) TransferObject(
+func (s *ImplSuiAPI) TransferObject(
 	ctx context.Context,
 	signer, recipient *sui_types.SuiAddress,
 	objID *sui_types.ObjectID,
@@ -168,14 +168,14 @@ func (c *Client) TransferObject(
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, transferObject, signer, objID, gas, gasBudget, recipient)
+	return &resp, s.http.CallContext(ctx, &resp, transferObject, signer, objID, gas, gasBudget, recipient)
 }
 
 // TransferSui Create an unsigned transaction to send SUI coin object to a Sui address. The SUI object is also used as the gas object.
-func (c *Client) TransferSui(
+func (s *ImplSuiAPI) TransferSui(
 	ctx context.Context, signer, recipient *sui_types.SuiAddress, suiObjID *sui_types.ObjectID, amount,
 	gasBudget types.SafeSuiBigInt[uint64],
 ) (*types.TransactionBytes, error) {
 	resp := types.TransactionBytes{}
-	return &resp, c.CallContext(ctx, &resp, transferSui, signer, suiObjID, gasBudget, recipient, amount)
+	return &resp, s.http.CallContext(ctx, &resp, transferSui, signer, suiObjID, gasBudget, recipient, amount)
 }

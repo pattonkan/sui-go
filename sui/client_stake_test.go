@@ -1,12 +1,11 @@
-package client_test
+package sui_test
 
 import (
 	"context"
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/account"
-	"github.com/howjmay/go-sui-sdk/client"
+	sui "github.com/howjmay/go-sui-sdk/sui"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -17,15 +16,15 @@ const (
 )
 
 func TestClient_GetLatestSuiSystemState(t *testing.T) {
-	cli := MainnetClient(t)
-	state, err := cli.GetLatestSuiSystemState(context.Background())
+	api := sui.NewSuiClient(MainnetClient(t))
+	state, err := api.GetLatestSuiSystemState(context.Background())
 	require.NoError(t, err)
 	t.Logf("system state: %v", state)
 }
 
 func TestClient_GetValidatorsApy(t *testing.T) {
-	cli := DevnetClient(t)
-	apys, err := cli.GetValidatorsApy(context.Background())
+	api := sui.NewSuiClient(DevnetClient(t))
+	apys, err := api.GetValidatorsApy(context.Background())
 	require.NoError(t, err)
 	t.Logf("current epoch %v", apys.Epoch)
 	apyMap := apys.ApyMap()
@@ -36,11 +35,11 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 }
 
 func TestGetDelegatedStakes(t *testing.T) {
-	cli := DevnetClient(t)
+	api := sui.NewSuiClient(DevnetClient(t))
 
 	address, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
-	stakes, err := cli.GetStakes(context.Background(), address)
+	stakes, err := api.GetStakes(context.Background(), address)
 	require.NoError(t, err)
 
 	for _, validator := range stakes {
@@ -57,16 +56,16 @@ func TestGetDelegatedStakes(t *testing.T) {
 }
 
 func TestGetStakesByIds(t *testing.T) {
-	cli := TestnetClient(t)
+	api := sui.NewSuiClient(TestnetClient(t))
 	owner, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
-	stakes, err := cli.GetStakes(context.Background(), owner)
+	stakes, err := api.GetStakes(context.Background(), owner)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(stakes), 1)
 
 	stake1 := stakes[0].Stakes[0].Data
 	stakeId := stake1.StakedSuiId
-	stakesFromId, err := cli.GetStakesByIds(context.Background(), []sui_types.ObjectID{stakeId})
+	stakesFromId, err := api.GetStakesByIds(context.Background(), []sui_types.ObjectID{stakeId})
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(stakesFromId), 1)
 
@@ -76,10 +75,10 @@ func TestGetStakesByIds(t *testing.T) {
 }
 
 func TestRequestAddDelegation(t *testing.T) {
-	cli := TestnetClient(t)
-	signer := account.TEST_ADDRESS
+	api := sui.NewSuiClient(TestnetClient(t))
+	signer := sui_types.TEST_ADDRESS
 
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(1).Uint64()
@@ -91,7 +90,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	validator, err := sui_types.NewAddressFromHex(validatorAddress)
 	require.NoError(t, err)
 
-	txBytes, err := client.BCS_RequestAddStake(
+	txBytes, err := sui.BCS_RequestAddStake(
 		signer,
 		pickedCoins.CoinRefs(),
 		types.NewSafeSuiBigInt(amount),
@@ -101,30 +100,30 @@ func TestRequestAddDelegation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txBytes, true)
+	dryRunTxn(t, api, txBytes, true)
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
-	cli := TestnetClient(t)
+	api := sui.NewSuiClient(TestnetClient(t))
 	gasBudget := sui_types.SUI(1).Uint64()
 
 	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
-	stakes, err := cli.GetStakes(context.Background(), signer)
+	stakes, err := api.GetStakes(context.Background(), signer)
 	require.NoError(t, err)
 	require.True(t, len(stakes) > 0)
 	require.True(t, len(stakes[0].Stakes) > 0)
 
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
-	detail, err := cli.GetObject(context.Background(), &stakeId, nil)
+	detail, err := api.GetObject(context.Background(), &stakeId, nil)
 	require.NoError(t, err)
-	txBytes, err := client.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
+	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txBytes, true)
+	dryRunTxn(t, api, txBytes, true)
 }

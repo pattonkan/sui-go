@@ -1,42 +1,42 @@
-package client_test
+package sui_test
 
 import (
 	"context"
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/client"
 	"github.com/howjmay/go-sui-sdk/move_types"
+	"github.com/howjmay/go-sui-sdk/sui"
+	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 
-	"github.com/howjmay/go-sui-sdk/account"
 	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestClient_TransferObject(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(coins.Data), 2)
 	coin := coins.Data[0]
 
-	txn, err := cli.TransferObject(
+	txn, err := api.TransferObject(
 		context.Background(), signer, recipient,
 		&coin.CoinObjectID, nil, types.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_TransferSui(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.0001).Uint64()
@@ -44,7 +44,7 @@ func TestClient_TransferSui(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 1, 0)
 	require.NoError(t, err)
 
-	txn, err := cli.TransferSui(
+	txn, err := api.TransferSui(
 		context.Background(), signer, recipient,
 		&pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(amount),
@@ -52,14 +52,14 @@ func TestClient_TransferSui(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_PayAllSui(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
 	recipient := signer
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.001).Uint64()
@@ -67,21 +67,21 @@ func TestClient_PayAllSui(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 
-	txn, err := cli.PayAllSui(
+	txn, err := api.PayAllSui(
 		context.Background(), signer, recipient,
 		pickedCoins.CoinIds(),
 		types.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_Pay(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
+	recipient := sui_types.TEST_ADDRESS
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	limit := len(coins.Data) - 1 // need reserve a coin for gas
 
@@ -90,7 +90,7 @@ func TestClient_Pay(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, limit, 0)
 	require.NoError(t, err)
 
-	txn, err := cli.Pay(
+	txn, err := api.Pay(
 		context.Background(), signer,
 		pickedCoins.CoinIds(),
 		[]*sui_types.SuiAddress{recipient},
@@ -102,14 +102,14 @@ func TestClient_Pay(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_PaySui(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
-	recipient := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
+	recipient := sui_types.TEST_ADDRESS
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.001).Uint64()
@@ -117,7 +117,7 @@ func TestClient_PaySui(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 
-	txn, err := cli.PaySui(
+	txn, err := api.PaySui(
 		context.Background(), signer,
 		pickedCoins.CoinIds(),
 		[]*sui_types.SuiAddress{recipient},
@@ -128,13 +128,13 @@ func TestClient_PaySui(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_SplitCoin(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
@@ -143,7 +143,7 @@ func TestClient_SplitCoin(t *testing.T) {
 	require.NoError(t, err)
 	splitCoins := []types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount / 2)}
 
-	txn, err := cli.SplitCoin(
+	txn, err := api.SplitCoin(
 		context.Background(), signer,
 		&pickedCoins.Coins[0].CoinObjectID,
 		splitCoins,
@@ -151,13 +151,13 @@ func TestClient_SplitCoin(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, false)
+	dryRunTxn(t, api, txn.TxBytes, false)
 }
 
 func TestClient_SplitCoinEqual(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
@@ -165,7 +165,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 1, 0)
 	require.NoError(t, err)
 
-	txn, err := cli.SplitCoinEqual(
+	txn, err := api.SplitCoinEqual(
 		context.Background(), signer,
 		&pickedCoins.Coins[0].CoinObjectID,
 		types.NewSafeSuiBigInt(uint64(2)),
@@ -173,13 +173,13 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_MergeCoins(t *testing.T) {
-	cli := DevnetClient(t)
-	signer := account.TEST_ADDRESS
-	coins, err := cli.GetCoins(context.Background(), signer, nil, nil, 10)
+	api := sui.NewSuiClient(DevnetClient(t))
+	signer := sui_types.TEST_ADDRESS
+	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= 3)
 
@@ -187,38 +187,38 @@ func TestClient_MergeCoins(t *testing.T) {
 	coin2 := coins.Data[1]
 	coin3 := coins.Data[2] // gas coin
 
-	txn, err := cli.MergeCoins(
+	txn, err := api.MergeCoins(
 		context.Background(), signer,
 		&coin1.CoinObjectID, &coin2.CoinObjectID,
 		&coin3.CoinObjectID, coin3.Balance,
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, cli, txn.TxBytes, true)
+	dryRunTxn(t, api, txn.TxBytes, true)
 }
 
 func TestClient_Publish(t *testing.T) {
 	t.Log("TestClient_Publish TODO")
-	// cli := DevnetClient(t)
+	// api := sui.NewSuiClient(DevnetClient(t))
 
-	// txnBytes, err := cli.Publish(context.Background(), signer, *coin1, *coin2, nil, 10000)
+	// txnBytes, err := api.Publish(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
-	// dryRunTxn(t, cli, txnBytes, M1Account(t))
+	// dryRunTxn(t, api, txnBytes, M1Account(t))
 }
 
 func TestClient_MoveCall(t *testing.T) {
-	cli := TestnetClient(t)
-	account, err := account.NewAccountWithMnemonic(account.TEST_MNEMONIC)
+	api := sui.NewSuiClient(TestnetClient(t))
+	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 
 	t.Log("signer: ", account.Address)
-	digest, err := client.RequestFundFromFaucet(account.Address, client.TestnetFaucetUrl)
+	digest, err := sui.RequestFundFromFaucet(account.Address, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("digest: ", digest)
 
 	packageID, err := move_types.NewAccountAddressHex("0x2")
 	require.NoError(t, err)
-	txnBytes, err := cli.MoveCall(
+	txnBytes, err := api.MoveCall(
 		context.Background(),
 		account.AccountAddress(),
 		packageID,
@@ -233,7 +233,7 @@ func TestClient_MoveCall(t *testing.T) {
 
 	signature, err := account.SignSecureWithoutEncode(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
 	require.NoError(t, err)
-	txnResponse, err := cli.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []any{signature}, &types.SuiTransactionBlockResponseOptions{
+	txnResponse, err := api.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []any{signature}, &types.SuiTransactionBlockResponseOptions{
 		ShowInput:          true,
 		ShowEffects:        true,
 		ShowEvents:         true,
@@ -244,14 +244,14 @@ func TestClient_MoveCall(t *testing.T) {
 	t.Log(txnResponse)
 
 	// try dry-run
-	dryRunTxn(t, cli, txnBytes.TxBytes, true)
+	dryRunTxn(t, api, txnBytes.TxBytes, true)
 }
 
 func TestClient_BatchTransaction(t *testing.T) {
 	t.Log("TestClient_BatchTransaction TODO")
-	// cli := DevnetClient(t)
+	// api := sui.NewSuiClient(DevnetClient(t))
 
-	// txnBytes, err := cli.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
+	// txnBytes, err := api.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
-	// dryRunTxn(t, cli, txnBytes, M1Account(t))
+	// dryRunTxn(t, api, txnBytes, M1Account(t))
 }

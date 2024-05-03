@@ -3,7 +3,6 @@ package sui_types
 import (
 	"github.com/howjmay/go-sui-sdk/lib"
 	"github.com/howjmay/go-sui-sdk/move_types"
-	"github.com/howjmay/go-sui-sdk/sui_protocol"
 )
 
 type TransactionData struct {
@@ -156,7 +155,7 @@ type PayAllSui struct {
 
 type ChangeEpoch struct {
 	Epoch                   EpochId
-	ProtocolVersion         sui_protocol.ProtocolVersion
+	ProtocolVersion         ProtocolVersion
 	StorageCharge           uint64
 	ComputationCharge       uint64
 	StorageRebate           uint64
