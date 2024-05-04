@@ -3,9 +3,9 @@ package sui_test
 import (
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/sui"
-	"github.com/howjmay/go-sui-sdk/sui/conn"
-	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_types"
 	"github.com/stretchr/testify/require"
 )
 

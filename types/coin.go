@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/sui-go/sui_types"
 )
 
 const SUI_COIN_TYPE = "0x2::sui::SUI"

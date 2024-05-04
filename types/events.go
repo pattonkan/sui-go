@@ -1,6 +1,6 @@
 package types
 
-import "github.com/howjmay/go-sui-sdk/sui_types"
+import "github.com/howjmay/sui-go/sui_types"
 
 type EventId struct {
 	TxDigest sui_types.TransactionDigest `json:"txDigest"`

@@ -5,10 +5,10 @@ import (
 	"math/big"
 	"testing"
 
-	sui "github.com/howjmay/go-sui-sdk/sui"
-	"github.com/howjmay/go-sui-sdk/sui/conn"
-	"github.com/howjmay/go-sui-sdk/sui_types"
-	"github.com/howjmay/go-sui-sdk/types"
+	sui "github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 

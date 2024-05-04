@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/go-sui-sdk/lib"
-	"github.com/howjmay/go-sui-sdk/sui_types"
-	"github.com/howjmay/go-sui-sdk/sui_types/sui_system_state"
-	"github.com/howjmay/go-sui-sdk/types"
+	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/sui_system_state"
+	"github.com/howjmay/sui-go/types"
 )
 
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!

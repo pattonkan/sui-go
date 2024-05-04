@@ -1,4 +1,4 @@
-module github.com/howjmay/go-sui-sdk
+module github.com/howjmay/sui-go
 
 go 1.18
 

@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/coming-chat/go-aptos/crypto/derivation"
-	"github.com/howjmay/go-sui-sdk/move_types"
+	"github.com/howjmay/sui-go/move_types"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
 )

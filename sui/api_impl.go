@@ -1,6 +1,6 @@
 package sui
 
-import "github.com/howjmay/go-sui-sdk/sui/conn"
+import "github.com/howjmay/sui-go/sui/conn"
 
 type ImplSuiAPI struct {
 	http      *conn.HttpClient

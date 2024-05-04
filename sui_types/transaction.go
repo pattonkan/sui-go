@@ -1,6 +1,6 @@
 package sui_types
 
-import "github.com/howjmay/go-sui-sdk/lib"
+import "github.com/howjmay/sui-go/lib"
 
 var (
 	SuiSystemMut = CallArg{
