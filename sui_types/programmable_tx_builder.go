@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/go-sui-sdk/lib"
-	"github.com/howjmay/go-sui-sdk/move_types"
+	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/move_types"
 	"github.com/mitchellh/hashstructure/v2"
 )
 

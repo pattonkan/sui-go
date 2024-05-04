@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/howjmay/go-sui-sdk/lib"
-	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/sui_types"
 )
 
 const (

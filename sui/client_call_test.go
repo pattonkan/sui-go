@@ -7,12 +7,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/lib"
-	"github.com/howjmay/go-sui-sdk/sui"
-	"github.com/howjmay/go-sui-sdk/sui/conn"
-	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_types"
 
-	"github.com/howjmay/go-sui-sdk/types"
+	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 

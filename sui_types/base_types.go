@@ -1,8 +1,8 @@
 package sui_types
 
 import (
-	"github.com/howjmay/go-sui-sdk/lib"
-	"github.com/howjmay/go-sui-sdk/move_types"
+	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/move_types"
 )
 
 type SuiAddress = move_types.AccountAddress

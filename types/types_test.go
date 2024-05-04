@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/types"
+	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 

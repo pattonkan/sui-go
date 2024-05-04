@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/howjmay/go-sui-sdk/sui"
-	"github.com/howjmay/go-sui-sdk/sui/conn"
-	"github.com/howjmay/go-sui-sdk/sui_types"
+	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_types"
 
-	"github.com/howjmay/go-sui-sdk/examples/event_pubsub/lib"
+	"github.com/howjmay/sui-go/examples/event_pubsub/lib"
 )
 
 func main() {

@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/howjmay/go-sui-sdk/sui_types"
-	"github.com/howjmay/go-sui-sdk/types"
+	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
