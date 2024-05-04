@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 type Subscriber struct {
@@ -20,8 +20,8 @@ func NewSubscriber(client *sui.ImplSuiAPI) *Subscriber {
 }
 
 func (s *Subscriber) SubscribeEvent(ctx context.Context, packageID *sui_types.PackageID) {
-	resultCh := make(chan types.SuiEvent)
-	err := s.client.SubscribeEvent(context.Background(), types.EventFilter{Package: packageID}, resultCh)
+	resultCh := make(chan models.SuiEvent)
+	err := s.client.SubscribeEvent(context.Background(), models.EventFilter{Package: packageID}, resultCh)
 	if err != nil {
 		log.Fatal(err)
 	}

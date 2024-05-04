@@ -1,10 +1,10 @@
-package types_test
+package models_test
 
 import (
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/sui-go/types"
+	"github.com/howjmay/sui-go/models"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,7 +17,7 @@ func TestNewAddressFromHex(t *testing.T) {
 func TestObjectOwnerJsonENDE(t *testing.T) {
 	{
 		var dataStruct struct {
-			Owner *types.ObjectOwner `json:"owner"`
+			Owner *models.ObjectOwner `json:"owner"`
 		}
 		jsonString := []byte(`{"owner":"Immutable"}`)
 
@@ -29,7 +29,7 @@ func TestObjectOwnerJsonENDE(t *testing.T) {
 	}
 	{
 		var dataStruct struct {
-			Owner *types.ObjectOwner `json:"owner"`
+			Owner *models.ObjectOwner `json:"owner"`
 		}
 		jsonString := []byte(`{"owner":{"AddressOwner":"0xfb1f678fcfe31c7c1924319e49614ffbe3a984842ceed559aa2d772e60a2ef8f"}}`)
 
@@ -110,7 +110,7 @@ func TestIsSameStringAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := types.IsSameAddressString(tt.args.addr1, tt.args.addr2); got != tt.want {
+			if got := models.IsSameAddressString(tt.args.addr1, tt.args.addr2); got != tt.want {
 				t.Errorf("IsSameStringAddress(): %v, want %v", got, tt.want)
 			}
 		})

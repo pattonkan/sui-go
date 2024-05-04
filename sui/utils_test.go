@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +24,7 @@ func dryRunTxn(
 	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
 	showJson bool,
-) *types.DryRunTransactionBlockResponse {
+) *models.DryRunTransactionBlockResponse {
 	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
 	require.Equal(t, "", simulate.Effects.Data.V1.Status.Error)
@@ -43,7 +43,7 @@ func executeTxn(
 	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
 	acc *sui_types.Account,
-) *types.SuiTransactionBlockResponse {
+) *models.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
 	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
@@ -52,12 +52,12 @@ func executeTxn(
 	// sign and send
 	signature, err := acc.SignSecureWithoutEncode(txBytes, sui_types.DefaultIntent())
 	require.NoError(t, err)
-	options := types.SuiTransactionBlockResponseOptions{
+	options := models.SuiTransactionBlockResponseOptions{
 		ShowEffects: true,
 	}
 	resp, err := api.ExecuteTransactionBlock(
 		context.TODO(), txBytes, []any{signature}, &options,
-		types.TxnRequestTypeWaitForLocalExecution,
+		models.TxnRequestTypeWaitForLocalExecution,
 	)
 	require.NoError(t, err)
 	t.Log(resp)

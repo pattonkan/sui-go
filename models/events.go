@@ -1,4 +1,4 @@
-package types
+package models
 
 import "github.com/howjmay/sui-go/sui_types"
 

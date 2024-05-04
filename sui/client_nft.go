@@ -3,8 +3,8 @@ package sui
 import (
 	"context"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 // MintNFT
@@ -15,7 +15,7 @@ func (s *ImplSuiAPI) MintNFT(
 	nftName, nftDescription, nftUri string,
 	gas *sui_types.ObjectID,
 	gasBudget uint64,
-) (*types.TransactionBytes, error) {
+) (*models.TransactionBytes, error) {
 	packageId, _ := sui_types.NewAddressFromHex("0x2")
 	args := []any{
 		nftName, nftDescription, nftUri,
@@ -29,13 +29,13 @@ func (s *ImplSuiAPI) MintNFT(
 		[]string{},
 		args,
 		gas,
-		types.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(gasBudget),
 	)
 }
 
-func (s *ImplSuiAPI) GetNFTsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) ([]types.SuiObjectResponse, error) {
+func (s *ImplSuiAPI) GetNFTsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) ([]models.SuiObjectResponse, error) {
 	return s.BatchGetObjectsOwnedByAddress(
-		ctx, address, &types.SuiObjectDataOptions{
+		ctx, address, &models.SuiObjectDataOptions{
 			ShowType:    true,
 			ShowContent: true,
 			ShowOwner:   true,

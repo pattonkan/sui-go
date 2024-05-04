@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +26,7 @@ func TestAccountSignAndSend(t *testing.T) {
 	for i, c := range coins {
 		coinIDs[i] = c.CoinObjectID
 	}
-	gasBudget := types.NewSafeSuiBigInt(uint64(10000000))
+	gasBudget := models.NewSafeSuiBigInt(uint64(10000000))
 	txn, err := api.PayAllSui(context.Background(), signer, signer, coinIDs, gasBudget)
 	require.NoError(t, err)
 

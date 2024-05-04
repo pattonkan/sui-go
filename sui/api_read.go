@@ -3,8 +3,8 @@ package sui
 import (
 	"context"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 // TODO getChainIdentifier
@@ -13,8 +13,8 @@ import (
 
 // TODO getCheckpoints
 
-func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest sui_types.TransactionDigest) ([]types.SuiEvent, error) {
-	var resp []types.SuiEvent
+func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest sui_types.TransactionDigest) ([]models.SuiEvent, error) {
+	var resp []models.SuiEvent
 	return resp, s.http.CallContext(ctx, &resp, getEvents, digest)
 }
 
@@ -28,9 +28,9 @@ func (s *ImplSuiAPI) GetLatestCheckpointSequenceNumber(ctx context.Context) (str
 func (s *ImplSuiAPI) GetObject(
 	ctx context.Context,
 	objID *sui_types.ObjectID,
-	options *types.SuiObjectDataOptions,
-) (*types.SuiObjectResponse, error) {
-	var resp types.SuiObjectResponse
+	options *models.SuiObjectDataOptions,
+) (*models.SuiObjectResponse, error) {
+	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getObject, objID, options)
 }
 
@@ -44,18 +44,18 @@ func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, err
 func (s *ImplSuiAPI) GetTransactionBlock(
 	ctx context.Context,
 	digest sui_types.TransactionDigest,
-	options types.SuiTransactionBlockResponseOptions,
-) (*types.SuiTransactionBlockResponse, error) {
-	resp := types.SuiTransactionBlockResponse{}
+	options models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	resp := models.SuiTransactionBlockResponse{}
 	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, digest, options)
 }
 
 func (s *ImplSuiAPI) MultiGetObjects(
 	ctx context.Context,
 	objIDs []sui_types.ObjectID,
-	options *types.SuiObjectDataOptions,
-) ([]types.SuiObjectResponse, error) {
-	var resp []types.SuiObjectResponse
+	options *models.SuiObjectDataOptions,
+) ([]models.SuiObjectResponse, error) {
+	var resp []models.SuiObjectResponse
 	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, objIDs, options)
 }
 
@@ -65,9 +65,9 @@ func (s *ImplSuiAPI) TryGetPastObject(
 	ctx context.Context,
 	objectId *sui_types.ObjectID,
 	version uint64,
-	options *types.SuiObjectDataOptions,
-) (*types.SuiPastObjectResponse, error) {
-	var resp types.SuiPastObjectResponse
+	options *models.SuiObjectDataOptions,
+) (*models.SuiPastObjectResponse, error) {
+	var resp models.SuiPastObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, objectId, version, options)
 }
 

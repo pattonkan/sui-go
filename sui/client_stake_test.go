@@ -5,10 +5,10 @@ import (
 	"math/big"
 	"testing"
 
-	sui "github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/models"
+	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,7 +84,7 @@ func TestRequestAddDelegation(t *testing.T) {
 
 	amount := sui_types.SUI(1).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 0, 0)
 	require.NoError(t, err)
 
 	validatorAddress := ComingChatValidatorAddress
@@ -94,7 +94,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	txBytes, err := sui.BCS_RequestAddStake(
 		signer,
 		pickedCoins.CoinRefs(),
-		types.NewSafeSuiBigInt(amount),
+		models.NewSafeSuiBigInt(amount),
 		validator,
 		gasBudget,
 		1000,
@@ -117,7 +117,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
-	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
