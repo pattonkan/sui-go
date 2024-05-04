@@ -6,10 +6,15 @@ import (
 )
 
 type SuiAddress = move_types.AccountAddress
+type PackageID = move_types.AccountAddress
 type ObjectID = move_types.AccountAddress
 type SequenceNumber = uint64
 
 func NewAddressFromHex(str string) (*SuiAddress, error) {
+	return move_types.NewAccountAddressHex(str)
+}
+
+func NewPackageIDFromHex(str string) (*PackageID, error) {
 	return move_types.NewAccountAddressHex(str)
 }
 
