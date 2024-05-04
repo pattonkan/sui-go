@@ -14,8 +14,16 @@ func NewAddressFromHex(str string) (*SuiAddress, error) {
 	return move_types.NewAccountAddressHex(str)
 }
 
-func NewPackageIDFromHex(str string) (*PackageID, error) {
+func PackageIDFromHex(str string) (*PackageID, error) {
 	return move_types.NewAccountAddressHex(str)
+}
+
+func MustPackageIDFromHex(str string) *PackageID {
+	packageID, err := move_types.NewAccountAddressHex(str)
+	if err != nil {
+		panic(err)
+	}
+	return packageID
 }
 
 func NewObjectIDFromHex(str string) (*ObjectID, error) {

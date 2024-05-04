@@ -7,39 +7,11 @@ import (
 
 	"github.com/howjmay/go-sui-sdk/lib"
 	"github.com/howjmay/go-sui-sdk/sui"
-	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 
 	"github.com/stretchr/testify/require"
 )
-
-func MainnetClient(t *testing.T) *conn.HttpClient {
-	c := conn.Dial(conn.MainnetEndpointUrl)
-	return c
-}
-
-func TestnetClient(t *testing.T) *conn.HttpClient {
-	c := conn.Dial(conn.TestnetEndpointUrl)
-	return c
-}
-
-func DevnetClient(t *testing.T) *conn.HttpClient {
-	c := conn.Dial(conn.DevnetEndpointUrl)
-	api := sui.NewSuiClient(c)
-	balance, err := api.GetBalance(context.Background(), sui_types.TEST_ADDRESS, types.SUI_COIN_TYPE)
-	require.NoError(t, err)
-	if balance.TotalBalance.BigInt().Uint64() < sui_types.SUI(0.3).Uint64() {
-		_, err = sui.RequestFundFromFaucet(sui_types.TEST_ADDRESS.String(), conn.DevnetFaucetUrl)
-		require.NoError(t, err)
-	}
-	return c
-}
-
-func LocalnetClient(t *testing.T) *conn.HttpClient {
-	c := conn.Dial(conn.LocalnetEndpointUrl)
-	return c
-}
 
 func AddressFromStrMust(str string) *sui_types.SuiAddress {
 	s, _ := sui_types.NewAddressFromHex(str)

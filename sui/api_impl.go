@@ -3,12 +3,22 @@ package sui
 import "github.com/howjmay/go-sui-sdk/sui/conn"
 
 type ImplSuiAPI struct {
-	http *conn.HttpClient
+	http      *conn.HttpClient
+	websocket *conn.WebsocketClient
 }
 
-func NewSuiClient(http *conn.HttpClient) *ImplSuiAPI {
+func NewSuiClient(url string) *ImplSuiAPI {
 	return &ImplSuiAPI{
-		http: http,
+		http: conn.NewHttpClient(url),
 	}
+}
 
+func (i *ImplSuiAPI) WithWebsocket(url string) {
+	i.websocket = conn.NewWebsocketClient(url)
+}
+
+func NewSuiWebsocketClient(url string) *ImplSuiAPI {
+	return &ImplSuiAPI{
+		websocket: conn.NewWebsocketClient(url),
+	}
 }

@@ -133,7 +133,7 @@ func GetPublishedPackageID(receiptJson string) *sui_types.PackageID {
 			packageID = change.PackageID
 		}
 	}
-	suiPackageID, err := sui_types.NewPackageIDFromHex(packageID)
+	suiPackageID, err := sui_types.PackageIDFromHex(packageID)
 	if err != nil {
 		log.Fatalf("failed to decode hex package ID: %v", err)
 	}

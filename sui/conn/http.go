@@ -45,12 +45,17 @@ const (
 	MainnetEndpointUrl  = "https://fullnode.mainnet.sui.io"
 	LocalnetEndpointUrl = "http://localhost:9000"
 
+	DevnetWebsocketEndpointUrl   = "wss://rpc.devnet.sui.io:443"
+	TestnetWebsocketEndpointUrl  = "wss://rpc.testnet.sui.io:443"
+	MainnetWebsocketEndpointUrl  = "wss://rpc.mainnet.sui.io:443"
+	LocalnetWebsocketEndpointUrl = "wss://localhost:9000" // FIXME this may be wrong
+
 	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/gas"
 	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/gas"
 	LocalnetFaucetUrl = "http://localhost:9123/gas"
 )
 
-func Dial(url string) (client *HttpClient) {
+func NewHttpClient(url string) *HttpClient {
 	return &HttpClient{
 		url: strings.TrimRight(url, "/"),
 		client: &http.Client{

@@ -18,7 +18,7 @@ func main() {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
-	api := sui.NewSuiClient(conn.Dial(conn.TestnetEndpointUrl))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	sender, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	if err != nil {
 		log.Panic(err)
@@ -29,7 +29,7 @@ func main() {
 	}
 	log.Println("digest: ", digest)
 
-	packageID, err := sui_types.NewPackageIDFromHex("")
+	packageID, err := sui_types.PackageIDFromHex("")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -46,7 +46,7 @@ func main() {
 
 	go func() {
 		for {
-			subscriber.SubscribeEvents(context.Background(), packageID)
+			subscriber.SubscribeEvent(context.Background(), packageID)
 		}
 	}()
 

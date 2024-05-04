@@ -2,10 +2,13 @@ package sui
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
 
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
+	"github.com/tidwall/gjson"
 )
 
 func (s *ImplSuiAPI) GetDynamicFieldObject(
@@ -70,6 +73,29 @@ func (s *ImplSuiAPI) ResolveNameServiceNames(ctx context.Context,
 	return &resp, s.http.CallContext(ctx, &resp, resolveNameServiceNames, owner, cursor, limit)
 }
 
-// TODO SubscribeEvent
+func (s *ImplSuiAPI) SubscribeEvent(ctx context.Context, filter types.EventFilter, resultCh chan types.SuiEvent) error {
+	resp := make(chan []byte, 10)
+	err := s.websocket.CallContext(ctx, resp, subscribeEvent, filter)
+	if err != nil {
+		return err
+	}
+	go func() {
+		for messageData := range resp {
+			var result types.SuiEvent
+			if gjson.ParseBytes(messageData).Get("error").Exists() {
+				log.Fatal(gjson.ParseBytes(messageData).Get("error").String())
+			}
+
+			err := json.Unmarshal([]byte(gjson.ParseBytes(messageData).Get("params.result").String()), &result)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			resultCh <- result
+		}
+
+	}()
+	return nil
+}
 
 // TODO SubscribeTransaction
