@@ -3,8 +3,8 @@ package sui
 import (
 	"context"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
@@ -14,8 +14,8 @@ func (s *ImplSuiAPI) BatchTransaction(
 	txnParams []map[string]interface{},
 	gas *sui_types.ObjectID,
 	gasBudget uint64,
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, batchTransaction, signer, txnParams, gas, gasBudget)
 }
 
@@ -25,9 +25,9 @@ func (s *ImplSuiAPI) MergeCoins(
 	signer *sui_types.SuiAddress,
 	primaryCoin, coinToMerge *sui_types.ObjectID,
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, mergeCoins, signer, primaryCoin, coinToMerge, gas, gasBudget)
 }
 
@@ -43,9 +43,9 @@ func (s *ImplSuiAPI) MoveCall(
 	typeArgs []string,
 	arguments []any,
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(
 		ctx,
 		&resp,
@@ -66,11 +66,11 @@ func (s *ImplSuiAPI) Pay(
 	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
 	recipients []*sui_types.SuiAddress,
-	amount []types.SafeSuiBigInt[uint64],
+	amount []models.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, pay, signer, inputCoins, recipients, amount, gas, gasBudget)
 }
 
@@ -79,9 +79,9 @@ func (s *ImplSuiAPI) PayAllSui(
 	ctx context.Context,
 	signer, recipient *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
 }
 
@@ -90,10 +90,10 @@ func (s *ImplSuiAPI) PaySui(
 	signer *sui_types.SuiAddress,
 	inputCoins []sui_types.ObjectID,
 	recipients []*sui_types.SuiAddress,
-	amount []types.SafeSuiBigInt[uint64],
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	amount []models.SafeSuiBigInt[uint64],
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, paySui, signer, inputCoins, recipients, amount, gasBudget)
 }
 
@@ -104,8 +104,8 @@ func (s *ImplSuiAPI) Publish(
 	dependencies []sui_types.ObjectID,
 	gas *sui_types.ObjectID,
 	gasBudget uint,
-) (*types.TransactionBytes, error) {
-	var resp types.TransactionBytes
+) (*models.TransactionBytes, error) {
+	var resp models.TransactionBytes
 	return &resp, s.http.CallContext(ctx, &resp, publish, sender, compiledModules, dependencies, gas, gasBudget)
 }
 
@@ -113,12 +113,12 @@ func (s *ImplSuiAPI) RequestAddStake(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	coins []sui_types.ObjectID,
-	amount types.SuiBigInt,
+	amount models.SuiBigInt,
 	validator *sui_types.SuiAddress,
 	gas *sui_types.ObjectID,
-	gasBudget types.SuiBigInt,
-) (*types.TransactionBytes, error) {
-	var resp types.TransactionBytes
+	gasBudget models.SuiBigInt,
+) (*models.TransactionBytes, error) {
+	var resp models.TransactionBytes
 	return &resp, s.http.CallContext(ctx, &resp, requestAddStake, signer, coins, amount, validator, gas, gasBudget)
 }
 
@@ -127,9 +127,9 @@ func (s *ImplSuiAPI) RequestWithdrawStake(
 	signer *sui_types.SuiAddress,
 	stakedSuiId sui_types.ObjectID,
 	gas *sui_types.ObjectID,
-	gasBudget types.SuiBigInt,
-) (*types.TransactionBytes, error) {
-	var resp types.TransactionBytes
+	gasBudget models.SuiBigInt,
+) (*models.TransactionBytes, error) {
+	var resp models.TransactionBytes
 	return &resp, s.http.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
 }
 
@@ -138,11 +138,11 @@ func (s *ImplSuiAPI) SplitCoin(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	Coin *sui_types.ObjectID,
-	splitAmounts []types.SafeSuiBigInt[uint64],
+	splitAmounts []models.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, splitCoin, signer, Coin, splitAmounts, gas, gasBudget)
 }
 
@@ -151,11 +151,11 @@ func (s *ImplSuiAPI) SplitCoinEqual(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
 	Coin *sui_types.ObjectID,
-	splitCount types.SafeSuiBigInt[uint64],
+	splitCount models.SafeSuiBigInt[uint64],
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, splitCoinEqual, signer, Coin, splitCount, gas, gasBudget)
 }
 
@@ -165,17 +165,17 @@ func (s *ImplSuiAPI) TransferObject(
 	signer, recipient *sui_types.SuiAddress,
 	objID *sui_types.ObjectID,
 	gas *sui_types.ObjectID,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, transferObject, signer, objID, gas, gasBudget, recipient)
 }
 
 // TransferSui Create an unsigned transaction to send SUI coin object to a Sui address. The SUI object is also used as the gas object.
 func (s *ImplSuiAPI) TransferSui(
 	ctx context.Context, signer, recipient *sui_types.SuiAddress, suiObjID *sui_types.ObjectID, amount,
-	gasBudget types.SafeSuiBigInt[uint64],
-) (*types.TransactionBytes, error) {
-	resp := types.TransactionBytes{}
+	gasBudget models.SafeSuiBigInt[uint64],
+) (*models.TransactionBytes, error) {
+	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(ctx, &resp, transferSui, signer, suiObjID, gasBudget, recipient, amount)
 }

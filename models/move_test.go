@@ -1,11 +1,11 @@
-package types_test
+package models_test
 
 import (
 	"reflect"
 	"testing"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,22 +13,22 @@ func TestNewResourceType(t *testing.T) {
 	tests := []struct {
 		name    string
 		str     string
-		want    *types.ResourceType
+		want    *models.ResourceType
 		wantErr bool
 	}{
 		{
 			name: "sample",
 			str:  "0x23::coin::Xxxx",
-			want: &types.ResourceType{addressFromHex(t, "0x23"), "coin", "Xxxx", nil},
+			want: &models.ResourceType{addressFromHex(t, "0x23"), "coin", "Xxxx", nil},
 		},
 		{
 			name: "three level",
 			str:  "0xabc::Coin::Xxxx<0x789::AAA::ppp<0x111::mod3::func3>>",
-			want: &types.ResourceType{
+			want: &models.ResourceType{
 				addressFromHex(t, "0xabc"), "Coin", "Xxxx",
-				&types.ResourceType{
+				&models.ResourceType{
 					addressFromHex(t, "0x789"), "AAA", "ppp",
-					&types.ResourceType{addressFromHex(t, "0x111"), "mod3", "func3", nil},
+					&models.ResourceType{addressFromHex(t, "0x111"), "mod3", "func3", nil},
 				},
 			},
 		},
@@ -56,7 +56,7 @@ func TestNewResourceType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := types.NewResourceType(tt.str)
+				got, err := models.NewResourceType(tt.str)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("NewResourceType() error: %v, wantErr %v", err, tt.wantErr)
 					return
@@ -72,7 +72,7 @@ func TestNewResourceType(t *testing.T) {
 func TestResourceType_String(t *testing.T) {
 	typeString := "0x1::mmm1::fff1<0x123abcdef::mm2::ff3>"
 
-	resourceType, err := types.NewResourceType(typeString)
+	resourceType, err := models.NewResourceType(typeString)
 	require.NoError(t, err)
 	res := "0x0000000000000000000000000000000000000000000000000000000000000001::mmm1::fff1<0x0000000000000000000000000000000000000000000000000000000123abcdef::mm2::ff3>"
 	require.Equal(t, resourceType.String(), res)
@@ -81,19 +81,19 @@ func TestResourceType_String(t *testing.T) {
 func TestResourceType_ShortString(t *testing.T) {
 	tests := []struct {
 		name string
-		arg  *types.ResourceType
+		arg  *models.ResourceType
 		want string
 	}{
 		{
-			arg:  &types.ResourceType{addressFromHex(t, "0x1"), "m1", "f1", nil},
+			arg:  &models.ResourceType{addressFromHex(t, "0x1"), "m1", "f1", nil},
 			want: "0x1::m1::f1",
 		},
 		{
-			arg: &types.ResourceType{
+			arg: &models.ResourceType{
 				addressFromHex(t, "0x1"), "m1", "f1",
-				&types.ResourceType{
+				&models.ResourceType{
 					addressFromHex(t, "2"), "m2", "f2",
-					&types.ResourceType{addressFromHex(t, "0x123abcdef"), "m3", "f3", nil},
+					&models.ResourceType{addressFromHex(t, "0x123abcdef"), "m3", "f3", nil},
 				},
 			},
 			want: "0x1::m1::f1<0x2::m2::f2<0x123abcdef::m3::f3>>",

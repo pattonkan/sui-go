@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
 
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,12 +48,12 @@ func TestClient_DryRunTransaction(t *testing.T) {
 
 	amount := sui_types.SUI(0.01).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 	tx, err := api.PayAllSui(
 		context.Background(), signer, signer,
 		pickedCoins.CoinIds(),
-		types.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
 
@@ -76,7 +76,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 //	require.NoError(t, err)
 //	account := M1Account(t)
 //	signedTx := tx.SignSerializedSigWith(account.PrivateKey)
-//	txResult, err := api.ExecuteTransactionSerializedSig(context.TODO(), *signedTx, types.TxnRequestTypeWaitForEffectsCert)
+//	txResult, err := api.ExecuteTransactionSerializedSig(context.TODO(), *signedTx, models.TxnRequestTypeWaitForEffectsCert)
 //	require.NoError(t, err)
 //	t.Logf("%#v", txResult)
 //}
@@ -91,7 +91,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 //	require.NoError(t, err)
 //	account := M1Account(t)
 //	signedTx := tx.SignSerializedSigWith(account.PrivateKey)
-//	txResult, err := api.ExecuteTransaction(context.TODO(), *signedTx, types.TxnRequestTypeWaitForEffectsCert)
+//	txResult, err := api.ExecuteTransaction(context.TODO(), *signedTx, models.TxnRequestTypeWaitForEffectsCert)
 //	require.NoError(t, err)
 //	t.Logf("%#v", txResult)
 //}
@@ -99,11 +99,11 @@ func TestClient_DryRunTransaction(t *testing.T) {
 func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
-	options := types.SuiObjectDataOptions{
+	options := models.SuiObjectDataOptions{
 		ShowType:    true,
 		ShowContent: true,
 	}
-	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", types.SuiCoinType)
+	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", models.SuiCoinType)
 	filterObject, err := api.BatchGetObjectsOwnedByAddress(context.TODO(), sui_types.TEST_ADDRESS, &options, coinType)
 	require.NoError(t, err)
 	t.Log(filterObject)
@@ -111,7 +111,7 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 
 func TestClient_GetCoinMetadata(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	metadata, err := api.GetCoinMetadata(context.TODO(), types.SuiCoinType)
+	metadata, err := api.GetCoinMetadata(context.TODO(), models.SuiCoinType)
 	require.NoError(t, err)
 	t.Logf("%#v", metadata)
 }
@@ -142,7 +142,7 @@ func TestClient_GetBalance(t *testing.T) {
 
 func TestClient_GetCoins(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	defaultCoinType := types.SuiCoinType
+	defaultCoinType := models.SuiCoinType
 	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, &defaultCoinType, nil, 1)
 	require.NoError(t, err)
 	t.Logf("%#v", coins)
@@ -159,7 +159,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 		name    string
 		a       *sui.ImplSuiAPI
 		args    args
-		want    *types.CoinPage
+		want    *models.CoinPage
 		wantErr bool
 	}{
 		{
@@ -194,7 +194,7 @@ func TestClient_GetTransaction(t *testing.T) {
 	d, err := sui_types.NewDigest(digest)
 	require.NoError(t, err)
 	resp, err := api.GetTransactionBlock(
-		context.Background(), *d, types.SuiTransactionBlockResponseOptions{
+		context.Background(), *d, models.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
 			ShowEffects:        true,
 			ShowObjectChanges:  true,
@@ -216,7 +216,7 @@ func TestBatchCall_GetObject(t *testing.T) {
 		objId, err := sui_types.NewAddressFromHex(idstr)
 		require.NoError(t, err)
 		obj, err := api.GetObject(
-			context.Background(), objId, &types.SuiObjectDataOptions{
+			context.Background(), objId, &models.SuiObjectDataOptions{
 				ShowType:    true,
 				ShowContent: true,
 			},
@@ -267,7 +267,7 @@ func TestClient_GetObject(t *testing.T) {
 		t.Run(
 			tt.name, func(t *testing.T) {
 				got, err := tt.api.GetObject(
-					tt.args.ctx, tt.args.objID, &types.SuiObjectDataOptions{
+					tt.args.ctx, tt.args.objID, &models.SuiObjectDataOptions{
 						ShowType:                true,
 						ShowOwner:               true,
 						ShowContent:             true,
@@ -299,7 +299,7 @@ func TestClient_MultiGetObjects(t *testing.T) {
 	obj := coins.Data[0].CoinObjectID
 	objs := []sui_types.ObjectID{obj, obj}
 	resp, err := api.MultiGetObjects(
-		context.Background(), objs, &types.SuiObjectDataOptions{
+		context.Background(), objs, &models.SuiObjectDataOptions{
 			ShowType:                true,
 			ShowOwner:               true,
 			ShowContent:             true,
@@ -318,12 +318,12 @@ func TestClient_GetOwnedObjects(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	obj, err := sui_types.NewAddressFromHex("0x2")
 	require.NoError(t, err)
-	query := types.SuiObjectResponseQuery{
-		Filter: &types.SuiObjectDataFilter{
+	query := models.SuiObjectResponseQuery{
+		Filter: &models.SuiObjectDataFilter{
 			Package: obj,
 			// StructType: "0x2::coin::Coin<0x2::sui::SUI>",
 		},
-		Options: &types.SuiObjectDataOptions{
+		Options: &models.SuiObjectDataOptions{
 			ShowType: true,
 		},
 	}
@@ -350,7 +350,7 @@ func TestClient_GetTotalSupply(t *testing.T) {
 			api:  sui.NewSuiClient(conn.DevnetEndpointUrl),
 			args: args{
 				context.TODO(),
-				types.SuiCoinType,
+				models.SuiCoinType,
 			},
 			wantErr: false,
 		},
@@ -384,9 +384,9 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 
 //func TestClient_Publish(t *testing.T) {
 //	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-//	dmens, err := types.NewBase64Data(DmensDmensB64)
+//	dmens, err := models.NewBase64Data(DmensDmensB64)
 //	require.NoError(t, err)
-//	profile, err := types.NewBase64Data(DmensProfileB64)
+//	profile, err := models.NewBase64Data(DmensProfileB64)
 //	require.NoError(t, err)
 //	coins, err := api.GetSuiCoinsOwnedByAddress(context.TODO(), *Address)
 //	require.NoError(t, err)
@@ -394,16 +394,16 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 //	require.NoError(t, err)
 //	type args struct {
 //		ctx             context.Context
-//		address         types.Address
-//		compiledModules []*types.Base64Data
-//		gas             types.ObjectID
+//		address         models.Address
+//		compiledModules []*models.Base64Data
+//		gas             models.ObjectID
 //		gasBudget       uint
 //	}
 //	tests := []struct {
 //		name    string
 //		client  *client.Client
 //		args    args
-//		want    *types.TransactionBytes
+//		want    *models.TransactionBytes
 //		wantErr bool
 //	}{
 //		{
@@ -412,7 +412,7 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 //			args: args{
 //				ctx:             context.TODO(),
 //				address:         *Address,
-//				compiledModules: []*types.Base64Data{dmens, profile},
+//				compiledModules: []*models.Base64Data{dmens, profile},
 //				gas:             coin.CoinObjectID,
 //				gasBudget:       30000,
 //			},
@@ -474,12 +474,12 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 
 // 	amount := SUI(0.01).Int64()
 // 	gasBudget := SUI(0.01).Uint64()
-// 	pickedCoins, err := types.PickupCoins(coins, *big.NewInt(amount * 2), 0, false)
+// 	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(amount * 2), 0, false)
 // 	require.NoError(t, err)
 // 	tx, err := api.PayAllSui(context.Background(),
 // 		signer, signer,
 // 		pickedCoins.CoinIds(),
-// 		types.NewSafeSuiBigInt(gasBudget))
+// 		models.NewSafeSuiBigInt(gasBudget))
 // 	require.NoError(t, err)
 
 // 	resp, err := api.DevInspectTransactionBlock(context.Background(), signer, tx.TxBytes, price, nil)
@@ -492,7 +492,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
-		query           types.SuiTransactionBlockResponseQuery
+		query           models.SuiTransactionBlockResponseQuery
 		cursor          *sui_types.TransactionDigest
 		limit           *uint
 		descendingOrder bool
@@ -500,18 +500,18 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.TransactionBlocksPage
+		want    *models.TransactionBlocksPage
 		wantErr bool
 	}{
 		{
 			name: "test for queryTransactionBlocks",
 			args: args{
 				ctx: context.TODO(),
-				query: types.SuiTransactionBlockResponseQuery{
-					Filter: &types.TransactionFilter{
+				query: models.SuiTransactionBlockResponseQuery{
+					Filter: &models.TransactionFilter{
 						FromAddress: sui_types.TEST_ADDRESS,
 					},
-					Options: &types.SuiTransactionBlockResponseOptions{
+					Options: &models.SuiTransactionBlockResponseOptions{
 						ShowInput:   true,
 						ShowEffects: true,
 					},
@@ -571,22 +571,22 @@ func TestClient_QueryEvents(t *testing.T) {
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
-		query           types.EventFilter
-		cursor          *types.EventId
+		query           models.EventFilter
+		cursor          *models.EventId
 		limit           *uint
 		descendingOrder bool
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.EventPage
+		want    *models.EventPage
 		wantErr bool
 	}{
 		{
 			name: "test for query events",
 			args: args{
 				ctx: context.TODO(),
-				query: types.EventFilter{
+				query: models.EventFilter{
 					Sender: sui_types.TEST_ADDRESS,
 				},
 				cursor:          nil,
@@ -629,7 +629,7 @@ func TestClient_GetDynamicFields(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.DynamicFieldPage
+		want    *models.DynamicFieldPage
 		wantErr bool
 	}{
 		{
@@ -668,7 +668,7 @@ func TestClient_GetDynamicFieldObject(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.SuiObjectResponse
+		want    *models.SuiObjectResponse
 		wantErr bool
 	}{
 		{

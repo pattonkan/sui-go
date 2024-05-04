@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/fardream/go-bcs/bcs"
+
 	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/sui_system_state"
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,8 +50,8 @@ func TestPTB_PaySui(t *testing.T) {
 	// build with remote rpc
 	// txn, err := api.PaySui(context.Background(), *sender, []sui_types.ObjectID{coin.CoinObjectID},
 	// 	[]*sui_types.SuiAddress{recipient, recipient},
-	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
-	// 	types.NewSafeSuiBigInt(gasBudget))
+	// 	[]models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount), models.NewSafeSuiBigInt(amount)},
+	// 	models.NewSafeSuiBigInt(gasBudget))
 	// require.NoError(t, err)
 	// txBytesRemote := txn.TxBytes.Data()
 
@@ -91,7 +92,7 @@ func TestPTB_TransferObject(t *testing.T) {
 		context.Background(), sender, recipient,
 		&coin.CoinObjectID,
 		&gas.CoinObjectID,
-		types.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -130,8 +131,8 @@ func TestPTB_TransferSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := api.TransferSui(
 		context.Background(), sender, recipient, &coin.CoinObjectID,
-		types.NewSafeSuiBigInt(amount),
-		types.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(amount),
+		models.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -174,7 +175,7 @@ func TestPTB_PayAllSui(t *testing.T) {
 		[]sui_types.ObjectID{
 			coin.CoinObjectID, coin2.CoinObjectID,
 		},
-		types.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -223,9 +224,9 @@ func TestPTB_Pay(t *testing.T) {
 	// txn, err := api.Pay(context.Background(), *sender,
 	// 	[]sui_types.ObjectID{coin.CoinObjectID},
 	// 	[]*sui_types.SuiAddress{recipient, recipient},
-	// 	[]types.SafeSuiBigInt[uint64]{types.NewSafeSuiBigInt(amount), types.NewSafeSuiBigInt(amount)},
+	// 	[]models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount), models.NewSafeSuiBigInt(amount)},
 	// 	&gas.CoinObjectID,
-	// 	types.NewSafeSuiBigInt(gasBudget))
+	// 	models.NewSafeSuiBigInt(gasBudget))
 	// require.NoError(t, err)
 	// txBytesRemote := txn.TxBytes.Data()
 
@@ -326,7 +327,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	t.Log(resp.Effects.Data.GasFee())
 }
 
-func getCoins(t *testing.T, api *sui.ImplSuiAPI, sender *sui_types.SuiAddress, needCoinObjNum int) []types.Coin {
+func getCoins(t *testing.T, api *sui.ImplSuiAPI, sender *sui_types.SuiAddress, needCoinObjNum int) []models.Coin {
 	coins, err := api.GetCoins(context.Background(), sender, nil, nil, uint(needCoinObjNum))
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= needCoinObjNum)

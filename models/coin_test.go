@@ -1,22 +1,22 @@
-package types_test
+package models_test
 
 import (
 	"math/big"
 	"reflect"
 	"testing"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 	"github.com/stretchr/testify/require"
 )
 
-func balanceObject(val uint64) types.SafeSuiBigInt[uint64] {
-	return types.NewSafeSuiBigInt(val)
+func balanceObject(val uint64) models.SafeSuiBigInt[uint64] {
+	return models.NewSafeSuiBigInt(val)
 }
 
 func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 	// coins 1,2,3,4,5
-	testCoins := types.Coins{
+	testCoins := models.Coins{
 		{Balance: balanceObject(3)},
 		{Balance: balanceObject(5)},
 		{Balance: balanceObject(1)},
@@ -30,10 +30,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		cs      types.Coins
+		cs      models.Coins
 		args    args
-		want    types.Coins
-		want1   *types.Coin
+		want    models.Coins
+		want1   *models.Coin
 		wantErr bool
 	}{
 		{
@@ -42,7 +42,7 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     new(big.Int),
 				gasAmount:  0,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
 			want:    nil,
 			want1:   nil,
@@ -54,10 +54,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(1),
 				gasAmount:  2,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
-			want:    types.Coins{{Balance: balanceObject(1)}},
-			want1:   &types.Coin{Balance: balanceObject(2)},
+			want:    models.Coins{{Balance: balanceObject(1)}},
+			want1:   &models.Coin{Balance: balanceObject(2)},
 			wantErr: false,
 		},
 		{
@@ -66,10 +66,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(4),
 				gasAmount:  2,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
-			want:    types.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(3)}},
-			want1:   &types.Coin{Balance: balanceObject(2)},
+			want:    models.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(3)}},
+			want1:   &models.Coin{Balance: balanceObject(2)},
 			wantErr: false,
 		},
 		{
@@ -78,10 +78,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(6),
 				gasAmount:  2,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
-			want:    types.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(3)}, {Balance: balanceObject(4)}},
-			want1:   &types.Coin{Balance: balanceObject(2)},
+			want:    models.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(3)}, {Balance: balanceObject(4)}},
+			want1:   &models.Coin{Balance: balanceObject(2)},
 			wantErr: false,
 		},
 		{
@@ -90,9 +90,9 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(6),
 				gasAmount:  6,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
-			want:    types.Coins{},
+			want:    models.Coins{},
 			want1:   nil,
 			wantErr: true,
 		},
@@ -102,10 +102,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(100),
 				gasAmount:  3,
-				pickMethod: types.PickSmaller,
+				pickMethod: models.PickSmaller,
 			},
-			want:    types.Coins{},
-			want1:   &types.Coin{Balance: balanceObject(3)},
+			want:    models.Coins{},
+			want1:   &models.Coin{Balance: balanceObject(3)},
 			wantErr: true,
 		},
 		{
@@ -114,10 +114,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(3),
 				gasAmount:  3,
-				pickMethod: types.PickBigger,
+				pickMethod: models.PickBigger,
 			},
-			want:    types.Coins{{Balance: balanceObject(5)}},
-			want1:   &types.Coin{Balance: balanceObject(3)},
+			want:    models.Coins{{Balance: balanceObject(5)}},
+			want1:   &models.Coin{Balance: balanceObject(3)},
 			wantErr: false,
 		},
 		{
@@ -126,10 +126,10 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 			args: args{
 				amount:     big.NewInt(3),
 				gasAmount:  3,
-				pickMethod: types.PickByOrder,
+				pickMethod: models.PickByOrder,
 			},
-			want:    types.Coins{{Balance: balanceObject(5)}},
-			want1:   &types.Coin{Balance: balanceObject(3)},
+			want:    models.Coins{{Balance: balanceObject(5)}},
+			want1:   &models.Coin{Balance: balanceObject(3)},
 			wantErr: false,
 		},
 	}
@@ -156,7 +156,7 @@ func TestCoins_PickSUICoinsWithGas(t *testing.T) {
 
 func TestCoins_PickCoins(t *testing.T) {
 	// coins 1,2,3,4,5
-	testCoins := types.Coins{
+	testCoins := models.Coins{
 		{Balance: balanceObject(3)},
 		{Balance: balanceObject(5)},
 		{Balance: balanceObject(1)},
@@ -169,57 +169,57 @@ func TestCoins_PickCoins(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		cs      types.Coins
+		cs      models.Coins
 		args    args
-		want    types.Coins
+		want    models.Coins
 		wantErr bool
 	}{
 		{
 			name:    "smaller 1",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(2), pickMethod: types.PickSmaller},
-			want:    types.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(2)}},
+			args:    args{amount: big.NewInt(2), pickMethod: models.PickSmaller},
+			want:    models.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(2)}},
 			wantErr: false,
 		},
 		{
 			name:    "smaller 2",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(4), pickMethod: types.PickSmaller},
-			want:    types.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(2)}, {Balance: balanceObject(3)}},
+			args:    args{amount: big.NewInt(4), pickMethod: models.PickSmaller},
+			want:    models.Coins{{Balance: balanceObject(1)}, {Balance: balanceObject(2)}, {Balance: balanceObject(3)}},
 			wantErr: false,
 		},
 		{
 			name:    "bigger 1",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(2), pickMethod: types.PickBigger},
-			want:    types.Coins{{Balance: balanceObject(5)}},
+			args:    args{amount: big.NewInt(2), pickMethod: models.PickBigger},
+			want:    models.Coins{{Balance: balanceObject(5)}},
 			wantErr: false,
 		},
 		{
 			name:    "bigger 2",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(6), pickMethod: types.PickBigger},
-			want:    types.Coins{{Balance: balanceObject(5)}, {Balance: balanceObject(4)}},
+			args:    args{amount: big.NewInt(6), pickMethod: models.PickBigger},
+			want:    models.Coins{{Balance: balanceObject(5)}, {Balance: balanceObject(4)}},
 			wantErr: false,
 		},
 		{
 			name:    "pick by order 1",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(6), pickMethod: types.PickByOrder},
-			want:    types.Coins{{Balance: balanceObject(3)}, {Balance: balanceObject(5)}},
+			args:    args{amount: big.NewInt(6), pickMethod: models.PickByOrder},
+			want:    models.Coins{{Balance: balanceObject(3)}, {Balance: balanceObject(5)}},
 			wantErr: false,
 		},
 		{
 			name:    "pick by order 2",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(15), pickMethod: types.PickByOrder},
+			args:    args{amount: big.NewInt(15), pickMethod: models.PickByOrder},
 			want:    testCoins,
 			wantErr: false,
 		},
 		{
 			name:    "pick error",
 			cs:      testCoins,
-			args:    args{amount: big.NewInt(16), pickMethod: types.PickByOrder},
+			args:    args{amount: big.NewInt(16), pickMethod: models.PickByOrder},
 			want:    nil,
 			wantErr: true,
 		},
@@ -241,12 +241,12 @@ func TestCoins_PickCoins(t *testing.T) {
 }
 
 func TestPickupCoins(t *testing.T) {
-	coin := func(n uint64) types.Coin {
-		return types.Coin{Balance: balanceObject(n), CoinType: types.SUI_COIN_TYPE}
+	coin := func(n uint64) models.Coin {
+		return models.Coin{Balance: balanceObject(n), CoinType: models.SUI_COIN_TYPE}
 	}
 
 	type args struct {
-		inputCoins   *types.CoinPage
+		inputCoins   *models.CoinPage
 		targetAmount big.Int
 		gasBudget    uint64
 		limit        int
@@ -255,22 +255,22 @@ func TestPickupCoins(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.PickedCoins
+		want    *models.PickedCoins
 		wantErr error
 	}{
 		{
 			name: "moreCount = 3",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
 				},
 				targetAmount: *big.NewInt(1e3),
 				moreCount:    3,
 			},
-			want: &types.PickedCoins{
-				Coins: []types.Coin{
+			want: &models.PickedCoins{
+				Coins: []models.Coin{
 					coin(1e3), coin(1e5), coin(1e2),
 				},
 				TotalAmount:  *big.NewInt(1e3 + 1e5 + 1e2),
@@ -280,8 +280,8 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "large gas",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
 				},
@@ -289,8 +289,8 @@ func TestPickupCoins(t *testing.T) {
 				gasBudget:    1e9,
 				moreCount:    3,
 			},
-			want: &types.PickedCoins{
-				Coins: []types.Coin{
+			want: &models.PickedCoins{
+				Coins: []models.Coin{
 					coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 				},
 				TotalAmount:  *big.NewInt(1e3 + 1e5 + 1e2 + 1e4),
@@ -300,43 +300,43 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "ErrNoCoinsFound",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{},
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{},
 				},
 				targetAmount: *big.NewInt(101000),
 			},
-			wantErr: types.ErrNoCoinsFound,
+			wantErr: models.ErrNoCoinsFound,
 		},
 		{
 			name: "ErrInsufficientBalance",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
 				},
 				targetAmount: *big.NewInt(1e9),
 			},
-			wantErr: types.ErrInsufficientBalance,
+			wantErr: models.ErrInsufficientBalance,
 		},
 		{
 			name: "ErrNeedMergeCoin 1",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
 					HasNextPage: true,
 				},
 				targetAmount: *big.NewInt(1e9),
 			},
-			wantErr: types.ErrNeedMergeCoin,
+			wantErr: models.ErrNeedMergeCoin,
 		},
 		{
 			name: "ErrNeedMergeCoin 2",
 			args: args{
-				inputCoins: &types.Page[types.Coin, sui_types.ObjectID]{
-					Data: []types.Coin{
+				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
+					Data: []models.Coin{
 						coin(1e5), coin(1e6), coin(1e4), coin(1e5),
 					},
 					HasNextPage: false,
@@ -344,13 +344,13 @@ func TestPickupCoins(t *testing.T) {
 				targetAmount: *big.NewInt(1e6 + 1e5*2 + 1e3),
 				limit:        3,
 			},
-			wantErr: types.ErrNeedMergeCoin,
+			wantErr: models.ErrNeedMergeCoin,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := types.PickupCoins(
+				got, err := models.PickupCoins(
 					tt.args.inputCoins,
 					tt.args.targetAmount,
 					tt.args.gasBudget,

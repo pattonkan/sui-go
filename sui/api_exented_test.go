@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 func TestSubscribeEvent(t *testing.T) {
@@ -16,23 +16,23 @@ func TestSubscribeEvent(t *testing.T) {
 
 	type args struct {
 		ctx      context.Context
-		filter   types.EventFilter
-		resultCh chan types.SuiEvent
+		filter   models.EventFilter
+		resultCh chan models.SuiEvent
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *types.EventPage
+		want    *models.EventPage
 		wantErr bool
 	}{
 		{
 			name: "test for filter events",
 			args: args{
 				ctx: context.TODO(),
-				filter: types.EventFilter{
+				filter: models.EventFilter{
 					Package: sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
 				},
-				resultCh: make(chan types.SuiEvent),
+				resultCh: make(chan models.SuiEvent),
 			},
 		},
 	}

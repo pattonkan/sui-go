@@ -6,9 +6,9 @@ import (
 
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/howjmay/sui-go/lib"
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/sui_system_state"
-	"github.com/howjmay/sui-go/types"
 )
 
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
@@ -17,8 +17,8 @@ const QUERY_MAX_RESULT_LIMIT = 50
 type suiBase64Data = lib.Base64Data
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
-func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (types.Coins, error) {
-	coinType := types.SuiCoinType
+func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (models.Coins, error) {
+	coinType := models.SuiCoinType
 	page, err := s.GetCoins(ctx, address, &coinType, nil, 200)
 	if err != nil {
 		return nil, err
@@ -30,12 +30,12 @@ func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui
 func (s *ImplSuiAPI) BatchGetObjectsOwnedByAddress(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
-	options *types.SuiObjectDataOptions,
+	options *models.SuiObjectDataOptions,
 	filterType string,
-) ([]types.SuiObjectResponse, error) {
+) ([]models.SuiObjectResponse, error) {
 	filterType = strings.TrimSpace(filterType)
 	return s.BatchGetFilteredObjectsOwnedByAddress(
-		ctx, address, options, func(sod *types.SuiObjectData) bool {
+		ctx, address, options, func(sod *models.SuiObjectData) bool {
 			return filterType == "" || filterType == *sod.Type
 		},
 	)
@@ -44,11 +44,11 @@ func (s *ImplSuiAPI) BatchGetObjectsOwnedByAddress(
 func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
-	options *types.SuiObjectDataOptions,
-	filter func(*types.SuiObjectData) bool,
-) ([]types.SuiObjectResponse, error) {
-	query := types.SuiObjectResponseQuery{
-		Options: &types.SuiObjectDataOptions{
+	options *models.SuiObjectDataOptions,
+	filter func(*models.SuiObjectData) bool,
+) ([]models.SuiObjectResponse, error) {
+	query := models.SuiObjectResponseQuery{
+		Options: &models.SuiObjectDataOptions{
 			ShowType: true,
 		},
 	}
@@ -75,7 +75,7 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 func BCS_RequestAddStake(
 	signer *sui_types.SuiAddress,
 	coins []*sui_types.ObjectRef,
-	amount types.SafeSuiBigInt[uint64],
+	amount models.SafeSuiBigInt[uint64],
 	validator *sui_types.SuiAddress,
 	gasBudget, gasPrice uint64,
 ) ([]byte, error) {

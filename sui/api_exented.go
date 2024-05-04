@@ -6,24 +6,24 @@ import (
 	"errors"
 	"log"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 	"github.com/tidwall/gjson"
 )
 
 func (s *ImplSuiAPI) GetDynamicFieldObject(
 	ctx context.Context, parentObjectID *sui_types.ObjectID,
 	name sui_types.DynamicFieldName,
-) (*types.SuiObjectResponse, error) {
-	var resp types.SuiObjectResponse
+) (*models.SuiObjectResponse, error) {
+	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFieldObject, parentObjectID, name)
 }
 
 func (s *ImplSuiAPI) GetDynamicFields(
 	ctx context.Context, parentObjectID *sui_types.ObjectID, cursor *sui_types.ObjectID,
 	limit *uint,
-) (*types.DynamicFieldPage, error) {
-	var resp types.DynamicFieldPage
+) (*models.DynamicFieldPage, error) {
+	var resp models.DynamicFieldPage
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFields, parentObjectID, cursor, limit)
 }
 
@@ -34,27 +34,27 @@ func (s *ImplSuiAPI) GetDynamicFields(
 func (s *ImplSuiAPI) GetOwnedObjects(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
-	query *types.SuiObjectResponseQuery,
-	cursor *types.CheckpointedObjectID,
+	query *models.SuiObjectResponseQuery,
+	cursor *models.CheckpointedObjectID,
 	limit *uint,
-) (*types.ObjectsPage, error) {
-	var resp types.ObjectsPage
+) (*models.ObjectsPage, error) {
+	var resp models.ObjectsPage
 	return &resp, s.http.CallContext(ctx, &resp, getOwnedObjects, address, query, cursor, limit)
 }
 
 func (s *ImplSuiAPI) QueryEvents(
-	ctx context.Context, query types.EventFilter, cursor *types.EventId, limit *uint,
+	ctx context.Context, query models.EventFilter, cursor *models.EventId, limit *uint,
 	descendingOrder bool,
-) (*types.EventPage, error) {
-	var resp types.EventPage
+) (*models.EventPage, error) {
+	var resp models.EventPage
 	return &resp, s.http.CallContext(ctx, &resp, queryEvents, query, cursor, limit, descendingOrder)
 }
 
 func (s *ImplSuiAPI) QueryTransactionBlocks(
-	ctx context.Context, query types.SuiTransactionBlockResponseQuery,
+	ctx context.Context, query models.SuiTransactionBlockResponseQuery,
 	cursor *sui_types.TransactionDigest, limit *uint, descendingOrder bool,
-) (*types.TransactionBlocksPage, error) {
-	resp := types.TransactionBlocksPage{}
+) (*models.TransactionBlocksPage, error) {
+	resp := models.TransactionBlocksPage{}
 	return &resp, s.http.CallContext(ctx, &resp, queryTransactionBlocks, query, cursor, limit, descendingOrder)
 }
 
@@ -68,12 +68,12 @@ func (s *ImplSuiAPI) ResolveNameServiceAddress(ctx context.Context, suiName stri
 }
 
 func (s *ImplSuiAPI) ResolveNameServiceNames(ctx context.Context,
-	owner *sui_types.SuiAddress, cursor *sui_types.ObjectID, limit *uint) (*types.SuiNamePage, error) {
-	var resp types.SuiNamePage
+	owner *sui_types.SuiAddress, cursor *sui_types.ObjectID, limit *uint) (*models.SuiNamePage, error) {
+	var resp models.SuiNamePage
 	return &resp, s.http.CallContext(ctx, &resp, resolveNameServiceNames, owner, cursor, limit)
 }
 
-func (s *ImplSuiAPI) SubscribeEvent(ctx context.Context, filter types.EventFilter, resultCh chan types.SuiEvent) error {
+func (s *ImplSuiAPI) SubscribeEvent(ctx context.Context, filter models.EventFilter, resultCh chan models.SuiEvent) error {
 	resp := make(chan []byte, 10)
 	err := s.websocket.CallContext(ctx, resp, subscribeEvent, filter)
 	if err != nil {
@@ -81,7 +81,7 @@ func (s *ImplSuiAPI) SubscribeEvent(ctx context.Context, filter types.EventFilte
 	}
 	go func() {
 		for messageData := range resp {
-			var result types.SuiEvent
+			var result models.SuiEvent
 			if gjson.ParseBytes(messageData).Get("error").Exists() {
 				log.Fatal(gjson.ParseBytes(messageData).Get("error").String())
 			}

@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/types"
 )
 
 type Publisher struct {
@@ -31,7 +31,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		[]string{},
 		[]any{},
 		nil,
-		types.NewSafeSuiBigInt(uint64(100000)),
+		models.NewSafeSuiBigInt(uint64(100000)),
 	)
 	if err != nil {
 		log.Panic(err)
@@ -42,13 +42,13 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		log.Panic(err)
 	}
 
-	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, txnBytes.TxBytes.Data(), []any{signature}, &types.SuiTransactionBlockResponseOptions{
+	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, txnBytes.TxBytes.Data(), []any{signature}, &models.SuiTransactionBlockResponseOptions{
 		ShowInput:          true,
 		ShowEffects:        true,
 		ShowEvents:         true,
 		ShowObjectChanges:  true,
 		ShowBalanceChanges: true,
-	}, types.TxnRequestTypeWaitForLocalExecution)
+	}, models.TxnRequestTypeWaitForLocalExecution)
 	if err != nil {
 		log.Panic(err)
 	}
