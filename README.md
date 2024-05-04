@@ -1,8 +1,8 @@
-# go-sui-sdk
+# sui-go
 Sui Golang SDK
 
-[![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://github.com/coming-chat/go-sui-sdk)
-[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/coming-chat/go-sui-sdk/blob/main/LICENSE)
+[![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://github.com/coming-chat/sui-go)
+[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/coming-chat/sui-go/blob/main/LICENSE)
 
 The Sui Golang SDK for ComingChat. 
 We welcome other developers to participate in the development and testing of sui-sdk.
@@ -10,7 +10,7 @@ We welcome other developers to participate in the development and testing of sui
 ## Install
 
 ```sh
-go get github.com/coming-chat/go-sui
+go get github.com/howjmay/go-sui
 ```
 
 
@@ -20,7 +20,7 @@ go get github.com/coming-chat/go-sui
 ### Account
 
 ```go
-import "github.com/coming-chat/go-sui/account"
+import "github.com/howjmay/go-sui/account"
 
 // Import account with mnemonic
 acc, err := account.NewAccountWithMnemonic(mnemonic)
@@ -45,8 +45,8 @@ signedData := acc.Sign(data)
 All data interactions on the Sui chain are implemented through the rpc client.
 
 ```go
-import "github.com/coming-chat/go-sui/client"
-import "github.com/coming-chat/go-sui/types"
+import "github.com/howjmay/go-sui/client"
+import "github.com/howjmay/go-sui/types"
 
 cli, err := client.Dial(rpcUrl)
 
@@ -69,16 +69,16 @@ print("transaction timestamp = ", resp.TimestampMs)
 
 ```
 
-We currently have some rpc methods built-in, [see here](https://github.com/coming-chat/go-sui-sdk/blob/main/client/client_call.go)
+We currently have some rpc methods built-in, [see here](https://github.com/howjmay/sui-go/blob/main/client/client_call.go)
 
 
 
 ### Build Transaction & Sign ( Transfer Sui )
 
 ```go
-import "github.com/coming-chat/go-sui/client"
-import "github.com/coming-chat/go-sui/types"
-import "github.com/coming-chat/go-sui/account"
+import "github.com/howjmay/go-sui/client"
+import "github.com/howjmay/go-sui/types"
+import "github.com/howjmay/go-sui/account"
 
 acc, err := account.NewAccountWithMnemonic(mnemonic)
 signer, _ := types.NewAddressFromHex(acc.Address)
