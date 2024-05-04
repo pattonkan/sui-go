@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/howjmay/go-sui-sdk/sui"
+	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -15,7 +16,7 @@ func TestAccountSignAndSend(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(account.Address)
 
-	api := sui.NewSuiClient(TestnetClient(t))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := AddressFromStrMust(account.Address)
 	coins, err := api.GetSuiCoinsOwnedByAddress(context.Background(), signer)
 	require.NoError(t, err)

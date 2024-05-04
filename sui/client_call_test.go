@@ -9,6 +9,7 @@ import (
 
 	"github.com/howjmay/go-sui-sdk/lib"
 	"github.com/howjmay/go-sui-sdk/sui"
+	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 
 	"github.com/howjmay/go-sui-sdk/types"
@@ -40,7 +41,7 @@ func Test_TagJson_Owner(t *testing.T) {
 }
 
 func TestClient_DryRunTransaction(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -66,7 +67,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 // This test case will affect the real coin in the test case of account
 // temporary disabled
 //func TestClient_ExecuteTransactionSerializedSig(t *testing.T) {
-//	api := sui.NewSuiClient(DevnetClient(t))
+//	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 //	coins, err := api.GetSuiCoinsOwnedByAddress(context.TODO(), *Address)
 //	require.NoError(t, err)
 //	coin, err := coins.PickCoinNoLess(2000)
@@ -81,7 +82,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 //}
 
 //func TestClient_ExecuteTransaction(t *testing.T) {
-//	api := sui.NewSuiClient(DevnetClient(t))
+//	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 //	coins, err := api.GetSuiCoinsOwnedByAddress(context.TODO(), *Address)
 //	require.NoError(t, err)
 //	coin, err := coins.PickCoinNoLess(2000)
@@ -96,7 +97,7 @@ func TestClient_DryRunTransaction(t *testing.T) {
 //}
 
 func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
 	options := types.SuiObjectDataOptions{
 		ShowType:    true,
@@ -109,14 +110,14 @@ func TestClient_BatchGetObjectsOwnedByAddress(t *testing.T) {
 }
 
 func TestClient_GetCoinMetadata(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	metadata, err := api.GetCoinMetadata(context.TODO(), types.SuiCoinType)
 	require.NoError(t, err)
 	t.Logf("%#v", metadata)
 }
 
 func TestClient_GetAllBalances(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	balances, err := api.GetAllBalances(context.TODO(), sui_types.TEST_ADDRESS)
 	require.NoError(t, err)
 	for _, balance := range balances {
@@ -129,7 +130,7 @@ func TestClient_GetAllBalances(t *testing.T) {
 }
 
 func TestClient_GetBalance(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	balance, err := api.GetBalance(context.TODO(), sui_types.TEST_ADDRESS, "")
 	require.NoError(t, err)
 	t.Logf(
@@ -140,7 +141,7 @@ func TestClient_GetBalance(t *testing.T) {
 }
 
 func TestClient_GetCoins(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	defaultCoinType := types.SuiCoinType
 	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, &defaultCoinType, nil, 1)
 	require.NoError(t, err)
@@ -163,7 +164,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 	}{
 		{
 			name: "test case 1",
-			a:    sui.NewSuiClient(DevnetClient(t)),
+			a:    sui.NewSuiClient(conn.DevnetEndpointUrl),
 			args: args{
 				ctx:     context.TODO(),
 				address: sui_types.TEST_ADDRESS,
@@ -188,7 +189,7 @@ func TestClient_GetAllCoins(t *testing.T) {
 }
 
 func TestClient_GetTransaction(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
 	d, err := sui_types.NewDigest(digest)
 	require.NoError(t, err)
@@ -208,7 +209,7 @@ func TestClient_GetTransaction(t *testing.T) {
 }
 
 func TestBatchCall_GetObject(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	if false {
 		// get specified object
 		idstr := "0x4ad2f0a918a241d6a19573212aeb56947bb9255a14e921a7ec78b262536826f0"
@@ -240,7 +241,7 @@ func TestClient_GetObject(t *testing.T) {
 		ctx   context.Context
 		objID *sui_types.ObjectID
 	}
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 
@@ -287,7 +288,7 @@ func TestClient_GetObject(t *testing.T) {
 }
 
 func TestClient_MultiGetObjects(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	coins, err := api.GetCoins(context.TODO(), sui_types.TEST_ADDRESS, nil, nil, 1)
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
@@ -314,7 +315,7 @@ func TestClient_MultiGetObjects(t *testing.T) {
 }
 
 func TestClient_GetOwnedObjects(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	obj, err := sui_types.NewAddressFromHex("0x2")
 	require.NoError(t, err)
 	query := types.SuiObjectResponseQuery{
@@ -346,7 +347,7 @@ func TestClient_GetTotalSupply(t *testing.T) {
 	}{
 		{
 			name: "test 1",
-			api:  sui.NewSuiClient(DevnetClient(t)),
+			api:  sui.NewSuiClient(conn.DevnetEndpointUrl),
 			args: args{
 				context.TODO(),
 				types.SuiCoinType,
@@ -368,21 +369,21 @@ func TestClient_GetTotalSupply(t *testing.T) {
 	}
 }
 func TestClient_GetTotalTransactionBlocks(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	res, err := api.GetTotalTransactionBlocks(context.Background())
 	require.NoError(t, err)
 	t.Log(res)
 }
 
 func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	res, err := api.GetLatestCheckpointSequenceNumber(context.Background())
 	require.NoError(t, err)
 	t.Log(res)
 }
 
 //func TestClient_Publish(t *testing.T) {
-//	api := sui.NewSuiClient(DevnetClient(t))
+//	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 //	dmens, err := types.NewBase64Data(DmensDmensB64)
 //	require.NoError(t, err)
 //	profile, err := types.NewBase64Data(DmensProfileB64)
@@ -438,7 +439,7 @@ func TestClient_GetLatestCheckpointSequenceNumber(t *testing.T) {
 //}
 
 func TestClient_TryGetPastObject(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	objId, err := sui_types.NewAddressFromHex("0x11462c88e74bb00079e3c043efb664482ee4551744ee691c7623b98503cb3f4d")
 	require.NoError(t, err)
 	data, err := api.TryGetPastObject(context.Background(), objId, 903, nil)
@@ -447,7 +448,7 @@ func TestClient_TryGetPastObject(t *testing.T) {
 }
 
 func TestClient_GetEvents(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
 	d, err := sui_types.NewDigest(digest)
 	require.NoError(t, err)
@@ -457,14 +458,14 @@ func TestClient_GetEvents(t *testing.T) {
 }
 
 func TestClient_GetReferenceGasPrice(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	gasPrice, err := api.GetReferenceGasPrice(context.Background())
 	require.NoError(t, err)
 	t.Logf("current gas price: %v", gasPrice)
 }
 
 // func TestClient_DevInspectTransactionBlock(t *testing.T) {
-// 	api := sui.NewSuiClient(DevnetClient(t))
+// 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 // 	signer := Address
 // 	price, err := api.GetReferenceGasPrice(context.TODO())
 // 	require.NoError(t, err)
@@ -487,7 +488,7 @@ func TestClient_GetReferenceGasPrice(t *testing.T) {
 // }
 
 func TestClient_QueryTransactionBlocks(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
@@ -542,7 +543,7 @@ func TestClient_QueryTransactionBlocks(t *testing.T) {
 }
 
 func TestClient_ResolveNameServiceAddress(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	addr, err := api.ResolveNameServiceAddress(context.Background(), "2222.sui")
 	require.NoError(t, err)
 	require.Equal(t, "0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9", addr.String())
@@ -552,7 +553,7 @@ func TestClient_ResolveNameServiceAddress(t *testing.T) {
 }
 
 func TestClient_ResolveNameServiceNames(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	owner := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
 	namePage, err := api.ResolveNameServiceNames(context.Background(), owner, nil, nil)
 	require.NoError(t, err)
@@ -566,7 +567,7 @@ func TestClient_ResolveNameServiceNames(t *testing.T) {
 }
 
 func TestClient_QueryEvents(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
@@ -615,7 +616,7 @@ func TestClient_QueryEvents(t *testing.T) {
 }
 
 func TestClient_GetDynamicFields(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	parentObjectID, err := sui_types.NewAddressFromHex("0x1719957d7a2bf9d72459ff0eab8e600cbb1991ef41ddd5b4a8c531035933d256")
 	require.NoError(t, err)
 	limit := uint(5)
@@ -656,7 +657,7 @@ func TestClient_GetDynamicFields(t *testing.T) {
 }
 
 func TestClient_GetDynamicFieldObject(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	parentObjectID, err := sui_types.NewAddressFromHex("0x1719957d7a2bf9d72459ff0eab8e600cbb1991ef41ddd5b4a8c531035933d256")
 	require.NoError(t, err)
 	type args struct {

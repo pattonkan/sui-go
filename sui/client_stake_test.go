@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	sui "github.com/howjmay/go-sui-sdk/sui"
+	"github.com/howjmay/go-sui-sdk/sui/conn"
 	"github.com/howjmay/go-sui-sdk/sui_types"
 	"github.com/howjmay/go-sui-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -16,14 +17,14 @@ const (
 )
 
 func TestClient_GetLatestSuiSystemState(t *testing.T) {
-	api := sui.NewSuiClient(MainnetClient(t))
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	state, err := api.GetLatestSuiSystemState(context.Background())
 	require.NoError(t, err)
 	t.Logf("system state: %v", state)
 }
 
 func TestClient_GetValidatorsApy(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	apys, err := api.GetValidatorsApy(context.Background())
 	require.NoError(t, err)
 	t.Logf("current epoch %v", apys.Epoch)
@@ -35,7 +36,7 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 }
 
 func TestGetDelegatedStakes(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
 	address, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
@@ -56,7 +57,7 @@ func TestGetDelegatedStakes(t *testing.T) {
 }
 
 func TestGetStakesByIds(t *testing.T) {
-	api := sui.NewSuiClient(TestnetClient(t))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	owner, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
 	stakes, err := api.GetStakes(context.Background(), owner)
@@ -75,7 +76,7 @@ func TestGetStakesByIds(t *testing.T) {
 }
 
 func TestRequestAddDelegation(t *testing.T) {
-	api := sui.NewSuiClient(TestnetClient(t))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -104,7 +105,7 @@ func TestRequestAddDelegation(t *testing.T) {
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
-	api := sui.NewSuiClient(TestnetClient(t))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	gasBudget := sui_types.SUI(1).Uint64()
 
 	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")

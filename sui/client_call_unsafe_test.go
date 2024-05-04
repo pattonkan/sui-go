@@ -15,7 +15,7 @@ import (
 )
 
 func TestClient_TransferObject(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -33,7 +33,7 @@ func TestClient_TransferObject(t *testing.T) {
 }
 
 func TestClient_TransferSui(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -56,7 +56,7 @@ func TestClient_TransferSui(t *testing.T) {
 }
 
 func TestClient_PayAllSui(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	recipient := signer
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -78,7 +78,7 @@ func TestClient_PayAllSui(t *testing.T) {
 }
 
 func TestClient_Pay(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	recipient := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -106,7 +106,7 @@ func TestClient_Pay(t *testing.T) {
 }
 
 func TestClient_PaySui(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	recipient := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
@@ -132,7 +132,7 @@ func TestClient_PaySui(t *testing.T) {
 }
 
 func TestClient_SplitCoin(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -155,7 +155,7 @@ func TestClient_SplitCoin(t *testing.T) {
 }
 
 func TestClient_SplitCoinEqual(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -177,7 +177,7 @@ func TestClient_SplitCoinEqual(t *testing.T) {
 }
 
 func TestClient_MergeCoins(t *testing.T) {
-	api := sui.NewSuiClient(DevnetClient(t))
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	signer := sui_types.TEST_ADDRESS
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -199,7 +199,7 @@ func TestClient_MergeCoins(t *testing.T) {
 
 func TestClient_Publish(t *testing.T) {
 	t.Log("TestClient_Publish TODO")
-	// api := sui.NewSuiClient(DevnetClient(t))
+	// api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
 	// txnBytes, err := api.Publish(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
@@ -207,7 +207,7 @@ func TestClient_Publish(t *testing.T) {
 }
 
 func TestClient_MoveCall(t *testing.T) {
-	api := sui.NewSuiClient(TestnetClient(t))
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
 	require.NoError(t, err)
 
@@ -249,7 +249,7 @@ func TestClient_MoveCall(t *testing.T) {
 
 func TestClient_BatchTransaction(t *testing.T) {
 	t.Log("TestClient_BatchTransaction TODO")
-	// api := sui.NewSuiClient(DevnetClient(t))
+	// api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
 	// txnBytes, err := api.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
 	// require.NoError(t, err)
