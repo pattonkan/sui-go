@@ -13,7 +13,7 @@ import (
 )
 
 func RequestFundFromFaucet(address string, faucetUrl string) (string, error) {
-	_, err := sui_types.NewAddressFromHex(address)
+	_, err := sui_types.AddressFromHex(address)
 	if err != nil {
 		return "", err
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewAddressFromHex(t *testing.T) {
+func TestAddressFromHex(t *testing.T) {
 	addr := addressFromHex(t, "0x2")
 	require.Equal(t, addr.ShortString(), "0x2")
 	t.Log(addr)

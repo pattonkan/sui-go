@@ -8,13 +8,14 @@ import (
 	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 
 	"github.com/stretchr/testify/require"
 )
 
 func AddressFromStrMust(str string) *sui_types.SuiAddress {
-	s, _ := sui_types.NewAddressFromHex(str)
+	s, _ := sui_types.AddressFromHex(str)
 	return s
 }
 
@@ -42,7 +43,7 @@ func executeTxn(
 	t *testing.T,
 	api *sui.ImplSuiAPI,
 	txBytes lib.Base64Data,
-	acc *sui_types.Account,
+	signer *sui_signer.Signer,
 ) *models.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
 	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
@@ -50,7 +51,7 @@ func executeTxn(
 	require.True(t, simulate.Effects.Data.IsSuccess())
 
 	// sign and send
-	signature, err := acc.SignTransactionBlock(txBytes, sui_types.DefaultIntent())
+	signature, err := signer.SignTransactionBlock(txBytes, sui_signer.DefaultIntent())
 	require.NoError(t, err)
 	options := models.SuiTransactionBlockResponseOptions{
 		ShowEffects: true,

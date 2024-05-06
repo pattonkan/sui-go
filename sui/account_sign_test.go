@@ -7,12 +7,14 @@ import (
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestAccountSignAndSend(t *testing.T) {
-	account, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
+	account, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 	t.Log(account.Address)
 

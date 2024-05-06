@@ -9,7 +9,7 @@ import (
 )
 
 func TestTransferSui(t *testing.T) {
-	recipient, err := NewAddressFromHex("0x7e875ea78ee09f08d72e2676cf84e0f1c8ac61d94fa339cc8e37cace85bebc6e")
+	recipient, err := AddressFromHex("0x7e875ea78ee09f08d72e2676cf84e0f1c8ac61d94fa339cc8e37cace85bebc6e")
 	require.NoError(t, err)
 
 	ptb := NewProgrammableTransactionBuilder()

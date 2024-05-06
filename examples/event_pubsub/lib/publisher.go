@@ -6,15 +6,16 @@ import (
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 )
 
 type Publisher struct {
 	client  *sui.ImplSuiAPI
-	account *sui_types.Account
+	account *sui_signer.Signer
 }
 
-func NewPublisher(client *sui.ImplSuiAPI, account *sui_types.Account) *Publisher {
+func NewPublisher(client *sui.ImplSuiAPI, account *sui_signer.Signer) *Publisher {
 	return &Publisher{
 		client:  client,
 		account: account,
@@ -24,7 +25,7 @@ func NewPublisher(client *sui.ImplSuiAPI, account *sui_types.Account) *Publisher
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		p.account.AccountAddress(),
+		p.account.Address,
 		packageID,
 		"eventpub",
 		"emit_clock",

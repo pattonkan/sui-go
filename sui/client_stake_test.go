@@ -8,6 +8,7 @@ import (
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/stretchr/testify/require"
 )
@@ -38,7 +39,7 @@ func TestClient_GetValidatorsApy(t *testing.T) {
 func TestGetDelegatedStakes(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
-	address, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
+	address, err := sui_types.AddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
 	stakes, err := api.GetStakes(context.Background(), address)
 	require.NoError(t, err)
@@ -58,7 +59,7 @@ func TestGetDelegatedStakes(t *testing.T) {
 
 func TestGetStakesByIds(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	owner, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
+	owner, err := sui_types.AddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
 	stakes, err := api.GetStakes(context.Background(), owner)
 	require.NoError(t, err)
@@ -77,7 +78,7 @@ func TestGetStakesByIds(t *testing.T) {
 
 func TestRequestAddDelegation(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer := sui_types.TEST_ADDRESS
+	signer := sui_signer.TEST_ADDRESS
 
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
@@ -88,7 +89,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	validatorAddress := ComingChatValidatorAddress
-	validator, err := sui_types.NewAddressFromHex(validatorAddress)
+	validator, err := sui_types.AddressFromHex(validatorAddress)
 	require.NoError(t, err)
 
 	txBytes, err := sui.BCS_RequestAddStake(
@@ -108,7 +109,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	gasBudget := sui_types.SUI(1).Uint64()
 
-	signer, err := sui_types.NewAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
+	signer, err := sui_types.AddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
 	stakes, err := api.GetStakes(context.Background(), signer)
 	require.NoError(t, err)

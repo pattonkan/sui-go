@@ -1,4 +1,4 @@
-package signer
+package sui_signer
 
 import (
 	"bytes"

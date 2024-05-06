@@ -9,6 +9,7 @@ import (
 
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 
 	"github.com/howjmay/sui-go/examples/event_pubsub/lib"
@@ -19,7 +20,7 @@ func main() {
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	sender, err := sui_types.NewAccountWithMnemonic(sui_types.TEST_MNEMONIC)
+	sender, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	if err != nil {
 		log.Panic(err)
 	}
