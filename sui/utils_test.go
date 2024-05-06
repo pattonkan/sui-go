@@ -50,7 +50,7 @@ func executeTxn(
 	require.True(t, simulate.Effects.Data.IsSuccess())
 
 	// sign and send
-	signature, err := acc.SignSecureWithoutEncode(txBytes, sui_types.DefaultIntent())
+	signature, err := acc.SignTransactionBlock(txBytes, sui_types.DefaultIntent())
 	require.NoError(t, err)
 	options := models.SuiTransactionBlockResponseOptions{
 		ShowEffects: true,

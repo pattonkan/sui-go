@@ -231,7 +231,7 @@ func TestClient_MoveCall(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	signature, err := account.SignSecureWithoutEncode(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
+	signature, err := account.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
 	require.NoError(t, err)
 	txnResponse, err := api.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []any{signature}, &models.SuiTransactionBlockResponseOptions{
 		ShowInput:          true,
