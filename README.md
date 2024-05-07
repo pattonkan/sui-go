@@ -23,11 +23,11 @@ go get github.com/howjmay/go-sui
 import "github.com/howjmay/go-sui/account"
 
 // Import account with mnemonic
-acc, err := account.NewAccountWithMnemonic(mnemonic)
+acc, err := account.NewsignerWithMnemonic(mnemonic)
 
 // Import account with private key
 privateKey, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-acc, err := account.NewAccount(privateKey)
+acc, err := account.Newsigner(privateKey)
 
 // Get private key, public key, address
 fmt.Printf("privateKey: %x\n", acc.PrivateKey[:32])
@@ -80,10 +80,10 @@ import "github.com/howjmay/go-sui/client"
 import "github.com/howjmay/go-sui/types"
 import "github.com/howjmay/go-sui/account"
 
-acc, err := account.NewAccountWithMnemonic(mnemonic)
-signer, _ := types.NewAddressFromHex(acc.Address)
+acc, err := account.NewsignerWithMnemonic(mnemonic)
+signer, _ := types.SuiAddressFromHex(acc.Address)
 
-recipient, err := types.NewAddressFromHex("0x12345678.......")
+recipient, err := types.SuiAddressFromHex("0x12345678.......")
 suiObjectID, err := types.NewHexData("0x36d3176a796e167ffcbd823c94718e7db56b955f")
 transferAmount := uint64(10000)
 maxGasTransfer := 100

@@ -10,14 +10,16 @@ import (
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/sui_system_state"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestPTB_PaySui(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
-	recipient, _ := sui_types.NewAddressFromHex("0x123456")
+	sender := sui_signer.TEST_ADDRESS
+	recipient, _ := sui_types.SuiAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -60,8 +62,8 @@ func TestPTB_PaySui(t *testing.T) {
 }
 
 func TestPTB_TransferObject(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
-	recipient := sui_types.TEST_ADDRESS
+	sender := sui_signer.TEST_ADDRESS
+	recipient := sui_signer.TEST_ADDRESS
 	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
@@ -101,7 +103,7 @@ func TestPTB_TransferObject(t *testing.T) {
 }
 
 func TestPTB_TransferSui(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
+	sender := sui_signer.TEST_ADDRESS
 	recipient := sender
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
@@ -141,7 +143,7 @@ func TestPTB_TransferSui(t *testing.T) {
 }
 
 func TestPTB_PayAllSui(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
+	sender := sui_signer.TEST_ADDRESS
 	recipient := sender
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -184,8 +186,8 @@ func TestPTB_PayAllSui(t *testing.T) {
 }
 
 func TestPTB_Pay(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
-	recipient, _ := sui_types.NewAddressFromHex("0x123456")
+	sender := sui_signer.TEST_ADDRESS
+	recipient, _ := sui_types.SuiAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -235,7 +237,7 @@ func TestPTB_Pay(t *testing.T) {
 }
 
 func TestPTB_MoveCall(t *testing.T) {
-	sender := sui_types.TEST_ADDRESS
+	sender := sui_signer.TEST_ADDRESS
 	gasBudget := sui_types.SUI(0.1).Uint64()
 	gasPrice := uint64(1000)
 
@@ -245,7 +247,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	coins := getCoins(t, api, sender, 2)
 	coin, coin2 := coins[0], coins[1]
 
-	validatorAddress, err := sui_types.NewAddressFromHex(ComingChatValidatorAddress)
+	validatorAddress, err := sui_types.SuiAddressFromHex(ComingChatValidatorAddress)
 	require.NoError(t, err)
 
 	// build with BCS
@@ -304,7 +306,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	// 	*sui_types.SuiSystemAddress,
 	// 	sui_system_state.SuiSystemModuleName,
 	// 	sui_types.AddStakeFunName,
-	// 	[]move_types.TypeTag{},
+	// 	[]sui_types.TypeTag{},
 	// 	[]sui_types.CallArg{
 	// 		sui_types.SuiSystemMut,
 	// 		coinArg,

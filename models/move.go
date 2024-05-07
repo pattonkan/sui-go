@@ -36,7 +36,7 @@ func NewResourceType(str string) (*ResourceType, error) {
 	if len(parts) != 3 {
 		return nil, errors.New("invalid type string literal")
 	}
-	addr, err := sui_types.NewAddressFromHex(parts[0])
+	addr, err := sui_types.SuiAddressFromHex(parts[0])
 	if err != nil {
 		return nil, err
 	}

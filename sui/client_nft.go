@@ -16,7 +16,7 @@ func (s *ImplSuiAPI) MintNFT(
 	gas *sui_types.ObjectID,
 	gasBudget uint64,
 ) (*models.TransactionBytes, error) {
-	packageId, _ := sui_types.NewAddressFromHex("0x2")
+	packageId, _ := sui_types.SuiAddressFromHex("0x2")
 	args := []any{
 		nftName, nftDescription, nftUri,
 	}

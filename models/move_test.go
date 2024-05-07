@@ -111,7 +111,7 @@ func TestResourceType_ShortString(t *testing.T) {
 }
 
 func addressFromHex(t *testing.T, hex string) *sui_types.SuiAddress {
-	addr, err := sui_types.NewAddressFromHex(hex)
+	addr, err := sui_types.SuiAddressFromHex(hex)
 	require.NoError(t, err)
 	return addr
 }

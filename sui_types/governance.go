@@ -1,12 +1,10 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/move_types"
-
 const (
-	StakingPoolModuleName = move_types.Identifier("staking_pool")
-	StakedSuiStructName   = move_types.Identifier("StakedSui")
+	StakingPoolModuleName = "staking_pool"
+	StakedSuiStructName   = "StakedSui"
 
-	AddStakeMulCoinFunName = move_types.Identifier("request_add_stake_mul_coin")
-	AddStakeFunName        = move_types.Identifier("request_add_stake")
-	WithdrawStakeFunName   = move_types.Identifier("request_withdraw_stake")
+	AddStakeMulCoinFunName = "request_add_stake_mul_coin"
+	AddStakeFunName        = "request_add_stake"
+	WithdrawStakeFunName   = "request_withdraw_stake"
 )

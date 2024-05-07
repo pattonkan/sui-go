@@ -2,7 +2,6 @@ package sui_types
 
 import (
 	"github.com/howjmay/sui-go/lib"
-	"github.com/howjmay/sui-go/move_types"
 )
 
 type TransactionData struct {
@@ -71,7 +70,7 @@ type Command struct {
 		Objects []ObjectID
 	}
 	MakeMoveVec *struct {
-		TypeTag   *move_types.TypeTag `bcs:"optional"`
+		TypeTag   *TypeTag `bcs:"optional"`
 		Arguments []Argument
 	}
 	Upgrade *struct {
@@ -98,9 +97,9 @@ func (a Argument) IsBcsEnum() {}
 
 type ProgrammableMoveCall struct {
 	Package       *ObjectID
-	Module        move_types.Identifier
-	Function      move_types.Identifier
-	TypeArguments []move_types.TypeTag
+	Module        string
+	Function      string
+	TypeArguments []TypeTag
 	Arguments     []Argument
 }
 
@@ -131,7 +130,7 @@ type MoveCall struct {
 	Package       ObjectID
 	Module        string
 	Function      string
-	TypeArguments []*move_types.TypeTag
+	TypeArguments []*TypeTag
 	Arguments     []*CallArg
 }
 

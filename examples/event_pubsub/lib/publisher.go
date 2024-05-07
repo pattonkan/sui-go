@@ -6,25 +6,26 @@ import (
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
+	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 )
 
 type Publisher struct {
-	client  *sui.ImplSuiAPI
-	account *sui_types.Account
+	client *sui.ImplSuiAPI
+	signer *sui_signer.Signer
 }
 
-func NewPublisher(client *sui.ImplSuiAPI, account *sui_types.Account) *Publisher {
+func NewPublisher(client *sui.ImplSuiAPI, signer *sui_signer.Signer) *Publisher {
 	return &Publisher{
-		client:  client,
-		account: account,
+		client: client,
+		signer: signer,
 	}
 }
 
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		p.account.AccountAddress(),
+		sui_types.MustSuiAddressFromHex(p.signer.Address),
 		packageID,
 		"eventpub",
 		"emit_clock",
@@ -37,7 +38,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		log.Panic(err)
 	}
 
-	signature, err := p.account.SignSecureWithoutEncode(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
+	signature, err := p.signer.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_signer.DefaultIntent())
 	if err != nil {
 		log.Panic(err)
 	}

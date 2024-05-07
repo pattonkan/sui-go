@@ -2,24 +2,18 @@ package sui_types
 
 import (
 	"github.com/howjmay/sui-go/lib"
-	"github.com/howjmay/sui-go/move_types"
 )
 
-type SuiAddress = move_types.AccountAddress
-type PackageID = move_types.AccountAddress
-type ObjectID = move_types.AccountAddress
+type PackageID = SuiAddress
+type ObjectID = SuiAddress
 type SequenceNumber = uint64
 
-func NewAddressFromHex(str string) (*SuiAddress, error) {
-	return move_types.NewAccountAddressHex(str)
-}
-
 func PackageIDFromHex(str string) (*PackageID, error) {
-	return move_types.NewAccountAddressHex(str)
+	return SuiAddressFromHex(str)
 }
 
 func MustPackageIDFromHex(str string) *PackageID {
-	packageID, err := move_types.NewAccountAddressHex(str)
+	packageID, err := SuiAddressFromHex(str)
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +21,7 @@ func MustPackageIDFromHex(str string) *PackageID {
 }
 
 func NewObjectIDFromHex(str string) (*ObjectID, error) {
-	return move_types.NewAccountAddressHex(str)
+	return SuiAddressFromHex(str)
 }
 
 // ObjectRef for BCS, need to keep this order
@@ -38,10 +32,10 @@ type ObjectRef struct {
 }
 
 type MoveObjectType struct {
-	Other     *move_types.StructTag
+	Other     *StructTag
 	GasCoin   *lib.EmptyEnum
 	StakedSui *lib.EmptyEnum
-	Coin      *move_types.TypeTag
+	Coin      *TypeTag
 }
 
 func (o MoveObjectType) IsBcsEnum() {}

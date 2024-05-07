@@ -7,7 +7,6 @@ import (
 
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/howjmay/sui-go/lib"
-	"github.com/howjmay/sui-go/move_types"
 	"github.com/mitchellh/hashstructure/v2"
 )
 
@@ -179,7 +178,7 @@ func (p *ProgrammableTransactionBuilder) MakeObjList(objs []ObjectArg) (Argument
 	arg := p.Command(
 		Command{
 			MakeMoveVec: &struct {
-				TypeTag   *move_types.TypeTag `bcs:"optional"`
+				TypeTag   *TypeTag `bcs:"optional"`
 				Arguments []Argument
 			}{TypeTag: nil, Arguments: objArgs},
 		},
@@ -273,9 +272,9 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 
 func (p *ProgrammableTransactionBuilder) MoveCall(
 	packageID *ObjectID,
-	module *move_types.Identifier,
-	function *move_types.Identifier,
-	typeArguments []move_types.TypeTag,
+	module *string,
+	function *string,
+	typeArguments []TypeTag,
 	callArgs []CallArg,
 ) error {
 	var arguments []Argument
