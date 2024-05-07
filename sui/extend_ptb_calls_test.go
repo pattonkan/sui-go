@@ -25,7 +25,7 @@ func TestPTB_PaySui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coin := getCoins(t, api, sender, 1)[0]
 
@@ -68,7 +68,7 @@ func TestPTB_TransferObject(t *testing.T) {
 	gasBudget := sui_types.SUI(0.1).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coins := getCoins(t, api, sender, 2)
 	coin, gas := coins[0], coins[1]
@@ -110,7 +110,7 @@ func TestPTB_TransferSui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coin := getCoins(t, api, sender, 1)[0]
 
@@ -149,7 +149,7 @@ func TestPTB_PayAllSui(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coins := getCoins(t, api, sender, 2)
 	coin, coin2 := coins[0], coins[1]
@@ -193,7 +193,7 @@ func TestPTB_Pay(t *testing.T) {
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coins := getCoins(t, api, sender, 2)
 	coin, gas := coins[0], coins[1]
@@ -243,7 +243,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	gasPrice := uint64(1000)
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	_, err := sui.RequestFundFromFaucet(sender.String(), conn.TestnetFaucetUrl)
+	_, err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coins := getCoins(t, api, sender, 2)
 	coin, coin2 := coins[0], coins[1]

@@ -12,12 +12,7 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-func RequestFundFromFaucet(address string, faucetUrl string) (string, error) {
-	_, err := sui_types.SuiAddressFromHex(address)
-	if err != nil {
-		return "", err
-	}
-
+func RequestFundFromFaucet(address *sui_types.SuiAddress, faucetUrl string) (string, error) {
 	paramJson := fmt.Sprintf(`{"FixedAmountRequest":{"recipient":"%v"}}`, address)
 	request, err := http.NewRequest(http.MethodPost, faucetUrl, bytes.NewBuffer([]byte(paramJson)))
 	if err != nil {
