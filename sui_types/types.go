@@ -1,8 +1,9 @@
 package sui_types
 
 var (
-	SuiSystemAddress, _               = SuiAddressFromHex("0x3")
+	SuiSystemAddress                  = MustSuiAddressFromHex("0x3")
 	SuiSystemPackageId                = SuiSystemAddress
+	SuiSystemModuleName               = "sui_system"
 	SuiSystemStateObjectID            = MustObjectIDFromHex("0x5")
 	SuiSystemStateObjectSharedVersion = ObjectStartVersion
 )

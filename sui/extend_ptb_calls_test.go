@@ -13,7 +13,6 @@ import (
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/serialization"
-	"github.com/howjmay/sui-go/sui_types/sui_system_state"
 
 	"github.com/stretchr/testify/require"
 )
@@ -276,7 +275,7 @@ func TestPTB_MoveCall(t *testing.T) {
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
 				Package:  sui_types.SuiSystemAddress,
-				Module:   sui_system_state.SuiSystemModuleName,
+				Module:   sui_types.SuiSystemModuleName,
 				Function: sui_types.AddStakeFunName,
 				Arguments: []sui_types.Argument{
 					arg0, arg1, arg2,

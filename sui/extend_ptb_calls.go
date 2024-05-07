@@ -8,7 +8,6 @@ import (
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/serialization"
-	"github.com/howjmay/sui-go/sui_types/sui_system_state"
 )
 
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
@@ -109,7 +108,7 @@ func BCS_RequestAddStake(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
 				Package:  sui_types.SuiSystemAddress,
-				Module:   sui_system_state.SuiSystemModuleName,
+				Module:   sui_types.SuiSystemModuleName,
 				Function: sui_types.AddStakeFunName,
 				Arguments: []sui_types.Argument{
 					arg0, arg1, arg2,
@@ -140,7 +139,7 @@ func BCS_RequestWithdrawStake(signer *sui_types.SuiAddress, stakedSuiRef sui_typ
 	ptb.Command(sui_types.Command{
 		MoveCall: &sui_types.ProgrammableMoveCall{
 			Package:  sui_types.SuiSystemAddress,
-			Module:   sui_system_state.SuiSystemModuleName,
+			Module:   sui_types.SuiSystemModuleName,
 			Function: sui_types.WithdrawStakeFunName,
 			Arguments: []sui_types.Argument{
 				arg0, arg1,

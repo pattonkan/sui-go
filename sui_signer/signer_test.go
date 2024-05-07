@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAccount(t *testing.T) {
+func TestNewSigner(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
 	t.Logf("addr: %v", signer.Address)
 }
 
-func Test_Signature_Marshal_Unmarshal(t *testing.T) {
+func TestSignatureMarshalUnmarshal(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
