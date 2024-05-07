@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 const (
@@ -26,7 +26,7 @@ type TransactionBytes struct {
 	InputObjects []InputObjectKind `json:"inputObjects"`
 
 	// transaction data bytes
-	TxBytes lib.Base64Data `json:"txBytes"`
+	TxBytes serialization.Base64Data `json:"txBytes"`
 }
 
 type TransferObject struct {

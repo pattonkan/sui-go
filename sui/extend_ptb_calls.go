@@ -5,16 +5,16 @@ import (
 	"strings"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 	"github.com/howjmay/sui-go/sui_types/sui_system_state"
 )
 
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
 const QUERY_MAX_RESULT_LIMIT = 50
 
-type suiBase64Data = lib.Base64Data
+type suiBase64Data = serialization.Base64Data
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
 func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (models.Coins, error) {
@@ -95,7 +95,7 @@ func BCS_RequestAddStake(
 				Argument  sui_types.Argument
 				Arguments []sui_types.Argument
 			}{
-				Argument:  sui_types.Argument{GasCoin: &lib.EmptyEnum{}},
+				Argument:  sui_types.Argument{GasCoin: &serialization.EmptyEnum{}},
 				Arguments: []sui_types.Argument{amtArg},
 			},
 		},

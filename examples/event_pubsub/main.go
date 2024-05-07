@@ -12,7 +12,7 @@ import (
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 
-	"github.com/howjmay/sui-go/examples/event_pubsub/lib"
+	serialization "github.com/howjmay/sui-go/examples/event_pubsub/lib"
 )
 
 func main() {
@@ -36,8 +36,8 @@ func main() {
 	}
 
 	log.Println("sender: ", sender.Address)
-	publisher := lib.NewPublisher(api, sender)
-	subscriber := lib.NewSubscriber(api)
+	publisher := serialization.NewPublisher(api, sender)
+	subscriber := serialization.NewSubscriber(api)
 
 	go func() {
 		for {

@@ -1,6 +1,6 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/lib"
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 const (
 	ObjectStartVersion = SequenceNumber(1)
@@ -26,7 +26,7 @@ type Owner struct {
 	Shared       *struct {
 		InitialSharedVersion SequenceNumber `json:"initial_shared_version"`
 	} `json:"Shared,omitempty"`
-	Immutable *lib.EmptyEnum `json:"Immutable,omitempty"`
+	Immutable *serialization.EmptyEnum `json:"Immutable,omitempty"`
 }
 
 func (o Owner) IsBcsEnum() {}

@@ -1,19 +1,19 @@
 package models
 
 import (
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 type DynamicFieldInfo struct {
 	Name sui_types.DynamicFieldName `json:"name"`
 	//Base58
-	BcsName    lib.Base58                              `json:"bcsName"`
-	Type       lib.TagJson[sui_types.DynamicFieldType] `json:"type"`
-	ObjectType string                                  `json:"objectType"`
-	ObjectID   sui_types.ObjectID                      `json:"objectId"`
-	Version    sui_types.SequenceNumber                `json:"version"`
-	Digest     sui_types.ObjectDigest                  `json:"digest"`
+	BcsName    serialization.Base58                              `json:"bcsName"`
+	Type       serialization.TagJson[sui_types.DynamicFieldType] `json:"type"`
+	ObjectType string                                            `json:"objectType"`
+	ObjectID   sui_types.ObjectID                                `json:"objectId"`
+	Version    sui_types.SequenceNumber                          `json:"version"`
+	Digest     sui_types.ObjectDigest                            `json:"digest"`
 }
 
 type DynamicFieldPage = Page[DynamicFieldInfo, sui_types.ObjectID]

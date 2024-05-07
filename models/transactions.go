@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 type ExecuteTransactionRequestType string
@@ -32,8 +32,8 @@ type ExecutionStatus struct {
 }
 
 type OwnedObjectRef struct {
-	Owner     lib.TagJson[sui_types.Owner] `json:"owner"`
-	Reference SuiObjectRef                 `json:"reference"`
+	Owner     serialization.TagJson[sui_types.Owner] `json:"owner"`
+	Reference SuiObjectRef                           `json:"reference"`
 }
 
 type SuiTransactionBlockEffectsModifiedAtVersions struct {
@@ -113,7 +113,7 @@ const (
 	SuiTransactionBlockKindProgrammableTransaction    = "ProgrammableTransaction"
 )
 
-type SuiTransactionBlockKind = lib.TagJson[TransactionBlockKind]
+type SuiTransactionBlockKind = serialization.TagJson[TransactionBlockKind]
 
 type TransactionBlockKind struct {
 	/// A system transaction that will update epoch information on-chain.
@@ -181,8 +181,8 @@ func (t SuiTransactionBlockData) Content() string {
 }
 
 type SuiTransactionBlock struct {
-	Data         lib.TagJson[SuiTransactionBlockData] `json:"data"`
-	TxSignatures []string                             `json:"txSignatures"`
+	Data         serialization.TagJson[SuiTransactionBlockData] `json:"data"`
+	TxSignatures []string                                       `json:"txSignatures"`
 }
 
 type ObjectChange struct {
@@ -252,16 +252,16 @@ type BalanceChange struct {
 }
 
 type SuiTransactionBlockResponse struct {
-	Digest                  sui_types.TransactionDigest              `json:"digest"`
-	Transaction             *SuiTransactionBlock                     `json:"transaction,omitempty"`
-	RawTransaction          []byte                                   `json:"rawTransaction,omitempty"`
-	Effects                 *lib.TagJson[SuiTransactionBlockEffects] `json:"effects,omitempty"`
-	Events                  []SuiEvent                               `json:"events,omitempty"`
-	TimestampMs             *SafeSuiBigInt[uint64]                   `json:"timestampMs,omitempty"`
-	Checkpoint              *SafeSuiBigInt[CheckpointSequenceNumber] `json:"checkpoint,omitempty"`
-	ConfirmedLocalExecution *bool                                    `json:"confirmedLocalExecution,omitempty"`
-	ObjectChanges           []lib.TagJson[ObjectChange]              `json:"objectChanges,omitempty"`
-	BalanceChanges          []BalanceChange                          `json:"balanceChanges,omitempty"`
+	Digest                  sui_types.TransactionDigest                        `json:"digest"`
+	Transaction             *SuiTransactionBlock                               `json:"transaction,omitempty"`
+	RawTransaction          []byte                                             `json:"rawTransaction,omitempty"`
+	Effects                 *serialization.TagJson[SuiTransactionBlockEffects] `json:"effects,omitempty"`
+	Events                  []SuiEvent                                         `json:"events,omitempty"`
+	TimestampMs             *SafeSuiBigInt[uint64]                             `json:"timestampMs,omitempty"`
+	Checkpoint              *SafeSuiBigInt[CheckpointSequenceNumber]           `json:"checkpoint,omitempty"`
+	ConfirmedLocalExecution *bool                                              `json:"confirmedLocalExecution,omitempty"`
+	ObjectChanges           []serialization.TagJson[ObjectChange]              `json:"objectChanges,omitempty"`
+	BalanceChanges          []BalanceChange                                    `json:"balanceChanges,omitempty"`
 	/* Errors that occurred in fetching/serializing the transaction. */
 	Errors []string `json:"errors,omitempty"`
 }
@@ -274,10 +274,10 @@ type ExecutionResultType struct {
 }
 
 type DevInspectResults struct {
-	Effects lib.TagJson[SuiTransactionBlockEffects] `json:"effects"`
-	Events  []SuiEvent                              `json:"events"`
-	Results []ExecutionResultType                   `json:"results,omitempty"`
-	Error   *string                                 `json:"error,omitempty"`
+	Effects serialization.TagJson[SuiTransactionBlockEffects] `json:"effects"`
+	Events  []SuiEvent                                        `json:"events"`
+	Results []ExecutionResultType                             `json:"results,omitempty"`
+	Error   *string                                           `json:"error,omitempty"`
 }
 
 type TransactionFilter struct {
@@ -319,9 +319,9 @@ type SuiTransactionBlockResponseQuery struct {
 type TransactionBlocksPage = Page[SuiTransactionBlockResponse, sui_types.TransactionDigest]
 
 type DryRunTransactionBlockResponse struct {
-	Effects        lib.TagJson[SuiTransactionBlockEffects] `json:"effects"`
-	Events         []SuiEvent                              `json:"events"`
-	ObjectChanges  []lib.TagJson[ObjectChange]             `json:"objectChanges"`
-	BalanceChanges []BalanceChange                         `json:"balanceChanges"`
-	Input          lib.TagJson[SuiTransactionBlockData]    `json:"input"`
+	Effects        serialization.TagJson[SuiTransactionBlockEffects] `json:"effects"`
+	Events         []SuiEvent                                        `json:"events"`
+	ObjectChanges  []serialization.TagJson[ObjectChange]             `json:"objectChanges"`
+	BalanceChanges []BalanceChange                                   `json:"balanceChanges"`
+	Input          serialization.TagJson[SuiTransactionBlockData]    `json:"input"`
 }

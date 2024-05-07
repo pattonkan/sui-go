@@ -1,6 +1,6 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/lib"
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 type StructTag struct {
 	Address    SuiAddress
@@ -10,15 +10,15 @@ type StructTag struct {
 }
 
 type TypeTag struct {
-	Bool    *lib.EmptyEnum
-	U8      *lib.EmptyEnum
-	U16     *lib.EmptyEnum
-	U32     *lib.EmptyEnum
-	U64     *lib.EmptyEnum
-	U128    *lib.EmptyEnum
-	U256    *lib.EmptyEnum
-	Address *lib.EmptyEnum
-	Signer  *lib.EmptyEnum
+	Bool    *serialization.EmptyEnum
+	U8      *serialization.EmptyEnum
+	U16     *serialization.EmptyEnum
+	U32     *serialization.EmptyEnum
+	U64     *serialization.EmptyEnum
+	U128    *serialization.EmptyEnum
+	U256    *serialization.EmptyEnum
+	Address *serialization.EmptyEnum
+	Signer  *serialization.EmptyEnum
 	Vector  *TypeTag
 	Struct  *StructTag
 }

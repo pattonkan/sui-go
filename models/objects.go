@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 type SuiObjectRef struct {
@@ -62,14 +62,14 @@ type SuiRawMoveObject struct {
 	Type              string                   `json:"type"`
 	HasPublicTransfer bool                     `json:"hasPublicTransfer"`
 	Version           sui_types.SequenceNumber `json:"version"`
-	BcsBytes          lib.Base64Data           `json:"bcsBytes"`
+	BcsBytes          serialization.Base64Data `json:"bcsBytes"`
 }
 
 type SuiRawMovePackage struct {
-	Id              sui_types.ObjectID        `json:"id"`
-	Version         sui_types.SequenceNumber  `json:"version"`
-	ModuleMap       map[string]lib.Base64Data `json:"moduleMap"`
-	TypeOriginTable []TypeOrigin              `json:"typeOriginTable"`
+	Id              sui_types.ObjectID                  `json:"id"`
+	Version         sui_types.SequenceNumber            `json:"version"`
+	ModuleMap       map[string]serialization.Base64Data `json:"moduleMap"`
+	TypeOriginTable []TypeOrigin                        `json:"typeOriginTable"`
 	LinkageTable    map[string]UpgradeInfo
 }
 
@@ -95,11 +95,11 @@ type SuiObjectData struct {
 	/**
 	 * Move object content or package content, default to be undefined unless SuiObjectDataOptions.showContent is set to true
 	 */
-	Content *lib.TagJson[SuiParsedData] `json:"content,omitempty"`
+	Content *serialization.TagJson[SuiParsedData] `json:"content,omitempty"`
 	/**
 	 * Move object content or package content in BCS bytes, default to be undefined unless SuiObjectDataOptions.showBcs is set to true
 	 */
-	Bcs *lib.TagJson[SuiRawData] `json:"bcs,omitempty"`
+	Bcs *serialization.TagJson[SuiRawData] `json:"bcs,omitempty"`
 	/**
 	 * The owner of this object. Default to be undefined unless SuiObjectDataOptions.showOwner is set to true
 	 */
@@ -173,8 +173,8 @@ func (e SuiObjectResponseError) Content() string {
 }
 
 type SuiObjectResponse struct {
-	Data  *SuiObjectData                       `json:"data,omitempty"`
-	Error *lib.TagJson[SuiObjectResponseError] `json:"error,omitempty"`
+	Data  *SuiObjectData                                 `json:"data,omitempty"`
+	Error *serialization.TagJson[SuiObjectResponseError] `json:"error,omitempty"`
 }
 
 type CheckpointSequenceNumber = uint64
@@ -198,7 +198,7 @@ type SuiObjectResponseQuery struct {
 	Options *SuiObjectDataOptions `json:"options,omitempty"`
 }
 
-type SuiPastObjectResponse = lib.TagJson[SuiPastObject]
+type SuiPastObjectResponse = serialization.TagJson[SuiPastObject]
 
 // TODO need test VersionNotFound
 type SuiPastObject struct {

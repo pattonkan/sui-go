@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/howjmay/sui-go/sui_types/serialization"
+
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/sui-go/lib"
 	"github.com/mitchellh/hashstructure/v2"
 )
 
@@ -233,7 +234,7 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 	var coinArg Argument
 	if amount == nil {
 		coinArg = Argument{
-			GasCoin: &lib.EmptyEnum{},
+			GasCoin: &serialization.EmptyEnum{},
 		}
 	} else {
 		amtArg, err := p.Pure(*amount)
@@ -247,7 +248,7 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 					Arguments []Argument
 				}{
 					Argument: Argument{
-						GasCoin: &lib.EmptyEnum{},
+						GasCoin: &serialization.EmptyEnum{},
 					}, Arguments: []Argument{
 						amtArg,
 					},
@@ -305,7 +306,7 @@ func (p *ProgrammableTransactionBuilder) PaySui(
 ) error {
 	return p.PayMulInternal(
 		recipients, amounts, Argument{
-			GasCoin: &lib.EmptyEnum{},
+			GasCoin: &serialization.EmptyEnum{},
 		},
 	)
 }
@@ -320,7 +321,7 @@ func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error 
 			TransferObjects: &struct {
 				Arguments []Argument
 				Argument  Argument
-			}{Arguments: []Argument{{GasCoin: &lib.EmptyEnum{}}}, Argument: recArg},
+			}{Arguments: []Argument{{GasCoin: &serialization.EmptyEnum{}}}, Argument: recArg},
 		},
 	)
 	return nil

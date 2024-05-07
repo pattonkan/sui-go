@@ -3,9 +3,9 @@ package sui_signer
 import (
 	"bytes"
 
-	"github.com/fardream/go-bcs/bcs"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 
-	"github.com/howjmay/sui-go/lib"
+	"github.com/fardream/go-bcs/bcs"
 )
 
 type Intent struct {
@@ -20,13 +20,13 @@ type Intent struct {
 func DefaultIntent() Intent {
 	return Intent{
 		Scope: IntentScope{
-			TransactionData: &lib.EmptyEnum{},
+			TransactionData: &serialization.EmptyEnum{},
 		},
 		Version: IntentVersion{
-			V0: &lib.EmptyEnum{},
+			V0: &serialization.EmptyEnum{},
 		},
 		AppID: AppID{
-			Sui: &lib.EmptyEnum{},
+			Sui: &serialization.EmptyEnum{},
 		},
 	}
 }
@@ -41,26 +41,26 @@ func (i *Intent) Bytes() []byte {
 
 // the type of the IntentMessage
 type IntentScope struct {
-	TransactionData         *lib.EmptyEnum // Used for a user signature on a transaction data.
-	TransactionEffects      *lib.EmptyEnum // Used for an authority signature on transaction effects.
-	CheckpointSummary       *lib.EmptyEnum // Used for an authority signature on a checkpoint summary.
-	PersonalMessage         *lib.EmptyEnum // Used for a user signature on a personal message.
-	SenderSignedTransaction *lib.EmptyEnum // Used for an authority signature on a user signed transaction.
-	ProofOfPossession       *lib.EmptyEnum // Used as a signature representing an authority's proof of possession of its authority protocol key.
-	HeaderDigest            *lib.EmptyEnum // Used for narwhal authority signature on header digest.
+	TransactionData         *serialization.EmptyEnum // Used for a user signature on a transaction data.
+	TransactionEffects      *serialization.EmptyEnum // Used for an authority signature on transaction effects.
+	CheckpointSummary       *serialization.EmptyEnum // Used for an authority signature on a checkpoint summary.
+	PersonalMessage         *serialization.EmptyEnum // Used for a user signature on a personal message.
+	SenderSignedTransaction *serialization.EmptyEnum // Used for an authority signature on a user signed transaction.
+	ProofOfPossession       *serialization.EmptyEnum // Used as a signature representing an authority's proof of possession of its authority protocol key.
+	HeaderDigest            *serialization.EmptyEnum // Used for narwhal authority signature on header digest.
 }
 
 func (i IntentScope) IsBcsEnum() {}
 
 type IntentVersion struct {
-	V0 *lib.EmptyEnum
+	V0 *serialization.EmptyEnum
 }
 
 func (i IntentVersion) IsBcsEnum() {}
 
 type AppID struct {
-	Sui     *lib.EmptyEnum
-	Narwhal *lib.EmptyEnum
+	Sui     *serialization.EmptyEnum
+	Narwhal *serialization.EmptyEnum
 }
 
 func (a AppID) IsBcsEnum() {}

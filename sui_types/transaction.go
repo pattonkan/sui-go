@@ -1,6 +1,6 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/lib"
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 var (
 	SuiSystemMut = CallArg{
@@ -59,7 +59,7 @@ func newWithGasCoinsAllowSponsor(
 				Budget:  gasBudget,
 			},
 			Expiration: TransactionExpiration{
-				None: &lib.EmptyEnum{},
+				None: &serialization.EmptyEnum{},
 			},
 		},
 	}

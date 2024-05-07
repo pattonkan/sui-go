@@ -1,8 +1,6 @@
 package sui_types
 
-import (
-	"github.com/howjmay/sui-go/lib"
-)
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 type PackageID = SuiAddress
 type ObjectID = SuiAddress
@@ -41,8 +39,8 @@ type ObjectRef struct {
 
 type MoveObjectType struct {
 	Other     *StructTag
-	GasCoin   *lib.EmptyEnum
-	StakedSui *lib.EmptyEnum
+	GasCoin   *serialization.EmptyEnum
+	StakedSui *serialization.EmptyEnum
 	Coin      *TypeTag
 }
 

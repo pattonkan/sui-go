@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 type AuthSignInfo interface{}
@@ -20,8 +20,8 @@ type ParsedTransactionResponse interface{}
 type ExecuteTransactionEffects struct {
 	TransactionEffectsDigest string `json:"transactionEffectsDigest"`
 
-	Effects      lib.TagJson[SuiTransactionBlockEffects] `json:"effects"`
-	AuthSignInfo *AuthSignInfo                           `json:"authSignInfo"`
+	Effects      serialization.TagJson[SuiTransactionBlockEffects] `json:"effects"`
+	AuthSignInfo *AuthSignInfo                                     `json:"authSignInfo"`
 }
 
 type ExecuteTransactionResponse struct {

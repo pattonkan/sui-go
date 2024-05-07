@@ -1,8 +1,6 @@
 package sui_types
 
-import (
-	"github.com/howjmay/sui-go/lib"
-)
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 type TransactionData struct {
 	V1 *TransactionDataV1
@@ -18,7 +16,7 @@ type TransactionDataV1 struct {
 }
 
 type TransactionExpiration struct {
-	None  *lib.EmptyEnum
+	None  *serialization.EmptyEnum
 	Epoch *EpochId
 }
 
@@ -84,7 +82,7 @@ type Command struct {
 func (c Command) IsBcsEnum() {}
 
 type Argument struct {
-	GasCoin      *lib.EmptyEnum
+	GasCoin      *serialization.EmptyEnum
 	Input        *uint16
 	Result       *uint16
 	NestedResult *struct {

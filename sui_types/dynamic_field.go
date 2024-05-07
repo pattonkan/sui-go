@@ -1,10 +1,10 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/lib"
+import "github.com/howjmay/sui-go/sui_types/serialization"
 
 type DynamicFieldType struct {
-	DynamicField  *lib.EmptyEnum `json:"DynamicField"`
-	DynamicObject *lib.EmptyEnum `json:"DynamicObject"`
+	DynamicField  *serialization.EmptyEnum `json:"DynamicField"`
+	DynamicObject *serialization.EmptyEnum `json:"DynamicObject"`
 }
 
 func (d DynamicFieldType) Tag() string {

@@ -7,19 +7,19 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_TagJson_Owner(t *testing.T) {
-	test := func(str string) lib.TagJson[sui_types.Owner] {
-		var s lib.TagJson[sui_types.Owner]
+	test := func(str string) serialization.TagJson[sui_types.Owner] {
+		var s serialization.TagJson[sui_types.Owner]
 		data := []byte(str)
 		err := json.Unmarshal(data, &s)
 		require.NoError(t, err)

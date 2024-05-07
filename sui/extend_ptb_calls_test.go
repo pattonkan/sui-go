@@ -6,12 +6,12 @@ import (
 
 	"github.com/fardream/go-bcs/bcs"
 
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 	"github.com/howjmay/sui-go/sui_types/sui_system_state"
 
 	"github.com/stretchr/testify/require"
@@ -262,7 +262,7 @@ func TestPTB_MoveCall(t *testing.T) {
 				Argument  sui_types.Argument
 				Arguments []sui_types.Argument
 			}{
-				Argument:  sui_types.Argument{GasCoin: &lib.EmptyEnum{}},
+				Argument:  sui_types.Argument{GasCoin: &serialization.EmptyEnum{}},
 				Arguments: []sui_types.Argument{amtArg},
 			},
 		},

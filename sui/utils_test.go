@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/sui-go/lib"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +23,7 @@ func AddressFromStrMust(str string) *sui_types.SuiAddress {
 func dryRunTxn(
 	t *testing.T,
 	api *sui.ImplSuiAPI,
-	txBytes lib.Base64Data,
+	txBytes serialization.Base64Data,
 	showJson bool,
 ) *models.DryRunTransactionBlockResponse {
 	simulate, err := api.DryRunTransaction(context.Background(), txBytes)
@@ -42,7 +42,7 @@ func dryRunTxn(
 func executeTxn(
 	t *testing.T,
 	api *sui.ImplSuiAPI,
-	txBytes lib.Base64Data,
+	txBytes serialization.Base64Data,
 	signer *sui_signer.Signer,
 ) *models.SuiTransactionBlockResponse {
 	// First of all, make sure that there are no problems with simulated trading.
