@@ -20,7 +20,7 @@ func Test_Signature_Marshal_Unmarshal(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	msg := "Coming chat is very good jopfpzf"
+	msg := "I want to have some bubble tea"
 	msgBytes := []byte(msg)
 
 	signature1, err := signer.SignTransactionBlock(msgBytes, sui_signer.DefaultIntent())

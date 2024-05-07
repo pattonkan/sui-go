@@ -19,7 +19,7 @@ import (
 
 func TestPTB_PaySui(t *testing.T) {
 	sender := sui_signer.TEST_ADDRESS
-	recipient, _ := sui_types.AddressFromHex("0x123456")
+	recipient, _ := sui_types.SuiAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -187,7 +187,7 @@ func TestPTB_PayAllSui(t *testing.T) {
 
 func TestPTB_Pay(t *testing.T) {
 	sender := sui_signer.TEST_ADDRESS
-	recipient, _ := sui_types.AddressFromHex("0x123456")
+	recipient, _ := sui_types.SuiAddressFromHex("0x123456")
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
 
@@ -247,7 +247,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	coins := getCoins(t, api, sender, 2)
 	coin, coin2 := coins[0], coins[1]
 
-	validatorAddress, err := sui_types.AddressFromHex(ComingChatValidatorAddress)
+	validatorAddress, err := sui_types.SuiAddressFromHex(ComingChatValidatorAddress)
 	require.NoError(t, err)
 
 	// build with BCS
@@ -306,7 +306,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	// 	*sui_types.SuiSystemAddress,
 	// 	sui_system_state.SuiSystemModuleName,
 	// 	sui_types.AddStakeFunName,
-	// 	[]move_types.TypeTag{},
+	// 	[]sui_types.TypeTag{},
 	// 	[]sui_types.CallArg{
 	// 		sui_types.SuiSystemMut,
 	// 		coinArg,

@@ -19,7 +19,7 @@ const (
 
 var (
 	TEST_MNEMONIC = "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-	TEST_ADDRESS  = sui_types.MustAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
+	TEST_ADDRESS  = sui_types.MustSuiAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
 )
 
 // FIXME support more than ed25519

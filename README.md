@@ -81,9 +81,9 @@ import "github.com/howjmay/go-sui/types"
 import "github.com/howjmay/go-sui/account"
 
 acc, err := account.NewsignerWithMnemonic(mnemonic)
-signer, _ := types.AddressFromHex(acc.Address)
+signer, _ := types.SuiAddressFromHex(acc.Address)
 
-recipient, err := types.AddressFromHex("0x12345678.......")
+recipient, err := types.SuiAddressFromHex("0x12345678.......")
 suiObjectID, err := types.NewHexData("0x36d3176a796e167ffcbd823c94718e7db56b955f")
 transferAmount := uint64(10000)
 maxGasTransfer := 100

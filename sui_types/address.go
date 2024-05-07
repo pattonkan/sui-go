@@ -1,4 +1,4 @@
-package move_types
+package sui_types
 
 import (
 	"encoding/hex"
@@ -9,9 +9,9 @@ import (
 
 const SuiAddressLen = 32
 
-type AccountAddress [SuiAddressLen]uint8
+type SuiAddress [SuiAddressLen]uint8
 
-func NewAccountAddressHex(str string) (*AccountAddress, error) {
+func SuiAddressFromHex(str string) (*SuiAddress, error) {
 	if strings.HasPrefix(str, "0x") || strings.HasPrefix(str, "0X") {
 		str = str[2:]
 	}
@@ -25,30 +25,38 @@ func NewAccountAddressHex(str string) (*AccountAddress, error) {
 	if len(data) > SuiAddressLen {
 		return nil, errors.New("the len is invalid")
 	}
-	var accountAddress AccountAddress
-	copy(accountAddress[SuiAddressLen-len(data):], data[:])
-	return &accountAddress, nil
+	var address SuiAddress
+	copy(address[SuiAddressLen-len(data):], data[:])
+	return &address, nil
 }
 
-func (a AccountAddress) Data() []byte {
+func MustSuiAddressFromHex(str string) *SuiAddress {
+	addr, err := SuiAddressFromHex(str)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+func (a SuiAddress) Data() []byte {
 	return a[:]
 }
-func (a AccountAddress) Length() int {
+func (a SuiAddress) Length() int {
 	return len(a)
 }
-func (a AccountAddress) String() string {
+func (a SuiAddress) String() string {
 	return "0x" + hex.EncodeToString(a[:])
 }
 
-func (a AccountAddress) ShortString() string {
+func (a SuiAddress) ShortString() string {
 	return "0x" + strings.TrimLeft(hex.EncodeToString(a[:]), "0")
 }
 
-func (a AccountAddress) MarshalJSON() ([]byte, error) {
+func (a SuiAddress) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.String())
 }
 
-func (a *AccountAddress) UnmarshalJSON(data []byte) error {
+func (a *SuiAddress) UnmarshalJSON(data []byte) error {
 	var str *string
 	err := json.Unmarshal(data, &str)
 	if err != nil {
@@ -57,13 +65,13 @@ func (a *AccountAddress) UnmarshalJSON(data []byte) error {
 	if str == nil {
 		return errors.New("nil address")
 	}
-	tmp, err := NewAccountAddressHex(*str)
+	tmp, err := SuiAddressFromHex(*str)
 	if err == nil {
 		*a = *tmp
 	}
 	return err
 }
 
-func (a AccountAddress) MarshalBCS() ([]byte, error) {
+func (a SuiAddress) MarshalBCS() ([]byte, error) {
 	return a[:], nil
 }

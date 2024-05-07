@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/coming-chat/go-aptos v0.0.0-20240226115831-c2468230eadc
 	github.com/fardream/go-bcs v0.4.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/mitchellh/hashstructure/v2 v2.0.2

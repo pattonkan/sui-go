@@ -15,7 +15,7 @@ import (
 )
 
 func AddressFromStrMust(str string) *sui_types.SuiAddress {
-	s, _ := sui_types.AddressFromHex(str)
+	s, _ := sui_types.SuiAddressFromHex(str)
 	return s
 }
 

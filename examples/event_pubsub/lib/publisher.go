@@ -11,21 +11,21 @@ import (
 )
 
 type Publisher struct {
-	client  *sui.ImplSuiAPI
-	account *sui_signer.Signer
+	client *sui.ImplSuiAPI
+	signer *sui_signer.Signer
 }
 
-func NewPublisher(client *sui.ImplSuiAPI, account *sui_signer.Signer) *Publisher {
+func NewPublisher(client *sui.ImplSuiAPI, signer *sui_signer.Signer) *Publisher {
 	return &Publisher{
-		client:  client,
-		account: account,
+		client: client,
+		signer: signer,
 	}
 }
 
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		p.account.Address,
+		sui_types.MustSuiAddressFromHex(p.signer.Address),
 		packageID,
 		"eventpub",
 		"emit_clock",
@@ -38,7 +38,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		log.Panic(err)
 	}
 
-	signature, err := p.account.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_types.DefaultIntent())
+	signature, err := p.signer.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_signer.DefaultIntent())
 	if err != nil {
 		log.Panic(err)
 	}

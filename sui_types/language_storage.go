@@ -1,11 +1,11 @@
-package move_types
+package sui_types
 
 import "github.com/howjmay/sui-go/lib"
 
 type StructTag struct {
-	Address    AccountAddress
-	Module     Identifier
-	Name       Identifier
+	Address    SuiAddress
+	Module     string
+	Name       string
 	TypeParams []TypeTag
 }
 
