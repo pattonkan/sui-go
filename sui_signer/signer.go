@@ -58,6 +58,15 @@ func NewSignerWithMnemonic(mnemonic string) (*Signer, error) {
 	return NewSigner(key.Key), nil
 }
 
+func (s *Signer) PrivateKey() []byte {
+	switch {
+	case s.ed25519Keypair != nil:
+		return s.ed25519Keypair.PriKey
+	default:
+		return nil
+	}
+}
+
 func (s *Signer) PublicKey() []byte {
 	switch {
 	case s.ed25519Keypair != nil:

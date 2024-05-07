@@ -89,11 +89,10 @@ func TestGetTotalTransactionBlocks(t *testing.T) {
 
 func TestGetTransactionBlock(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
-	d, err := sui_types.NewDigest(digest)
+	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 	require.NoError(t, err)
 	resp, err := api.GetTransactionBlock(
-		context.Background(), *d, models.SuiTransactionBlockResponseOptions{
+		context.Background(), *digest, models.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
 			ShowEffects:        true,
 			ShowObjectChanges:  true,
