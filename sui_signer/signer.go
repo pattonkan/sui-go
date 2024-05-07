@@ -26,7 +26,7 @@ var (
 type Signer struct {
 	ed25519Keypair *KeypairEd25519
 	// secp256k1Keypair *KeypairSecp256k1
-	Address string
+	Address *sui_types.SuiAddress
 }
 
 func NewSigner(seed []byte) *Signer {
@@ -42,7 +42,7 @@ func NewSigner(seed []byte) *Signer {
 			PriKey: prikey,
 			PubKey: pubkey,
 		},
-		Address: addr,
+		Address: sui_types.MustSuiAddressFromHex(addr),
 	}
 }
 

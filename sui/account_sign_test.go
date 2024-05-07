@@ -19,7 +19,7 @@ func TestAccountSignAndSend(t *testing.T) {
 	t.Log(account.Address)
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer := AddressFromStrMust(account.Address)
+	signer := account.Address
 	coins, err := api.GetSuiCoinsOwnedByAddress(context.Background(), signer)
 	require.NoError(t, err)
 	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")

@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	digest, err := sui.RequestFundFromFaucet(sender.Address, conn.TestnetFaucetUrl)
+	digest, err := sui.RequestFundFromFaucet(sender.Address.String(), conn.TestnetFaucetUrl)
 	if err != nil {
 		log.Panic(err)
 	}
