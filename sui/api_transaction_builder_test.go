@@ -50,7 +50,7 @@ func TestMoveCall(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("sui_signer: ", signer.Address)
-	digest, err := sui.RequestFundFromFaucet(signer.Address.String(), conn.TestnetFaucetUrl)
+	digest, err := sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("digest: ", digest)
 
