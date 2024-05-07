@@ -12,15 +12,18 @@ import (
 )
 
 func (s *ImplSuiAPI) GetDynamicFieldObject(
-	ctx context.Context, parentObjectID *sui_types.ObjectID,
-	name sui_types.DynamicFieldName,
+	ctx context.Context,
+	parentObjectID *sui_types.ObjectID,
+	name *sui_types.DynamicFieldName,
 ) (*models.SuiObjectResponse, error) {
 	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFieldObject, parentObjectID, name)
 }
 
 func (s *ImplSuiAPI) GetDynamicFields(
-	ctx context.Context, parentObjectID *sui_types.ObjectID, cursor *sui_types.ObjectID,
+	ctx context.Context,
+	parentObjectID *sui_types.ObjectID,
+	cursor *sui_types.ObjectID,
 	limit *uint,
 ) (*models.DynamicFieldPage, error) {
 	var resp models.DynamicFieldPage

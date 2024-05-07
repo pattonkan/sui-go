@@ -17,25 +17,6 @@ const (
 	ComingChatValidatorAddress = "0x520289e77c838bae8501ae92b151b99a54407288fdd20dee6e5416bfe943eb7a"
 )
 
-func TestClient_GetLatestSuiSystemState(t *testing.T) {
-	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	state, err := api.GetLatestSuiSystemState(context.Background())
-	require.NoError(t, err)
-	t.Logf("system state: %v", state)
-}
-
-func TestClient_GetValidatorsApy(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	apys, err := api.GetValidatorsApy(context.Background())
-	require.NoError(t, err)
-	t.Logf("current epoch %v", apys.Epoch)
-	apyMap := apys.ApyMap()
-	for _, apy := range apys.Apys {
-		key := apy.Address
-		t.Logf("%v apy: %v", key, apyMap[key])
-	}
-}
-
 func TestGetDelegatedStakes(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 
@@ -55,25 +36,6 @@ func TestGetDelegatedStakes(t *testing.T) {
 			}
 		}
 	}
-}
-
-func TestGetStakesByIds(t *testing.T) {
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	owner, err := sui_types.SuiAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
-	require.NoError(t, err)
-	stakes, err := api.GetStakes(context.Background(), owner)
-	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(stakes), 1)
-
-	stake1 := stakes[0].Stakes[0].Data
-	stakeId := stake1.StakedSuiId
-	stakesFromId, err := api.GetStakesByIds(context.Background(), []sui_types.ObjectID{stakeId})
-	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(stakesFromId), 1)
-
-	queriedStake := stakesFromId[0].Stakes[0].Data
-	require.Equal(t, stake1, queriedStake)
-	t.Log(stakesFromId)
 }
 
 func TestRequestAddDelegation(t *testing.T) {

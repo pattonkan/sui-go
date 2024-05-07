@@ -8,8 +8,6 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-const SUI_COIN_TYPE = "0x2::sui::SUI"
-
 const MAX_INPUT_COUNT_MERGE = 256 - 1
 const MAX_INPUT_COUNT_STAKE = 512 - 1
 
@@ -35,7 +33,7 @@ func (c *Coin) Reference() *sui_types.ObjectRef {
 type CoinPage = Page[Coin, sui_types.ObjectID]
 
 func (c *Coin) IsSUI() bool {
-	return c.CoinType == SUI_COIN_TYPE
+	return c.CoinType == SuiCoinType
 }
 
 type Balance struct {

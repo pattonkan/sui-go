@@ -2,6 +2,7 @@ package sui_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/fardream/go-bcs/bcs"
@@ -327,6 +328,19 @@ func TestPTB_MoveCall(t *testing.T) {
 	require.NoError(t, err)
 	resp := dryRunTxn(t, api, txBytesBCS, true)
 	t.Log(resp.Effects.Data.GasFee())
+}
+
+func TestBatchGetObjectsOwnedByAddress(t *testing.T) {
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
+
+	options := models.SuiObjectDataOptions{
+		ShowType:    true,
+		ShowContent: true,
+	}
+	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", models.SuiCoinType)
+	filterObject, err := api.BatchGetObjectsOwnedByAddress(context.TODO(), sui_signer.TEST_ADDRESS, &options, coinType)
+	require.NoError(t, err)
+	t.Log(filterObject)
 }
 
 func getCoins(t *testing.T, api *sui.ImplSuiAPI, sender *sui_types.SuiAddress, needCoinObjNum int) []models.Coin {

@@ -116,15 +116,15 @@ const (
 type SuiTransactionBlockKind = serialization.TagJson[TransactionBlockKind]
 
 type TransactionBlockKind struct {
-	/// A system transaction that will update epoch information on-chain.
+	// A system transaction that will update epoch information on-chain.
 	ChangeEpoch *SuiChangeEpoch `json:"ChangeEpoch,omitempty"`
-	/// A system transaction used for initializing the initial state of the chain.
+	// A system transaction used for initializing the initial state of the chain.
 	Genesis *SuiGenesisTransaction `json:"Genesis,omitempty"`
-	/// A system transaction marking the start of a series of transactions scheduled as part of a
-	/// checkpoint
+	// A system transaction marking the start of a series of transactions scheduled as part of a
+	// checkpoint
 	ConsensusCommitPrologue *SuiConsensusCommitPrologue `json:"ConsensusCommitPrologue,omitempty"`
-	/// A series of transactions where the results of one transaction can be used in future
-	/// transactions
+	// A series of transactions where the results of one transaction can be used in future
+	// transactions
 	ProgrammableTransaction *SuiProgrammableTransactionBlock `json:"ProgrammableTransaction,omitempty"`
 	// .. more transaction types go here
 }
@@ -157,8 +157,8 @@ type SuiConsensusCommitPrologue struct {
 
 type SuiProgrammableTransactionBlock struct {
 	Inputs []interface{} `json:"inputs"`
-	/// The transactions to be executed sequentially. A failure in any transaction will
-	/// result in the failure of the entire programmable transaction block.
+	// The transactions to be executed sequentially. A failure in any transaction will
+	// result in the failure of the entire programmable transaction block.
 	Commands []interface{} `json:"transactions"`
 }
 
@@ -192,7 +192,7 @@ type ObjectChange struct {
 		Digest    sui_types.ObjectDigest                  `json:"digest"`
 		Nodules   []string                                `json:"nodules"`
 	} `json:"published,omitempty"`
-	/// Transfer objects to new address / wrap in another object
+	// Transfer objects to new address / wrap in another object
 	Transferred *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Recipient  ObjectOwner                             `json:"recipient"`
@@ -201,7 +201,7 @@ type ObjectChange struct {
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		Digest     sui_types.ObjectDigest                  `json:"digest"`
 	} `json:"transferred,omitempty"`
-	/// Object mutated.
+	// Object mutated.
 	Mutated *struct {
 		Sender          sui_types.SuiAddress                    `json:"sender"`
 		Owner           ObjectOwner                             `json:"owner"`
@@ -211,21 +211,21 @@ type ObjectChange struct {
 		PreviousVersion SafeSuiBigInt[sui_types.SequenceNumber] `json:"previousVersion"`
 		Digest          sui_types.ObjectDigest                  `json:"digest"`
 	} `json:"mutated,omitempty"`
-	/// Delete object j
+	// Delete object j
 	Deleted *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		ObjectType string                                  `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"deleted,omitempty"`
-	/// Wrapped object
+	// Wrapped object
 	Wrapped *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		ObjectType string                                  `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"wrapped,omitempty"`
-	/// New object creation
+	// New object creation
 	Created *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Owner      ObjectOwner                             `json:"owner"`

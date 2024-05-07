@@ -242,7 +242,7 @@ func TestCoins_PickCoins(t *testing.T) {
 
 func TestPickupCoins(t *testing.T) {
 	coin := func(n uint64) models.Coin {
-		return models.Coin{Balance: balanceObject(n), CoinType: models.SUI_COIN_TYPE}
+		return models.Coin{Balance: balanceObject(n), CoinType: models.SuiCoinType}
 	}
 
 	type args struct {

@@ -25,32 +25,32 @@ type SuiEvent struct {
 }
 
 type EventFilter struct {
-	/// Query by sender sui_types.address.
+	// Query by sender sui_types.address.
 	Sender *sui_types.SuiAddress `json:"Sender,omitempty"`
-	/// Return events emitted by the given transaction.
+	// Return events emitted by the given transaction.
 	Transaction *sui_types.TransactionDigest `json:"Transaction,omitempty"`
-	///digest of the transaction, as base-64 encoded string
+	//digest of the transaction, as base-64 encoded string
 
-	/// Return events emitted in a specified Package.
+	// Return events emitted in a specified Package.
 	Package *sui_types.ObjectID `json:"Package,omitempty"`
-	/// Return events emitted in a specified Move module.
+	// Return events emitted in a specified Move module.
 	MoveModule *struct {
-		/// the Move package ID
+		// the Move package ID
 		Package sui_types.ObjectID `json:"package"`
-		/// the module name
+		// the module name
 		Module string `json:"module"`
 	} `json:"MoveModule,omitempty"`
-	/// Return events with the given move event struct name
+	// Return events with the given move event struct name
 	MoveEventType  *string `json:"MoveEventType,omitempty"`
 	MoveEventField *struct {
 		Path  string      `json:"path"`
 		Value interface{} `json:"value"`
 	} `json:"MoveEventField,omitempty"`
-	/// Return events emitted in [start_time, end_time] interval
+	// Return events emitted in [start_time, end_time] interval
 	TimeRange *struct {
-		/// left endpoint of time interval, milliseconds since epoch, inclusive
+		// left endpoint of time interval, milliseconds since epoch, inclusive
 		StartTime SafeSuiBigInt[uint64] `json:"startTime"`
-		/// right endpoint of time interval, milliseconds since epoch, exclusive
+		// right endpoint of time interval, milliseconds since epoch, exclusive
 		EndTime SafeSuiBigInt[uint64] `json:"endTime"`
 	} `json:"TimeRange,omitempty"`
 

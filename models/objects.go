@@ -202,15 +202,15 @@ type SuiPastObjectResponse = serialization.TagJson[SuiPastObject]
 
 // TODO need test VersionNotFound
 type SuiPastObject struct {
-	/// The object exists and is found with this version
+	// The object exists and is found with this version
 	VersionFound *SuiObjectData `json:"VersionFound,omitempty"`
-	/// The object does not exist
+	// The object does not exist
 	ObjectNotExists *sui_types.ObjectID `json:"ObjectNotExists,omitempty"`
-	/// The object is found to be deleted with this version
+	// The object is found to be deleted with this version
 	ObjectDeleted *SuiObjectRef `json:"ObjectDeleted,omitempty"`
-	/// The object exists but not found with this version
+	// The object exists but not found with this version
 	VersionNotFound *struct{ ObjectID sui_types.SequenceNumber } `json:"VersionNotFound,omitempty"`
-	/// The asked object version is higher than the latest
+	// The asked object version is higher than the latest
 	VersionTooHigh *struct {
 		ObjectID      sui_types.ObjectID       `json:"object_id"`
 		AskedVersion  sui_types.SequenceNumber `json:"asked_version"`

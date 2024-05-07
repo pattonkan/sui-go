@@ -1,4 +1,4 @@
-/// Module: eventpub
+// Module: eventpub
 module eventpub::eventpub {
     use sui::clock::{Self, Clock};
     use sui::event;
