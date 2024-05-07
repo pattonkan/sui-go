@@ -25,7 +25,7 @@ func NewPublisher(client *sui.ImplSuiAPI, signer *sui_signer.Signer) *Publisher 
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		sui_types.MustSuiAddressFromHex(p.signer.Address),
+		p.signer.Address,
 		packageID,
 		"eventpub",
 		"emit_clock",

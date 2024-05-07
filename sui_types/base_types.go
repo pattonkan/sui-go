@@ -20,8 +20,16 @@ func MustPackageIDFromHex(str string) *PackageID {
 	return packageID
 }
 
-func NewObjectIDFromHex(str string) (*ObjectID, error) {
+func ObjectIDFromHex(str string) (*ObjectID, error) {
 	return SuiAddressFromHex(str)
+}
+
+func MustObjectIDFromHex(str string) *ObjectID {
+	objectID, err := SuiAddressFromHex(str)
+	if err != nil {
+		panic(err)
+	}
+	return objectID
 }
 
 // ObjectRef for BCS, need to keep this order

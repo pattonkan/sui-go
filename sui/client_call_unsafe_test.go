@@ -214,18 +214,16 @@ func TestClient_MoveCall(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Log("sui_signer: ", signer.Address)
-	digest, err := sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
+	digest, err := sui.RequestFundFromFaucet(signer.Address.String(), conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("digest: ", digest)
 
 	packageID, err := sui_types.SuiAddressFromHex("0x2")
 	require.NoError(t, err)
-	signerAccountAddress, err := sui_types.SuiAddressFromHex(signer.Address)
-	require.NoError(t, err)
 
 	txnBytes, err := api.MoveCall(
 		context.Background(),
-		signerAccountAddress,
+		signer.Address,
 		packageID,
 		"address",
 		"length",
