@@ -17,6 +17,7 @@ type Client struct {
 }
 
 func TestStartNewChain(t *testing.T) {
+	t.Skip("only for localnet")
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
