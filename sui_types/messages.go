@@ -49,58 +49,6 @@ type ProgrammableTransaction struct {
 	Commands []Command
 }
 
-type Command struct {
-	MoveCall        *ProgrammableMoveCall
-	TransferObjects *struct {
-		Arguments []Argument
-		Argument  Argument
-	}
-	SplitCoins *struct {
-		Argument  Argument
-		Arguments []Argument
-	}
-	MergeCoins *struct {
-		Argument  Argument
-		Arguments []Argument
-	}
-	Publish *struct {
-		Bytes   [][]uint8
-		Objects []ObjectID
-	}
-	MakeMoveVec *struct {
-		TypeTag   *TypeTag `bcs:"optional"`
-		Arguments []Argument
-	}
-	Upgrade *struct {
-		Bytes    [][]uint8
-		Objects  []ObjectID
-		ObjectID ObjectID
-		Argument Argument
-	}
-}
-
-func (c Command) IsBcsEnum() {}
-
-type Argument struct {
-	GasCoin      *serialization.EmptyEnum
-	Input        *uint16
-	Result       *uint16
-	NestedResult *struct {
-		Result1 uint16
-		Result2 uint16
-	}
-}
-
-func (a Argument) IsBcsEnum() {}
-
-type ProgrammableMoveCall struct {
-	Package       *ObjectID
-	Module        string
-	Function      string
-	TypeArguments []TypeTag
-	Arguments     []Argument
-}
-
 type SingleTransactionKind struct {
 	TransferObject *TransferObject
 	Publish        *MoveModulePublish

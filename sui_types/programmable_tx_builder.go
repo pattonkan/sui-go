@@ -178,10 +178,7 @@ func (p *ProgrammableTransactionBuilder) MakeObjList(objs []ObjectArg) (Argument
 	}
 	arg := p.Command(
 		Command{
-			MakeMoveVec: &struct {
-				TypeTag   *TypeTag `bcs:"optional"`
-				Arguments []Argument
-			}{TypeTag: nil, Arguments: objArgs},
+			MakeMoveVec: &ProgrammableMakeMoveVec{Type: nil, Objects: objArgs},
 		},
 	)
 	return arg, nil
@@ -217,10 +214,7 @@ func (p *ProgrammableTransactionBuilder) TransferObject(
 	}
 	p.Command(
 		Command{
-			TransferObjects: &struct {
-				Arguments []Argument
-				Argument  Argument
-			}{Arguments: objArgs, Argument: recArg},
+			TransferObjects: &ProgrammableTransferObjects{Objects: objArgs, Address: recArg},
 		},
 	)
 	return nil
@@ -243,13 +237,11 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 		}
 		coinArg = p.Command(
 			Command{
-				SplitCoins: &struct {
-					Argument  Argument
-					Arguments []Argument
-				}{
-					Argument: Argument{
+				SplitCoins: &ProgrammableSplitCoins{
+					Coin: Argument{
 						GasCoin: &serialization.EmptyEnum{},
-					}, Arguments: []Argument{
+					},
+					Amounts: []Argument{
 						amtArg,
 					},
 				},
@@ -258,13 +250,11 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 	}
 	p.Command(
 		Command{
-			TransferObjects: &struct {
-				Arguments []Argument
-				Argument  Argument
-			}{
-				Arguments: []Argument{
+			TransferObjects: &ProgrammableTransferObjects{
+				Objects: []Argument{
 					coinArg,
-				}, Argument: recArg,
+				},
+				Address: recArg,
 			},
 		},
 	)
@@ -318,10 +308,10 @@ func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error 
 	}
 	p.Command(
 		Command{
-			TransferObjects: &struct {
-				Arguments []Argument
-				Argument  Argument
-			}{Arguments: []Argument{{GasCoin: &serialization.EmptyEnum{}}}, Argument: recArg},
+			TransferObjects: &ProgrammableTransferObjects{
+				Objects: []Argument{{GasCoin: &serialization.EmptyEnum{}}},
+				Address: recArg,
+			},
 		},
 	)
 	return nil
@@ -359,10 +349,10 @@ func (p *ProgrammableTransactionBuilder) Pay(
 	if len(mergeArgs) != 0 {
 		p.Command(
 			Command{
-				MergeCoins: &struct {
-					Argument  Argument
-					Arguments []Argument
-				}{Argument: coinArg, Arguments: mergeArgs},
+				MergeCoins: &ProgrammableMergeCoins{
+					Destination: coinArg,
+					Sources:     mergeArgs,
+				},
 			},
 		)
 	}
@@ -401,10 +391,10 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 	}
 	splitCoinResult := p.Command(
 		Command{
-			SplitCoins: &struct {
-				Argument  Argument
-				Arguments []Argument
-			}{Argument: coin, Arguments: amtArgs},
+			SplitCoins: &ProgrammableSplitCoins{
+				Coin:    coin,
+				Amounts: amtArgs,
+			},
 		},
 	)
 	if splitCoinResult.Result == nil {
@@ -427,10 +417,10 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 		}
 		p.Command(
 			Command{
-				TransferObjects: &struct {
-					Arguments []Argument
-					Argument  Argument
-				}{Arguments: coins, Argument: recArg},
+				TransferObjects: &ProgrammableTransferObjects{
+					Objects: coins,
+					Address: recArg,
+				},
 			},
 		)
 	}
