@@ -7,8 +7,8 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-func (s *ImplSuiAPI) GetAllBalances(ctx context.Context, owner *sui_types.SuiAddress) ([]models.Balance, error) {
-	var resp []models.Balance
+func (s *ImplSuiAPI) GetAllBalances(ctx context.Context, owner *sui_types.SuiAddress) ([]*models.Balance, error) {
+	var resp []*models.Balance
 	return resp, s.http.CallContext(ctx, &resp, getAllBalances, owner)
 }
 

@@ -21,7 +21,7 @@ func NewSubscriber(client *sui.ImplSuiAPI) *Subscriber {
 
 func (s *Subscriber) SubscribeEvent(ctx context.Context, packageID *sui_types.PackageID) {
 	resultCh := make(chan models.SuiEvent)
-	err := s.client.SubscribeEvent(context.Background(), models.EventFilter{Package: packageID}, resultCh)
+	err := s.client.SubscribeEvent(context.Background(), &models.EventFilter{Package: packageID}, resultCh)
 	if err != nil {
 		log.Fatal(err)
 	}

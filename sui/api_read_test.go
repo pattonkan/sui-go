@@ -14,10 +14,9 @@ import (
 
 func TestGetEvents(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	digest := "D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL"
-	d, err := sui_types.NewDigest(digest)
+	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 	require.NoError(t, err)
-	res, err := api.GetEvents(context.Background(), *d)
+	res, err := api.GetEvents(context.Background(), digest)
 	require.NoError(t, err)
 	t.Log(res)
 }
@@ -50,7 +49,7 @@ func TestGetObject(t *testing.T) {
 			api:  api,
 			args: args{
 				ctx:   context.TODO(),
-				objID: &coins.Data[0].CoinObjectID,
+				objID: coins.Data[0].CoinObjectID,
 			},
 			want:    3,
 			wantErr: false,
@@ -92,7 +91,7 @@ func TestGetTransactionBlock(t *testing.T) {
 	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 	require.NoError(t, err)
 	resp, err := api.GetTransactionBlock(
-		context.Background(), *digest, models.SuiTransactionBlockResponseOptions{
+		context.Background(), digest, &models.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
 			ShowEffects:        true,
 			ShowObjectChanges:  true,
@@ -116,7 +115,7 @@ func TestMultiGetObjects(t *testing.T) {
 	}
 
 	obj := coins.Data[0].CoinObjectID
-	objs := []sui_types.ObjectID{obj, obj}
+	objs := []*sui_types.ObjectID{obj, obj}
 	resp, err := api.MultiGetObjects(
 		context.Background(), objs, &models.SuiObjectDataOptions{
 			ShowType:                true,

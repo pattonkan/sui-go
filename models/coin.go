@@ -12,11 +12,11 @@ const MAX_INPUT_COUNT_MERGE = 256 - 1
 const MAX_INPUT_COUNT_STAKE = 512 - 1
 
 type Coin struct {
-	CoinType     string                 `json:"coinType"`
-	CoinObjectID sui_types.ObjectID     `json:"coinObjectID"`
-	Version      SafeSuiBigInt[uint64]  `json:"version"`
-	Digest       sui_types.ObjectDigest `json:"digest"`
-	Balance      SafeSuiBigInt[uint64]  `json:"balance"`
+	CoinType     string                  `json:"coinType"`
+	CoinObjectID *sui_types.ObjectID     `json:"coinObjectID"`
+	Version      SafeSuiBigInt[uint64]   `json:"version"`
+	Digest       *sui_types.ObjectDigest `json:"digest"`
+	Balance      SafeSuiBigInt[uint64]   `json:"balance"`
 
 	LockedUntilEpoch    *SafeSuiBigInt[uint64]      `json:"lockedUntilEpoch,omitempty"`
 	PreviousTransaction sui_types.TransactionDigest `json:"previousTransaction"`
@@ -30,7 +30,7 @@ func (c *Coin) Reference() *sui_types.ObjectRef {
 	}
 }
 
-type CoinPage = Page[Coin, sui_types.ObjectID]
+type CoinPage = Page[*Coin, sui_types.ObjectID]
 
 func (c *Coin) IsSUI() bool {
 	return c.CoinType == SuiCoinType
@@ -48,17 +48,17 @@ type Supply struct {
 }
 
 type PickedCoins struct {
-	Coins        []Coin
-	TotalAmount  big.Int
-	TargetAmount big.Int
+	Coins        []*Coin
+	TotalAmount  *big.Int
+	TargetAmount *big.Int
 }
 
 func (cs *PickedCoins) Count() int {
 	return len(cs.Coins)
 }
 
-func (cs *PickedCoins) CoinIds() []sui_types.ObjectID {
-	coinIDs := make([]sui_types.ObjectID, len(cs.Coins))
+func (cs *PickedCoins) CoinIds() []*sui_types.ObjectID {
+	coinIDs := make([]*sui_types.ObjectID, len(cs.Coins))
 	for idx, coin := range cs.Coins {
 		coinIDs[idx] = coin.CoinObjectID
 	}
@@ -74,8 +74,8 @@ func (cs *PickedCoins) CoinRefs() []*sui_types.ObjectRef {
 }
 
 // @return Min(total-target, 10e9) (10 SUI)
-func (cs *PickedCoins) SuggestMaxGasBudget() uint64 {
-	sub := big.NewInt(0).Sub(&cs.TotalAmount, &cs.TargetAmount).Uint64()
+func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
+	sub := big.NewInt(0).Sub(p.TotalAmount, p.TargetAmount).Uint64()
 	maxGas := uint64(10e9) // 10 Sui
 	if sub <= maxGas {
 		return sub
@@ -93,7 +93,7 @@ func (cs *PickedCoins) SuggestMaxGasBudget() uint64 {
 // @throw ErrNoCoinsFound If the count of input coins is 0.
 // @throw ErrInsufficientBalance If the input coins are all that is left and the total amount is less than the target amount.
 // @throw ErrNeedMergeCoin If there are many coins, but the total amount of coins limited is less than the target amount.
-func PickupCoins(inputCoins *CoinPage, targetAmount big.Int, gasBudget uint64, limit int, moreCount int) (
+func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, limit int, moreCount int) (
 	*PickedCoins,
 	error,
 ) {
@@ -110,11 +110,11 @@ func PickupCoins(inputCoins *CoinPage, targetAmount big.Int, gasBudget uint64, l
 	if moreCount > limit {
 		moreCount = limit
 	}
-	totalTarget := big.NewInt(0).Add(&targetAmount, big.NewInt(0).SetUint64(gasBudget))
+	totalTarget := big.NewInt(0).Add(targetAmount, big.NewInt(0).SetUint64(gasBudget))
 	coins := inputCoins.Data
 
 	total := big.NewInt(0)
-	pickedCoins := []Coin{}
+	pickedCoins := []*Coin{}
 	for idx, coin := range coins {
 		total = total.Add(total, big.NewInt(0).SetUint64(coin.Balance.Uint64()))
 		pickedCoins = append(pickedCoins, coin)
@@ -140,11 +140,11 @@ func PickupCoins(inputCoins *CoinPage, targetAmount big.Int, gasBudget uint64, l
 	return &PickedCoins{
 		Coins:        pickedCoins,
 		TargetAmount: targetAmount,
-		TotalAmount:  *total,
+		TotalAmount:  total,
 	}, nil
 }
 
-type Coins []Coin
+type Coins []*Coin
 
 func (cs Coins) TotalBalance() *big.Int {
 	total := big.NewInt(0)
@@ -158,7 +158,7 @@ func (cs Coins) PickCoinNoLess(amount uint64) (*Coin, error) {
 	for i, coin := range cs {
 		if coin.Balance.Uint64() >= amount {
 			cs = append(cs[:i], cs[i+1:]...)
-			return &coin, nil
+			return coin, nil
 		}
 	}
 	if len(cs) <= 3 {
@@ -174,7 +174,7 @@ const (
 )
 
 // PickSUICoinsWithGas pick coins, which sum >= amount, and pick a gas coin >= gasAmount which not in coins
-// if not satisfated amount/gasAmount, an ErrCoinsNotMatchRequest/ErrCoinsNeedMoreObject error will return
+// if not satisfied amount/gasAmount, an ErrCoinsNotMatchRequest/ErrCoinsNeedMoreObject error will return
 // if gasAmount == 0, a nil gasCoin will return
 // pickMethod, see PickSmaller|PickBigger|PickByOrder
 func (cs Coins) PickSUICoinsWithGas(amount *big.Int, gasAmount uint64, pickMethod int) (Coins, *Coin, error) {
@@ -198,7 +198,7 @@ func (cs Coins) PickSUICoinsWithGas(amount *big.Int, gasAmount uint64, pickMetho
 		}
 
 		if nil == gasCoin || gasCoin.Balance.Uint64() > cs[i].Balance.Uint64() {
-			gasCoin = &cs[i]
+			gasCoin = cs[i]
 			selectIndex = i
 		}
 	}

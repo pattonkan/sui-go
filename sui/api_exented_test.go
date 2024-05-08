@@ -120,7 +120,7 @@ func TestQueryEvents(t *testing.T) {
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
-		query           models.EventFilter
+		query           *models.EventFilter
 		cursor          *models.EventId
 		limit           *uint
 		descendingOrder bool
@@ -135,7 +135,7 @@ func TestQueryEvents(t *testing.T) {
 			name: "test for query events",
 			args: args{
 				ctx: context.TODO(),
-				query: models.EventFilter{
+				query: &models.EventFilter{
 					Sender: sui_signer.TEST_ADDRESS,
 				},
 				cursor:          nil,
@@ -169,7 +169,7 @@ func TestQueryTransactionBlocks(t *testing.T) {
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
-		query           models.SuiTransactionBlockResponseQuery
+		query           *models.SuiTransactionBlockResponseQuery
 		cursor          *sui_types.TransactionDigest
 		limit           *uint
 		descendingOrder bool
@@ -184,7 +184,7 @@ func TestQueryTransactionBlocks(t *testing.T) {
 			name: "test for queryTransactionBlocks",
 			args: args{
 				ctx: context.TODO(),
-				query: models.SuiTransactionBlockResponseQuery{
+				query: &models.SuiTransactionBlockResponseQuery{
 					Filter: &models.TransactionFilter{
 						FromAddress: sui_signer.TEST_ADDRESS,
 					},
@@ -248,7 +248,7 @@ func TestSubscribeEvent(t *testing.T) {
 
 	type args struct {
 		ctx      context.Context
-		filter   models.EventFilter
+		filter   *models.EventFilter
 		resultCh chan models.SuiEvent
 	}
 	tests := []struct {
@@ -261,7 +261,7 @@ func TestSubscribeEvent(t *testing.T) {
 			name: "test for filter events",
 			args: args{
 				ctx: context.TODO(),
-				filter: models.EventFilter{
+				filter: &models.EventFilter{
 					Package: sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
 				},
 				resultCh: make(chan models.SuiEvent),

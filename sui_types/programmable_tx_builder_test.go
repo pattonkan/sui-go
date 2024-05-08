@@ -25,9 +25,9 @@ func TestTransferSui(t *testing.T) {
 		pt,
 		[]*sui_types.ObjectRef{
 			{
-				ObjectID: *objectId,
+				ObjectID: objectId,
 				Version:  14924029,
-				Digest:   *digest,
+				Digest:   digest,
 			},
 		},
 		10000000,

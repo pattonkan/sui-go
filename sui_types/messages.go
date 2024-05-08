@@ -134,7 +134,7 @@ func (c CallArg) IsBcsEnum() {}
 type ObjectArg struct {
 	ImmOrOwnedObject *ObjectRef
 	SharedObject     *struct {
-		Id                   ObjectID
+		Id                   *ObjectID
 		InitialSharedVersion SequenceNumber
 		Mutable              bool
 	}
@@ -142,13 +142,13 @@ type ObjectArg struct {
 
 func (o ObjectArg) IsBcsEnum() {}
 
-func (o ObjectArg) id() ObjectID {
+func (o ObjectArg) id() *ObjectID {
 	switch {
 	case o.ImmOrOwnedObject != nil:
 		return o.ImmOrOwnedObject.ObjectID
 	case o.SharedObject != nil:
 		return o.SharedObject.Id
 	default:
-		return ObjectID{}
+		return &ObjectID{}
 	}
 }

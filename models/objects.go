@@ -85,9 +85,9 @@ type TypeOrigin struct {
 }
 
 type SuiObjectData struct {
-	ObjectID sui_types.ObjectID                      `json:"objectId"`
+	ObjectID *sui_types.ObjectID                     `json:"objectId"`
 	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-	Digest   sui_types.ObjectDigest                  `json:"digest"`
+	Digest   *sui_types.ObjectDigest                 `json:"digest"`
 	/**
 	 * Type of the object, default to be undefined unless SuiObjectDataOptions.showType is set to true
 	 */
@@ -128,7 +128,7 @@ func (data *SuiObjectData) Reference() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
 		ObjectID: data.ObjectID,
 		Version:  data.Version.data,
-		Digest:   data.Digest.Data(),
+		Digest:   data.Digest,
 	}
 }
 
