@@ -90,12 +90,9 @@ func BCS_RequestAddStake(
 	}
 	arg1 := ptb.Command(
 		sui_types.Command{
-			SplitCoins: &struct {
-				Argument  sui_types.Argument
-				Arguments []sui_types.Argument
-			}{
-				Argument:  sui_types.Argument{GasCoin: &serialization.EmptyEnum{}},
-				Arguments: []sui_types.Argument{amtArg},
+			SplitCoins: &sui_types.ProgrammableSplitCoins{
+				Coin:    sui_types.Argument{GasCoin: &serialization.EmptyEnum{}},
+				Amounts: []sui_types.Argument{amtArg},
 			},
 		},
 	) // the coin is split result argument
