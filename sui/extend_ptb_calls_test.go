@@ -98,8 +98,8 @@ func TestPTB_TransferObject(t *testing.T) {
 	// build with remote rpc
 	txn, err := api.TransferObject(
 		context.Background(), sender, recipient,
-		&coin.CoinObjectID,
-		&gas.CoinObjectID,
+		coin.CoinObjectID,
+		gas.CoinObjectID,
 		models.NewSafeSuiBigInt(gasBudget),
 	)
 	require.NoError(t, err)
@@ -141,7 +141,7 @@ func TestPTB_TransferSui(t *testing.T) {
 
 	// build with remote rpc
 	txn, err := api.TransferSui(
-		context.Background(), sender, recipient, &coin.CoinObjectID,
+		context.Background(), sender, recipient, coin.CoinObjectID,
 		models.NewSafeSuiBigInt(amount),
 		models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -186,7 +186,7 @@ func TestPTB_PayAllSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := api.PayAllSui(
 		context.Background(), sender, recipient,
-		[]sui_types.ObjectID{
+		[]*sui_types.ObjectID{
 			coin.CoinObjectID, coin2.CoinObjectID,
 		},
 		models.NewSafeSuiBigInt(gasBudget),
@@ -357,7 +357,7 @@ func TestBatchGetObjectsOwnedByAddress(t *testing.T) {
 	t.Log(filterObject)
 }
 
-func getCoins(t *testing.T, api *sui.ImplSuiAPI, sender *sui_types.SuiAddress, needCoinObjNum int) []models.Coin {
+func getCoins(t *testing.T, api *sui.ImplSuiAPI, sender *sui_types.SuiAddress, needCoinObjNum int) []*models.Coin {
 	coins, err := api.GetCoins(context.Background(), sender, nil, nil, uint(needCoinObjNum))
 	require.NoError(t, err)
 	require.True(t, len(coins.Data) >= needCoinObjNum)

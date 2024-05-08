@@ -19,13 +19,13 @@ func (s *ImplSuiAPI) GetReferenceGasPrice(ctx context.Context) (*models.SafeSuiB
 	return &resp, s.http.CallContext(ctx, &resp, getReferenceGasPrice)
 }
 
-func (s *ImplSuiAPI) GetStakes(ctx context.Context, owner *sui_types.SuiAddress) ([]models.DelegatedStake, error) {
-	var resp []models.DelegatedStake
+func (s *ImplSuiAPI) GetStakes(ctx context.Context, owner *sui_types.SuiAddress) ([]*models.DelegatedStake, error) {
+	var resp []*models.DelegatedStake
 	return resp, s.http.CallContext(ctx, &resp, getStakes, owner)
 }
 
-func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]models.DelegatedStake, error) {
-	var resp []models.DelegatedStake
+func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]*models.DelegatedStake, error) {
+	var resp []*models.DelegatedStake
 	return resp, s.http.CallContext(ctx, &resp, getStakesByIds, stakedSuiIds)
 }
 

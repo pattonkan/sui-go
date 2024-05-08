@@ -38,8 +38,8 @@ func TestMergeCoins(t *testing.T) {
 
 	txn, err := api.MergeCoins(
 		context.Background(), signer,
-		&coin1.CoinObjectID, &coin2.CoinObjectID,
-		&coin3.CoinObjectID, coin3.Balance,
+		coin1.CoinObjectID, coin2.CoinObjectID,
+		coin3.CoinObjectID, coin3.Balance,
 	)
 	require.NoError(t, err)
 
@@ -98,7 +98,7 @@ func TestPay(t *testing.T) {
 
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, limit, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, limit, 0)
 	require.NoError(t, err)
 
 	txn, err := api.Pay(
@@ -125,7 +125,7 @@ func TestPayAllSui(t *testing.T) {
 
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	txn, err := api.PayAllSui(
@@ -147,7 +147,7 @@ func TestPaySui(t *testing.T) {
 
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	txn, err := api.PaySui(
@@ -165,26 +165,27 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
+	t.Skip("remove using MoveBuild() by adding a compiled binary")
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
 	require.NoError(t, err)
 
-	dependencies := make([]sui_types.ObjectID, len(modules.Dependencies))
+	dependencies := make([]*sui_types.ObjectID, len(modules.Dependencies))
 	for i, v := range modules.Dependencies {
-		dependencies[i] = *sui_types.MustObjectIDFromHex(v)
+		dependencies[i] = sui_types.MustObjectIDFromHex(v)
 	}
 
 	coins, err := client.GetCoins(context.Background(), sui_signer.TEST_ADDRESS, nil, nil, 10)
 	require.NoError(t, err)
 	gasBudget := uint64(1000000)
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(100000), gasBudget, 10, 10)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100000), gasBudget, 10, 10)
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, &pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
+	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
 	require.NoError(t, err)
 
-	fmt.Println("txnBytes: ", txnBytes)
+	fmt.Printf("txnBytes: %#v\n", txnBytes)
 }
 
 func TestSplitCoin(t *testing.T) {
@@ -195,13 +196,13 @@ func TestSplitCoin(t *testing.T) {
 
 	amount := sui_types.SUI(0.01).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 1, 0)
 	require.NoError(t, err)
 	splitCoins := []models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount / 2)}
 
 	txn, err := api.SplitCoin(
 		context.Background(), signer,
-		&pickedCoins.Coins[0].CoinObjectID,
+		pickedCoins.Coins[0].CoinObjectID,
 		splitCoins,
 		nil, models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -218,12 +219,12 @@ func TestSplitCoinEqual(t *testing.T) {
 
 	amount := sui_types.SUI(0.01).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), 0, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 1, 0)
 	require.NoError(t, err)
 
 	txn, err := api.SplitCoinEqual(
 		context.Background(), signer,
-		&pickedCoins.Coins[0].CoinObjectID,
+		pickedCoins.Coins[0].CoinObjectID,
 		models.NewSafeSuiBigInt(uint64(2)),
 		nil, models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -243,8 +244,12 @@ func TestTransferObject(t *testing.T) {
 	coin := coins.Data[0]
 
 	txn, err := api.TransferObject(
-		context.Background(), signer, recipient,
-		&coin.CoinObjectID, nil, models.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
+		context.Background(),
+		signer,
+		recipient,
+		coin.CoinObjectID,
+		nil,
+		models.NewSafeSuiBigInt(sui_types.SUI(0.01).Uint64()),
 	)
 	require.NoError(t, err)
 
@@ -260,12 +265,12 @@ func TestTransferSui(t *testing.T) {
 
 	amount := sui_types.SUI(0.0001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(0).SetUint64(amount), gasBudget, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 1, 0)
 	require.NoError(t, err)
 
 	txn, err := api.TransferSui(
 		context.Background(), signer, recipient,
-		&pickedCoins.Coins[0].CoinObjectID,
+		pickedCoins.Coins[0].CoinObjectID,
 		models.NewSafeSuiBigInt(amount),
 		models.NewSafeSuiBigInt(gasBudget),
 	)

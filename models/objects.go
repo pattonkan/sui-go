@@ -62,14 +62,14 @@ type SuiRawMoveObject struct {
 	Type              string                   `json:"type"`
 	HasPublicTransfer bool                     `json:"hasPublicTransfer"`
 	Version           sui_types.SequenceNumber `json:"version"`
-	BcsBytes          serialization.Base64Data `json:"bcsBytes"`
+	BcsBytes          sui_types.Base64Data     `json:"bcsBytes"`
 }
 
 type SuiRawMovePackage struct {
-	Id              sui_types.ObjectID                  `json:"id"`
-	Version         sui_types.SequenceNumber            `json:"version"`
-	ModuleMap       map[string]serialization.Base64Data `json:"moduleMap"`
-	TypeOriginTable []TypeOrigin                        `json:"typeOriginTable"`
+	Id              sui_types.ObjectID              `json:"id"`
+	Version         sui_types.SequenceNumber        `json:"version"`
+	ModuleMap       map[string]sui_types.Base64Data `json:"moduleMap"`
+	TypeOriginTable []TypeOrigin                    `json:"typeOriginTable"`
 	LinkageTable    map[string]UpgradeInfo
 }
 
@@ -85,9 +85,9 @@ type TypeOrigin struct {
 }
 
 type SuiObjectData struct {
-	ObjectID sui_types.ObjectID                      `json:"objectId"`
+	ObjectID *sui_types.ObjectID                     `json:"objectId"`
 	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-	Digest   sui_types.ObjectDigest                  `json:"digest"`
+	Digest   *sui_types.ObjectDigest                 `json:"digest"`
 	/**
 	 * Type of the object, default to be undefined unless SuiObjectDataOptions.showType is set to true
 	 */
@@ -128,7 +128,7 @@ func (data *SuiObjectData) Reference() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
 		ObjectID: data.ObjectID,
 		Version:  data.Version.data,
-		Digest:   data.Digest.Data(),
+		Digest:   data.Digest,
 	}
 }
 

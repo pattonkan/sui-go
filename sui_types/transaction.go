@@ -9,11 +9,11 @@ var (
 
 	SuiSystemMutObj = ObjectArg{
 		SharedObject: &struct {
-			Id                   ObjectID
+			Id                   *ObjectID
 			InitialSharedVersion SequenceNumber
 			Mutable              bool
 		}{
-			Id:                   *SuiSystemStateObjectID,
+			Id:                   SuiSystemStateObjectID,
 			InitialSharedVersion: SuiSystemStateObjectSharedVersion,
 			Mutable:              true,
 		},

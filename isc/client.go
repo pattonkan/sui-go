@@ -55,7 +55,7 @@ func (c *Client) StartNewChain(ctx context.Context, signer *sui_signer.Signer, p
 	if err != nil {
 		panic(err)
 	}
-	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(100000), gasBudget, 10, 10)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100000), gasBudget, 10, 10)
 	if err != nil {
 		panic(err)
 	}

@@ -114,7 +114,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 	id := objArg.id()
 	var oj ObjectArg
 	if oldValue, ok := p.Inputs[BuilderArg{
-		Object: &id,
+		Object: id,
 	}.String()]; ok {
 		var oldObjArg ObjectArg
 		switch {
@@ -131,7 +131,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 			}
 			oj = ObjectArg{
 				SharedObject: &struct {
-					Id                   ObjectID
+					Id                   *ObjectID
 					InitialSharedVersion SequenceNumber
 					Mutable              bool
 				}{
@@ -154,7 +154,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 	}
 	i := p.insertFull(
 		BuilderArg{
-			Object: &id,
+			Object: id,
 		}, CallArg{
 			Object: &oj,
 		},

@@ -81,29 +81,29 @@ type DelegatedStake struct {
 }
 
 type SuiValidatorSummary struct {
-	SuiAddress             sui_types.SuiAddress     `json:"sui_types.SuiAddress"`
-	ProtocolPubkeyBytes    serialization.Base64Data `json:"protocolPubkeyBytes"`
-	NetworkPubkeyBytes     serialization.Base64Data `json:"networkPubkeyBytes"`
-	WorkerPubkeyBytes      serialization.Base64Data `json:"workerPubkeyBytes"`
-	ProofOfPossessionBytes serialization.Base64Data `json:"proofOfPossessionBytes"`
-	OperationCapId         sui_types.ObjectID       `json:"operationCapId"`
-	Name                   string                   `json:"name"`
-	Description            string                   `json:"description"`
-	ImageUrl               string                   `json:"imageUrl"`
-	ProjectUrl             string                   `json:"projectUrl"`
-	P2pAddress             string                   `json:"p2pAddress"`
-	NetAddress             string                   `json:"netAddress"`
-	PrimaryAddress         string                   `json:"primaryAddress"`
-	WorkerAddress          string                   `json:"workerAddress"`
+	SuiAddress             sui_types.SuiAddress `json:"sui_types.SuiAddress"`
+	ProtocolPubkeyBytes    sui_types.Base64Data `json:"protocolPubkeyBytes"`
+	NetworkPubkeyBytes     sui_types.Base64Data `json:"networkPubkeyBytes"`
+	WorkerPubkeyBytes      sui_types.Base64Data `json:"workerPubkeyBytes"`
+	ProofOfPossessionBytes sui_types.Base64Data `json:"proofOfPossessionBytes"`
+	OperationCapId         sui_types.ObjectID   `json:"operationCapId"`
+	Name                   string               `json:"name"`
+	Description            string               `json:"description"`
+	ImageUrl               string               `json:"imageUrl"`
+	ProjectUrl             string               `json:"projectUrl"`
+	P2pAddress             string               `json:"p2pAddress"`
+	NetAddress             string               `json:"netAddress"`
+	PrimaryAddress         string               `json:"primaryAddress"`
+	WorkerAddress          string               `json:"workerAddress"`
 
-	NextEpochProtocolPubkeyBytes serialization.Base64Data `json:"nextEpochProtocolPubkeyBytes"`
-	NextEpochProofOfPossession   serialization.Base64Data `json:"nextEpochProofOfPossession"`
-	NextEpochNetworkPubkeyBytes  serialization.Base64Data `json:"nextEpochNetworkPubkeyBytes"`
-	NextEpochWorkerPubkeyBytes   serialization.Base64Data `json:"nextEpochWorkerPubkeyBytes"`
-	NextEpochNetAddress          string                   `json:"nextEpochNetAddress"`
-	NextEpochP2pAddress          string                   `json:"nextEpochP2pAddress"`
-	NextEpochPrimaryAddress      string                   `json:"nextEpochPrimaryAddress"`
-	NextEpochWorkerAddress       string                   `json:"nextEpochWorkerAddress"`
+	NextEpochProtocolPubkeyBytes sui_types.Base64Data `json:"nextEpochProtocolPubkeyBytes"`
+	NextEpochProofOfPossession   sui_types.Base64Data `json:"nextEpochProofOfPossession"`
+	NextEpochNetworkPubkeyBytes  sui_types.Base64Data `json:"nextEpochNetworkPubkeyBytes"`
+	NextEpochWorkerPubkeyBytes   sui_types.Base64Data `json:"nextEpochWorkerPubkeyBytes"`
+	NextEpochNetAddress          string               `json:"nextEpochNetAddress"`
+	NextEpochP2pAddress          string               `json:"nextEpochP2pAddress"`
+	NextEpochPrimaryAddress      string               `json:"nextEpochPrimaryAddress"`
+	NextEpochWorkerAddress       string               `json:"nextEpochWorkerAddress"`
 
 	VotingPower             SafeSuiBigInt[uint64] `json:"votingPower"`
 	GasPrice                SafeSuiBigInt[uint64] `json:"gasPrice"`

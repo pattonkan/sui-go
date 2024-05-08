@@ -32,9 +32,9 @@ func MustObjectIDFromHex(str string) *ObjectID {
 
 // ObjectRef for BCS, need to keep this order
 type ObjectRef struct {
-	ObjectID ObjectID       `json:"objectId"`
+	ObjectID *ObjectID      `json:"objectId"`
 	Version  SequenceNumber `json:"version"`
-	Digest   ObjectDigest   `json:"digest"`
+	Digest   *ObjectDigest  `json:"digest"`
 }
 
 type MoveObjectType struct {

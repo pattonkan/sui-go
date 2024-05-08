@@ -7,6 +7,7 @@ import (
 )
 
 func TestGetPublishedPackageID(t *testing.T) {
-	packageID := isc.GetPublishedPackageID(isc.GetGitRoot() + "/isc/anchor_contract/iscanchor/publish_receipt.json")
+	t.Skip("we need to build contract first")
+	packageID := isc.GetPublishedPackageID(isc.GetGitRoot() + "/contracts/testcoin/publish_receipt.json")
 	t.Log(packageID)
 }

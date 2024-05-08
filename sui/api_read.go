@@ -13,8 +13,8 @@ import (
 
 // TODO getCheckpoints
 
-func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest sui_types.TransactionDigest) ([]models.SuiEvent, error) {
-	var resp []models.SuiEvent
+func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest *sui_types.TransactionDigest) ([]*models.SuiEvent, error) {
+	var resp []*models.SuiEvent
 	return resp, s.http.CallContext(ctx, &resp, getEvents, digest)
 }
 
@@ -43,8 +43,8 @@ func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, err
 
 func (s *ImplSuiAPI) GetTransactionBlock(
 	ctx context.Context,
-	digest sui_types.TransactionDigest,
-	options models.SuiTransactionBlockResponseOptions,
+	digest *sui_types.TransactionDigest,
+	options *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
 	resp := models.SuiTransactionBlockResponse{}
 	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, digest, options)
@@ -52,7 +52,7 @@ func (s *ImplSuiAPI) GetTransactionBlock(
 
 func (s *ImplSuiAPI) MultiGetObjects(
 	ctx context.Context,
-	objIDs []sui_types.ObjectID,
+	objIDs []*sui_types.ObjectID,
 	options *models.SuiObjectDataOptions,
 ) ([]models.SuiObjectResponse, error) {
 	var resp []models.SuiObjectResponse

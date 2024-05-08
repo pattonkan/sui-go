@@ -7,13 +7,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/howjmay/sui-go/sui_types/serialization"
+	"github.com/howjmay/sui-go/sui_types"
 )
 
 type CompiledMoveModules struct {
-	Modules      []*serialization.Base64Data `json:"modules"`
-	Dependencies []string                    `json:"dependencies"`
-	Digest       []int                       `json:"digest"`
+	Modules      []*sui_types.Base64Data `json:"modules"`
+	Dependencies []string                `json:"dependencies"`
+	Digest       []int                   `json:"digest"`
 }
 
 func MoveBuild(path string) (*CompiledMoveModules, error) {
