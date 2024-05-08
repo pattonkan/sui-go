@@ -37,10 +37,13 @@ func TestPTB_PaySui(t *testing.T) {
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			coin.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -81,10 +84,13 @@ func TestPTB_TransferObject(t *testing.T) {
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			gas.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -122,10 +128,13 @@ func TestPTB_TransferSui(t *testing.T) {
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			coin.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -162,11 +171,14 @@ func TestPTB_PayAllSui(t *testing.T) {
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			coin.Reference(),
 			coin2.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -210,10 +222,13 @@ func TestPTB_Pay(t *testing.T) {
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			gas.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -223,7 +238,7 @@ func TestPTB_Pay(t *testing.T) {
 	t.Log(gasfee)
 
 	// build with remote rpc
-	// txn, err := api.Pay(context.Background(), *sender,
+	// txn, err := api.Pay(context.Background(), sender,
 	// 	[]sui_types.ObjectID{coin.CoinObjectID},
 	// 	[]*sui_types.SuiAddress{recipient, recipient},
 	// 	[]models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount), models.NewSafeSuiBigInt(amount)},
@@ -282,11 +297,14 @@ func TestPTB_MoveCall(t *testing.T) {
 	)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*sender, []*sui_types.ObjectRef{
+		sender,
+		pt,
+		[]*sui_types.ObjectRef{
 			coin.Reference(),
 			coin2.Reference(),
 		},
-		pt, gasBudget, gasPrice,
+		gasBudget,
+		gasPrice,
 	)
 
 	// case 2: direct stake the specified coin
@@ -313,7 +331,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	// require.NoError(t, err)
 	// pt := ptb.Finish()
 	// tx := sui_types.NewProgrammable(
-	// 	*sender, []*sui_types.ObjectRef{
+	// 	sender, []*sui_types.ObjectRef{
 	// 		coin2.Reference(),
 	// 	},
 	// 	pt, gasBudget, gasPrice,

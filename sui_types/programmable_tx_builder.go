@@ -102,6 +102,14 @@ func (p *ProgrammableTransactionBuilder) Pure(value any) (Argument, error) {
 	return p.pureBytes(pureData, false), nil
 }
 
+func (p *ProgrammableTransactionBuilder) MustPure(value any) Argument {
+	pureData, err := bcs.Marshal(value)
+	if err != nil {
+		panic(err)
+	}
+	return p.pureBytes(pureData, false)
+}
+
 func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error) {
 	id := objArg.id()
 	var oj ObjectArg

@@ -6,7 +6,9 @@ edition = "2024.beta"
 # authors = ["Eric Hop (eric@iota.org)"]
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+MoveStdlib = {local = "../../../../kinesis/crates/sui-framework/packages/move-stdlib"}
+Stardust = { local = "../../../../kinesis/crates/sui-framework/packages/stardust" }
+Sui = { local = "../../../../kinesis/crates/sui-framework/packages/sui-framework" }
 
 # For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
 # Revision can be a branch, a tag, and a commit hash.

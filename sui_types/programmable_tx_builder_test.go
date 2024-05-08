@@ -21,13 +21,17 @@ func TestTransferSui(t *testing.T) {
 	objectId, err := sui_types.SuiAddressFromHex("0x13c1c3d0e15b4039cec4291c75b77c972c10c8e8e70ab4ca174cf336917cb4db")
 	require.NoError(t, err)
 	tx := sui_types.NewProgrammable(
-		*recipient, []*sui_types.ObjectRef{
+		recipient,
+		pt,
+		[]*sui_types.ObjectRef{
 			{
 				ObjectID: *objectId,
 				Version:  14924029,
 				Digest:   *digest,
 			},
-		}, pt, 10000000, 1000,
+		},
+		10000000,
+		1000,
 	)
 	txByte, err := bcs.Marshal(tx)
 	require.NoError(t, err)

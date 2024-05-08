@@ -115,7 +115,7 @@ func BCS_RequestAddStake(
 	)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*signer, coins, pt, gasBudget, gasPrice,
+		signer, pt, coins, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }
@@ -145,7 +145,7 @@ func BCS_RequestWithdrawStake(signer *sui_types.SuiAddress, stakedSuiRef sui_typ
 	})
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*signer, gas, pt, gasBudget, gasPrice,
+		signer, pt, gas, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }
