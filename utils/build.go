@@ -2,15 +2,18 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os/exec"
 	"strings"
+
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 type CompiledMoveModules struct {
-	Modules      []string `json:"modules"`
-	Dependencies []string `json:"dependencies"`
-	Digest       []int    `json:"digest"`
+	Modules      []*serialization.Base64Data `json:"modules"`
+	Dependencies []string                    `json:"dependencies"`
+	Digest       []int                       `json:"digest"`
 }
 
 func MoveBuild(path string) (*CompiledMoveModules, error) {
@@ -18,17 +21,20 @@ func MoveBuild(path string) (*CompiledMoveModules, error) {
 	// Setup the command to be executed
 	cmd := exec.Command("sui", "move", "build", "--dump-bytecode-as-base64")
 	cmd.Dir = path
+	fmt.Println("path ", path)
 
 	// Run the command and capture the output
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, err
+		// return nil, err
+		panic(err)
 	}
 
 	var modules CompiledMoveModules
 	err = json.Unmarshal(output, &modules)
 	if err != nil {
-		return nil, err
+		// return nil, err
+		panic(err)
 	}
 
 	return &modules, nil

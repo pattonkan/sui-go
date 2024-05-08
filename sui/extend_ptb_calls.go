@@ -13,7 +13,7 @@ import (
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
 const QUERY_MAX_RESULT_LIMIT = 50
 
-type suiBase64Data = serialization.Base64Data
+// type suiBase64Data = serialization.Base64Data
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
 func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (models.Coins, error) {
