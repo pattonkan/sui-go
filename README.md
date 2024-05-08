@@ -1,110 +1,67 @@
 # sui-go
 Sui Golang SDK
 
-[![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://github.com/coming-chat/sui-go)
-[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/coming-chat/sui-go/blob/main/LICENSE)
+[![Documentation (main)](https://img.shields.io/badge/docs-master-59f)](https://github.com/howjmay/sui-go)
+[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/howjmay/sui-go/blob/main/LICENSE)
 
-The Sui Golang SDK for ComingChat. 
-We welcome other developers to participate in the development and testing of sui-sdk.
+The Sui Golang SDK. We welcome other developers to participate in the development and testing of sui-sdk.
 
 ## Install
 
 ```sh
-go get github.com/howjmay/go-sui
+go get github.com/howjmay/sui-go
 ```
-
-
 
 ## Usage
 
-### Account
+### Signer
+
+Singer is a struct which holds the keypair of a user and will be used to sign transactions.
 
 ```go
-import "github.com/howjmay/go-sui/account"
+import "github.com/howjmay/sui-go/sui_signer"
 
-// Import account with mnemonic
-acc, err := account.NewsignerWithMnemonic(mnemonic)
+// Create a sui_signer.Signer with mnemonic
+mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
+signer1, _ := sui_signer.NewSignerWithMnemonic(mnemonic)
+fmt.Printf("address   : %v\n", signer1.Address)
 
-// Import account with private key
-privateKey, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-acc, err := account.Newsigner(privateKey)
+// create sui_signer.Signer with private key
+privKey, _ := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
+signer2 := sui_signer.NewSigner(privKey)
 
 // Get private key, public key, address
-fmt.Printf("privateKey: %x\n", acc.PrivateKey[:32])
-fmt.Printf(" publicKey: %x\n", acc.PublicKey)
-fmt.Printf("   address: %v\n", acc.Address)
+fmt.Printf("privateKey: %x\n", signer2.PrivateKey()[:32])
+fmt.Printf("publicKey : %x\n", signer2.PublicKey())
+fmt.Printf("address   : %v\n", signer2.Address)
 
 // Sign data
-signedData := acc.Sign(data)
+data := []byte("bubble tea is the best")
+signedData := signer1.Sign(data)
 ```
-
-
 
 ### JSON RPC Client
 
-All data interactions on the Sui chain are implemented through the rpc client.
+All data interactions on the Sui chain are implemented through the JSON RPC client.
 
 ```go
-import "github.com/howjmay/go-sui/client"
-import "github.com/howjmay/go-sui/types"
+import "github.com/howjmay/sui-go/sui"
+import "github.com/howjmay/sui-go/sui_types"
 
-cli, err := client.Dial(rpcUrl)
+client := sui.NewSuiClient(rpcUrl) // some hardcoded endpoints are provided e.g. conn.TestnetEndpointUrl
 
-// call JSON RPC
-responseObject := uint64(0) // if response is a uint64
-err := cli.CallContext(ctx, &responseObject, funcName, params...)
-
-// e.g. call get transaction
-digest, err := types.NewBase64Data("/KXvTwNRHKKzAB+/Dz1O64LjVbISgIW4VUCmuuPyEfU=")
-resp := types.TransactionResponse{}
-err := cli.CallContext(ctx, &resp, "sui_getTransaction", digest)
-print("transaction status = ", resp.Effects.Status)
-print("transaction timestamp = ", resp.TimestampMs)
-
-// And you can call some predefined methods
-digest, err := types.NewBase64Data("/KXvTwNRHKKzAB+/Dz1O64LjVbISgIW4VUCmuuPyEfU=")
-resp, err := cli.GetTransaction(ctx, digest)
-print("transaction status = ", resp.Effects.Status)
-print("transaction timestamp = ", resp.TimestampMs)
-
+// Call JSON RPC (e.g. call sui_getTransactionBlock)
+digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
+require.NoError(t, err)
+resp, err := client.GetTransactionBlock(
+    context.Background(), *digest, models.SuiTransactionBlockResponseOptions{
+        ShowInput:          true,
+        ShowEffects:        true,
+        ShowObjectChanges:  true,
+        ShowBalanceChanges: true,
+        ShowEvents:         true,
+    },
+)
+fmt.Println("transaction status = ", resp.Effects.Status)
+fmt.Println("transaction timestamp = ", resp.TimestampMs)
 ```
-
-We currently have some rpc methods built-in, [see here](https://github.com/howjmay/sui-go/blob/main/client/client_call.go)
-
-
-
-### Build Transaction & Sign ( Transfer Sui )
-
-```go
-import "github.com/howjmay/go-sui/client"
-import "github.com/howjmay/go-sui/types"
-import "github.com/howjmay/go-sui/account"
-
-acc, err := account.NewsignerWithMnemonic(mnemonic)
-signer, _ := types.SuiAddressFromHex(acc.Address)
-
-recipient, err := types.SuiAddressFromHex("0x12345678.......")
-suiObjectID, err := types.NewHexData("0x36d3176a796e167ffcbd823c94718e7db56b955f")
-transferAmount := uint64(10000)
-maxGasTransfer := 100
-
-cli, err := client.Dial(rpcUrl)
-txnBytes, err := cli.TransferSui(ctx, *signer, *recipient, suiObjectID, transferAmount, maxGasTransfer)
-
-// Sign
-signedTxn := txnBytes.SignWith(acc.PrivateKey)
-
-```
-
-
-
-### Send Signed Transaction
-
-```go
-txnResponse, err := cli.ExecuteTransaction(ctx, signedTxn)
-
-print("transaction digest = ", txnResponse.Certificate.TransactionDigest)
-print("transaction status = ", txnResponse.Effects.Status)
-print("transaction gasFee = ", txnResponse.Effects.GasFee())
-```
-
