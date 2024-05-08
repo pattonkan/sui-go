@@ -5,6 +5,7 @@ import (
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
@@ -100,10 +101,10 @@ func (s *ImplSuiAPI) PaySui(
 func (s *ImplSuiAPI) Publish(
 	ctx context.Context,
 	sender *sui_types.SuiAddress,
-	compiledModules []*suiBase64Data,
+	compiledModules []*serialization.Base64Data,
 	dependencies []sui_types.ObjectID,
 	gas *sui_types.ObjectID,
-	gasBudget uint,
+	gasBudget models.SafeSuiBigInt[uint64],
 ) (*models.TransactionBytes, error) {
 	var resp models.TransactionBytes
 	return &resp, s.http.CallContext(ctx, &resp, publish, sender, compiledModules, dependencies, gas, gasBudget)

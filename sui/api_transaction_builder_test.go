@@ -2,6 +2,7 @@ package sui_test
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -163,64 +165,26 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	t.Skip("FIXME")
-	// api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	// dmens, err := models.NewBase64Data(DmensDmensB64)
-	// require.NoError(t, err)
-	// profile, err := models.NewBase64Data(DmensProfileB64)
-	// require.NoError(t, err)
-	// coins, err := api.GetSuiCoinsOwnedByAddress(context.TODO(), *Address)
-	// require.NoError(t, err)
-	// coin, err := coins.PickCoinNoLess(30000)
-	// require.NoError(t, err)
-	//
-	//	type args struct {
-	//		ctx             context.Context
-	//		address         models.Address
-	//		compiledModules []*models.Base64Data
-	//		gas             models.ObjectID
-	//		gasBudget       uint
-	//	}
-	//
-	//	tests := []struct {
-	//		name    string
-	//		client  *client.Client
-	//		args    args
-	//		want    *models.TransactionBytes
-	//		wantErr bool
-	//	}{
-	//
-	//		{
-	//			name:   "test for dmens publish",
-	//			client: chain,
-	//			args: args{
-	//				ctx:             context.TODO(),
-	//				address:         *Address,
-	//				compiledModules: []*models.Base64Data{dmens, profile},
-	//				gas:             coin.CoinObjectID,
-	//				gasBudget:       30000,
-	//			},
-	//		},
-	//	}
-	//
-	//	for _, tt := range tests {
-	//		t.Run(tt.name, func(t *testing.T) {
-	//			got, err := tt.client.Publish(tt.args.ctx, tt.args.address, tt.args.compiledModules, tt.args.gas, tt.args.gasBudget)
-	//			if (err != nil) != tt.wantErr {
-	//				t.Errorf("Publish() error: %v, wantErr %v", err, tt.wantErr)
-	//				return
-	//			}
-	//			t.Logf("%#v", got)
-	//
-	//			txResult, err := tt.client.DryRunTransaction(context.TODO(), got)
-	//			if (err != nil) != tt.wantErr {
-	//				t.Errorf("Publish() error: %v, wantErr %v", err, tt.wantErr)
-	//				return
-	//			}
-	//
-	//			t.Logf("%#v", txResult)
-	//		})
-	//	}
+	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+
+	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
+	require.NoError(t, err)
+
+	dependencies := make([]sui_types.ObjectID, len(modules.Dependencies))
+	for i, v := range modules.Dependencies {
+		dependencies[i] = *sui_types.MustObjectIDFromHex(v)
+	}
+
+	coins, err := client.GetCoins(context.Background(), sui_signer.TEST_ADDRESS, nil, nil, 10)
+	require.NoError(t, err)
+	gasBudget := uint64(1000000)
+	pickedCoins, err := models.PickupCoins(coins, *big.NewInt(100000), gasBudget, 10, 10)
+	require.NoError(t, err)
+
+	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, &pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
+	require.NoError(t, err)
+
+	fmt.Println("txnBytes: ", txnBytes)
 }
 
 func TestSplitCoin(t *testing.T) {
