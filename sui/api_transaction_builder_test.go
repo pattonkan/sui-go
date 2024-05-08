@@ -163,7 +163,6 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	t.Skip("FIXME")
 	// api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	// dmens, err := models.NewBase64Data(DmensDmensB64)
 	// require.NoError(t, err)
