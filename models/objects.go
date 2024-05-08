@@ -62,14 +62,14 @@ type SuiRawMoveObject struct {
 	Type              string                   `json:"type"`
 	HasPublicTransfer bool                     `json:"hasPublicTransfer"`
 	Version           sui_types.SequenceNumber `json:"version"`
-	BcsBytes          serialization.Base64Data `json:"bcsBytes"`
+	BcsBytes          sui_types.Base64Data     `json:"bcsBytes"`
 }
 
 type SuiRawMovePackage struct {
-	Id              sui_types.ObjectID                  `json:"id"`
-	Version         sui_types.SequenceNumber            `json:"version"`
-	ModuleMap       map[string]serialization.Base64Data `json:"moduleMap"`
-	TypeOriginTable []TypeOrigin                        `json:"typeOriginTable"`
+	Id              sui_types.ObjectID              `json:"id"`
+	Version         sui_types.SequenceNumber        `json:"version"`
+	ModuleMap       map[string]sui_types.Base64Data `json:"moduleMap"`
+	TypeOriginTable []TypeOrigin                    `json:"typeOriginTable"`
 	LinkageTable    map[string]UpgradeInfo
 }
 

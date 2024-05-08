@@ -5,13 +5,12 @@ import (
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
 func (s *ImplSuiAPI) DevInspectTransactionBlock(
 	ctx context.Context,
 	senderAddress *sui_types.SuiAddress,
-	txByte serialization.Base64Data,
+	txByte sui_types.Base64Data,
 	gasPrice *models.SafeSuiBigInt[uint64],
 	epoch *uint64,
 ) (*models.DevInspectResults, error) {
@@ -21,14 +20,14 @@ func (s *ImplSuiAPI) DevInspectTransactionBlock(
 
 func (s *ImplSuiAPI) DryRunTransaction(
 	ctx context.Context,
-	txBytes serialization.Base64Data,
+	txBytes sui_types.Base64Data,
 ) (*models.DryRunTransactionBlockResponse, error) {
 	var resp models.DryRunTransactionBlockResponse
 	return &resp, s.http.CallContext(ctx, &resp, dryRunTransactionBlock, txBytes)
 }
 
 func (s *ImplSuiAPI) ExecuteTransactionBlock(
-	ctx context.Context, txBytes serialization.Base64Data, signatures []any,
+	ctx context.Context, txBytes sui_types.Base64Data, signatures []any,
 	options *models.SuiTransactionBlockResponseOptions, requestType models.ExecuteTransactionRequestType,
 ) (*models.SuiTransactionBlockResponse, error) {
 	resp := models.SuiTransactionBlockResponse{}

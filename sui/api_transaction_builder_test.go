@@ -165,6 +165,7 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
+	t.Skip("remove using MoveBuild() by adding a compiled binary")
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")

@@ -1,4 +1,4 @@
-package serialization
+package sui_types
 
 import (
 	"encoding/base64"
