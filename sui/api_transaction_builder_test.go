@@ -179,18 +179,13 @@ func TestPublish(t *testing.T) {
 	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
-	dependencies := make([]*sui_types.ObjectID, len(modules.Dependencies))
-	for i, v := range modules.Dependencies {
-		dependencies[i] = sui_types.MustObjectIDFromHex(v)
-	}
-
 	coins, err := client.GetCoins(context.Background(), sui_signer.TEST_ADDRESS, nil, nil, 10)
 	require.NoError(t, err)
 	gasBudget := uint64(1000000)
 	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100000), gasBudget, 10, 10)
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
+	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
 	require.NoError(t, err)
 
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)

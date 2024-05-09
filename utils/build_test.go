@@ -1,7 +1,8 @@
 package utils_test
 
 import (
-	"fmt"
+	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/howjmay/sui-go/utils"
@@ -14,5 +15,11 @@ func TestMoveBuild(t *testing.T) {
 	// FIXME add a testing contract for the localnet
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin/")
 	require.NoError(t, err)
-	fmt.Println("modules", modules)
+
+	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/testcoin/contract_base64.json")
+	require.NoError(t, err)
+	var expectedModules utils.CompiledMoveModules
+	err = json.Unmarshal(jsonData, &expectedModules)
+	require.NoError(t, err)
+	require.Equal(t, &expectedModules, modules)
 }

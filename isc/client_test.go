@@ -2,10 +2,8 @@ package isc_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"math/big"
-	"os"
 	"testing"
 
 	"github.com/howjmay/sui-go/isc"
@@ -24,13 +22,12 @@ type Client struct {
 }
 
 func TestStartNewChain(t *testing.T) {
-	// t.Skip("only for localnet")
+	t.Skip("only for localnet")
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	t.Log("sui_signer: ", signer.Address)
 	digest, err := sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 	t.Log("digest: ", digest)
@@ -38,17 +35,8 @@ func TestStartNewChain(t *testing.T) {
 	require.NoError(t, err)
 	t.Log("digest: ", digest)
 
-	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/isc/contracts/isc/contract_base64.json")
+	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
-
-	var modules utils.CompiledMoveModules
-	err = json.Unmarshal(jsonData, &modules)
-	require.NoError(t, err)
-
-	dependencies := make([]*sui_types.ObjectID, len(modules.Dependencies))
-	for i, v := range modules.Dependencies {
-		dependencies[i] = sui_types.MustObjectIDFromHex(v)
-	}
 
 	coins, err := client.API.GetCoins(context.Background(), sui_signer.TEST_ADDRESS, nil, nil, 10)
 	require.NoError(t, err)
@@ -56,7 +44,7 @@ func TestStartNewChain(t *testing.T) {
 	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100000), gasBudget, 10, 10)
 	require.NoError(t, err)
 
-	txnBytes, err := client.API.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
+	txnBytes, err := client.API.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
 	require.NoError(t, err)
 	signature, err := signer.SignTransactionBlock(txnBytes.TxBytes, sui_signer.DefaultIntent())
 	require.NoError(t, err)
@@ -87,6 +75,7 @@ func TestStartNewChain(t *testing.T) {
 
 	res, err := client.StartNewChain(context.Background(), signer, &packageID, nil)
 	require.NoError(t, err)
+	require.Equal(t, res.Effects.Data.V1.Status.Status, "success")
 	t.Logf("res.Effects.Data.V1.Status: %#v\n", res.Effects.Data.V1.Status)
 	t.Logf("StartNewChain response: %#v\n", res)
 	// for _, change := range res.ObjectChanges {

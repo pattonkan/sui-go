@@ -12,29 +12,27 @@ import (
 
 type CompiledMoveModules struct {
 	Modules      []*sui_types.Base64Data `json:"modules"`
-	Dependencies []string                `json:"dependencies"`
+	Dependencies []*sui_types.SuiAddress `json:"dependencies"`
 	Digest       []int                   `json:"digest"`
 }
 
-func MoveBuild(path string) (*CompiledMoveModules, error) {
+func MoveBuild(contractPath string) (*CompiledMoveModules, error) {
 	var err error
-	// Setup the command to be executed
 	cmd := exec.Command("sui", "move", "build", "--dump-bytecode-as-base64")
-	cmd.Dir = path
-	fmt.Println("path ", path)
+	// TODO skip to fetch latest deps if there is no internet
+	// cmd := exec.Command("sui", "move", "build", "--dump-bytecode-as-base64", "--skip-fetch-latest-git-deps")
+	cmd.Dir = contractPath
 
-	// Run the command and capture the output
 	output, err := cmd.Output()
 	if err != nil {
-		// return nil, err
-		panic(err)
+		// FIXME propagate the stderr message
+		return nil, fmt.Errorf("failed to execute sui cli: %w", err)
 	}
 
 	var modules CompiledMoveModules
 	err = json.Unmarshal(output, &modules)
 	if err != nil {
-		// return nil, err
-		panic(err)
+		return nil, fmt.Errorf("failed to parse move build result: %w", err)
 	}
 
 	return &modules, nil
