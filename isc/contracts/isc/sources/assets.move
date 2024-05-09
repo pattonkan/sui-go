@@ -17,7 +17,7 @@ module isc::assets {
     /// keeps track of all assets in an `Anchor`
     public struct Assets has key, store {
         id: UID,
-        tokens: Bag,
+        coins: Bag,
         nfts: vector<Nft>,
     }
 
@@ -25,19 +25,19 @@ module isc::assets {
     public fun new(ctx: &mut TxContext): Assets {
         Assets {
             id: object::new(ctx),
-            tokens: bag::new(ctx),
+            coins: bag::new(ctx),
             nfts: vector[],
         }
     }
 
-    /// add native tokens to the `Assets` 
+    /// add native coin to the `Assets` 
     /// consolidates balances of the same T by `join`ing them together
-    public fun add_tokens<T>(assets: &mut Assets, tokens: Balance<T>) {
-        let token_type_name = type_name::get<T>().into_string();
-        if (!assets.tokens.contains(token_type_name)) {
-            assets.tokens.add(token_type_name, tokens);
+    public fun add_balance<T>(assets: &mut Assets, balance: Balance<T>) {
+        let coin_type_name = type_name::get<T>().into_string();
+        if (!assets.coins.contains(coin_type_name)) {
+            assets.coins.add(coin_type_name, balance);
         } else {
-            assets.tokens.borrow_mut<String, Balance<T>>(token_type_name).join(tokens);
+            assets.coins.borrow_mut<String, Balance<T>>(coin_type_name).join(balance);
         }
      }
 
@@ -60,9 +60,9 @@ module isc::assets {
     }
 
     /// determines if a specified token T is present in the `Assets`
-    public fun has_tokens<T>(assets: &mut Assets): bool {
-        let token_type_name = type_name::get<T>().into_string();
-        assets.tokens.contains(token_type_name)
+    public fun has_coin<T>(assets: &mut Assets): bool {
+        let coin_type_name = type_name::get<T>().into_string();
+        assets.coins.contains(coin_type_name)
     }
 
     /// determines if a specified nft is present in the `Assets`
@@ -71,16 +71,16 @@ module isc::assets {
         found
     }
 
-    /// takes a specified amount of native tokens from the `Assets`
-    public fun take_tokens<T>(assets: &mut Assets, amount: u64): Balance<T> {
-        let token_type_name = type_name::get<T>().into_string();
-        assert!(assets.tokens.contains(token_type_name), ETokenNotFound);
-        let tokens = assets.tokens.borrow_mut<String, Balance<T>>(token_type_name);
-        assert!(tokens.value() >= amount, EInsufficientBalance);
-        if (tokens.value() == amount) {
-            return assets.tokens.remove(token_type_name)
+    /// takes a specified amount of native coin from the `Assets`
+    public fun take_coin<T>(assets: &mut Assets, amount: u64): Balance<T> {
+        let coin_type_name = type_name::get<T>().into_string();
+        assert!(assets.coins.contains(coin_type_name), ETokenNotFound);
+        let coin = assets.coins.borrow_mut<String, Balance<T>>(coin_type_name);
+        assert!(coin.value() >= amount, EInsufficientBalance);
+        if (coin.value() == amount) {
+            return assets.coins.remove(coin_type_name)
         };
-        tokens.split(amount)
+        coin.split(amount)
     }
 
     /// takes a specified nft from the `Assets`
@@ -93,10 +93,10 @@ module isc::assets {
     public fun destroy_empty(assets: Assets) {
         let Assets {
             id,
-            tokens,
+            coins,
             nfts,
         } = assets;
-        tokens.destroy_empty();
+        coins.destroy_empty();
         nfts.destroy_empty();
         object::delete(id);
     }

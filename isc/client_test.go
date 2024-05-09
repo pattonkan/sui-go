@@ -2,13 +2,15 @@ package isc_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/howjmay/sui-go/isc"
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
+	"github.com/howjmay/sui-go/utils"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,17 +25,28 @@ func TestStartNewChain(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	t.Log("sui_signer: ", signer.Address)
-	digest, err := sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
-	t.Log("digest: ", digest)
 
-	packageID, anchorCap := isc.GetIscPackageIDAndAnchor(isc.GetGitRoot() + "/isc/contracts/isc/publish_receipt.json")
-
-	res, err := client.StartNewChain(context.Background(), signer, packageID, anchorCap)
+	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
-	t.Logf("StartNewChain response: %#v\n", res)
-	for _, change := range res.ObjectChanges {
-		fmt.Println("change.Data.Created: ", change.Data.Created)
-	}
+
+	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	require.NoError(t, err)
+	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
+		ShowEffects:       true,
+		ShowObjectChanges: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+
+	packageID := txnResponse.GetPublishedPackageID()
+	t.Log("packageID: ", packageID)
+
+	startNewChainRes, err := client.StartNewChain(context.Background(), signer, packageID, 10000000, &models.SuiTransactionBlockResponseOptions{
+		ShowEffects: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	t.Logf("StartNewChain response: %#v\n", startNewChainRes)
 }

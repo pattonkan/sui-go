@@ -1,12 +1,9 @@
 /// Module: isc
 module isc::request {
     use isc::{
-        ledger::{Ledger},
+        allowance::{Allowance},
     };
     use std::ascii::String;
-
-    /// privileged function was called without authorization
-    const EMultipleTimeLocks: u64 = 1;
 
     public struct RequestData has copy, drop, store {
         id: ID,
@@ -14,8 +11,7 @@ module isc::request {
         function: String,
         args: vector<vector<u8>>,
         sender: address,
-        allowance: Option<Ledger>,
-        time_lock: u64,
+        allowance: Option<Allowance>,
     }
 
     public struct Request has key, store {
@@ -32,7 +28,6 @@ module isc::request {
                 contract: contract,
                 function: function,
                 args: args,
-                time_lock: 0,
                 sender: ctx.sender(),
             };
         Request{
@@ -41,16 +36,14 @@ module isc::request {
         }
     }
 
-    public fun set_time_lock(req: &mut Request, time_lock: u64) {
-        assert!(req.data.time_lock == 0, EMultipleTimeLocks);
-        //TODO check time lock value to be in the future?
-        req.data.time_lock = time_lock;
+    /// sets an allowance for the `Request`
+    public fun set_allowance(req: &mut Request, allowance: Allowance) {
+        req.data.allowance = option::some(allowance);
     }
 
-    public fun as_data(req: Request): RequestData {
-        let Request { id, data } = req;
-        object::delete(id);
-        move data
+    public fun destroy_request(req: Request) {
+        let Request { id, data: _ } = req;
+        object::delete(id)
     }
 }
 
