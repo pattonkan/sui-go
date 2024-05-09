@@ -24,10 +24,10 @@ func NewIscClient(api *sui.ImplSuiAPI) *Client {
 
 func (c *Client) StartNewChain(ctx context.Context, signer *sui_signer.Signer, packageID *sui_types.PackageID, anchorCap *sui_types.ObjectID) (*models.SuiTransactionBlockResponse, error) {
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	argAnchor, err := ptb.Pure(anchorCap.String())
-	if err != nil {
-		panic(err)
-	}
+	// argAnchor, err := ptb.Pure(anchorCap.String())
+	// if err != nil {
+	// 	panic(err)
+	// }
 	arg1 := ptb.Command(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
@@ -35,7 +35,7 @@ func (c *Client) StartNewChain(ctx context.Context, signer *sui_signer.Signer, p
 				Module:        "anchor",
 				Function:      "start_new_chain",
 				TypeArguments: []sui_types.TypeTag{},
-				Arguments:     []sui_types.Argument{argAnchor},
+				Arguments:     []sui_types.Argument{},
 			},
 		},
 	)
@@ -50,7 +50,7 @@ func (c *Client) StartNewChain(ctx context.Context, signer *sui_signer.Signer, p
 	)
 	pt := ptb.Finish()
 
-	gasBudget := uint64(1000000)
+	gasBudget := uint64(100000000)
 	coins, err := c.API.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	if err != nil {
 		panic(err)

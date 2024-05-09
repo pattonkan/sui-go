@@ -72,6 +72,7 @@ func (a *SuiAddress) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+// FIXME may need to be pointer
 func (a SuiAddress) MarshalBCS() ([]byte, error) {
 	return a[:], nil
 }

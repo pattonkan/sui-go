@@ -3,7 +3,6 @@ package sui_test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"os"
 	"testing"
@@ -194,7 +193,20 @@ func TestPublish(t *testing.T) {
 	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
 	require.NoError(t, err)
 
-	fmt.Printf("txnBytes: %#v\n", txnBytes)
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	signature, err := signer.SignTransactionBlock(txnBytes.TxBytes, sui_signer.DefaultIntent())
+	require.NoError(t, err)
+	txnResponse, err := client.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes, []any{signature}, &models.SuiTransactionBlockResponseOptions{
+		ShowInput:          true,
+		ShowEffects:        true,
+		ShowEvents:         true,
+		ShowObjectChanges:  true,
+		ShowBalanceChanges: true,
+	}, models.TxnRequestTypeWaitForLocalExecution)
+	require.NoError(t, err)
+	t.Log(txnResponse)
 }
 
 func TestSplitCoin(t *testing.T) {
