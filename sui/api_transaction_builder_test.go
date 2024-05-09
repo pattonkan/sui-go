@@ -2,8 +2,10 @@ package sui_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/big"
+	"os"
 	"testing"
 
 	"github.com/howjmay/sui-go/models"
@@ -165,10 +167,17 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	t.Skip("remove using MoveBuild() by adding a compiled binary")
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 
-	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
+	// If local side has installed Sui-cli then the user can use the following func to build move contracts
+	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
+	// require.NoError(t, err)
+
+	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/testcoin/contract_base64.json")
+	require.NoError(t, err)
+
+	var modules utils.CompiledMoveModules
+	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
 	dependencies := make([]*sui_types.ObjectID, len(modules.Dependencies))
