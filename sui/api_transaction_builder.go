@@ -104,7 +104,7 @@ func (s *ImplSuiAPI) Publish(
 	sender *sui_types.SuiAddress,
 	compiledModules []*sui_types.Base64Data,
 	dependencies []*sui_types.ObjectID,
-	gas *sui_types.ObjectID,
+	gas *sui_types.ObjectID, // optional
 	gasBudget models.SafeSuiBigInt[uint64],
 ) (*models.TransactionBytes, error) {
 	var resp models.TransactionBytes

@@ -46,7 +46,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(1).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
+	gasBudget := sui_types.SUI(0.1).Uint64()
 	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 0, 0)
 	require.NoError(t, err)
 

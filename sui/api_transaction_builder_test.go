@@ -75,7 +75,7 @@ func TestMoveCall(t *testing.T) {
 
 	signature, err := signer.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_signer.DefaultIntent())
 	require.NoError(t, err)
-	txnResponse, err := api.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []any{signature}, &models.SuiTransactionBlockResponseOptions{
+	txnResponse, err := api.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []*sui_signer.Signature{&signature}, &models.SuiTransactionBlockResponseOptions{
 		ShowInput:          true,
 		ShowEffects:        true,
 		ShowEvents:         true,
@@ -167,7 +167,11 @@ func TestPaySui(t *testing.T) {
 
 func TestPublish(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
 
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
+	require.NoError(t, err)
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
 	// require.NoError(t, err)
@@ -179,29 +183,27 @@ func TestPublish(t *testing.T) {
 	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
-	coins, err := client.GetCoins(context.Background(), sui_signer.TEST_ADDRESS, nil, nil, 10)
+	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
-	gasBudget := uint64(1000000)
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100000), gasBudget, 10, 10)
-	require.NoError(t, err)
-
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, pickedCoins.CoinIds()[0], models.NewSafeSuiBigInt(gasBudget))
+	gasBudget := uint64(1000000000)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(1000000), gasBudget, 10, 10)
 	require.NoError(t, err)
 
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	txnBytes, err := client.Publish(
+		context.Background(),
+		signer.Address,
+		modules.Modules,
+		modules.Dependencies,
+		pickedCoins.CoinIds()[0],
+		models.NewSafeSuiBigInt(gasBudget),
+	)
 	require.NoError(t, err)
 
-	signature, err := signer.SignTransactionBlock(txnBytes.TxBytes, sui_signer.DefaultIntent())
+	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
+		ShowEffects: true,
+	})
 	require.NoError(t, err)
-	txnResponse, err := client.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes, []any{signature}, &models.SuiTransactionBlockResponseOptions{
-		ShowInput:          true,
-		ShowEffects:        true,
-		ShowEvents:         true,
-		ShowObjectChanges:  true,
-		ShowBalanceChanges: true,
-	}, models.TxnRequestTypeWaitForLocalExecution)
-	require.NoError(t, err)
-	t.Log(txnResponse)
+	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
 }
 
 func TestSplitCoin(t *testing.T) {

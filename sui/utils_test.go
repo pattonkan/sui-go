@@ -56,7 +56,7 @@ func executeTxn(
 		ShowEffects: true,
 	}
 	resp, err := api.ExecuteTransactionBlock(
-		context.TODO(), txBytes, []any{signature}, &options,
+		context.TODO(), txBytes, []*sui_signer.Signature{&signature}, &options,
 		models.TxnRequestTypeWaitForLocalExecution,
 	)
 	require.NoError(t, err)

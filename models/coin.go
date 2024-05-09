@@ -48,7 +48,7 @@ type Supply struct {
 }
 
 type PickedCoins struct {
-	Coins        []*Coin
+	Coins        Coins
 	TotalAmount  *big.Int
 	TargetAmount *big.Int
 }
@@ -88,8 +88,8 @@ func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
 // @param inputCoins queried page coin data
 // @param targetAmount total amount of coins to be selected from inputCoins
 // @param gasBudget the transaction gas budget
-// @param limit the max number of coins selected, default is `MAX_INPUT_COUNT_MERGE`
-// @param moreCount get more count of coins as possible, maybe the caller will want to try to merge out some small coin objects, default is 10
+// @param limit the max number of coins selected, default (limit <= 0) is `MAX_INPUT_COUNT_MERGE`
+// @param moreCount get more count of coins as possible, maybe the caller will want to try to merge out some small coin objects, default (moreCount <= 0) is 10
 // @throw ErrNoCoinsFound If the count of input coins is 0.
 // @throw ErrInsufficientBalance If the input coins are all that is left and the total amount is less than the target amount.
 // @throw ErrNeedMergeCoin If there are many coins, but the total amount of coins limited is less than the target amount.
@@ -104,7 +104,7 @@ func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, 
 	if limit <= 0 {
 		limit = MAX_INPUT_COUNT_MERGE
 	}
-	if moreCount == 0 {
+	if moreCount <= 0 {
 		moreCount = 10
 	}
 	if moreCount > limit {
@@ -165,6 +165,14 @@ func (cs Coins) PickCoinNoLess(amount uint64) (*Coin, error) {
 		return nil, errors.New("insufficient balance")
 	}
 	return nil, errors.New("no coin is enough to cover the gas")
+}
+
+func (cs Coins) CoinRefs() []*sui_types.ObjectRef {
+	coinRefs := make([]*sui_types.ObjectRef, len(cs))
+	for idx, coin := range cs {
+		coinRefs[idx] = coin.Reference()
+	}
+	return coinRefs
 }
 
 const (
