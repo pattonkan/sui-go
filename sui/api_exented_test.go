@@ -244,7 +244,7 @@ func TestResolveNameServiceNames(t *testing.T) {
 }
 
 func TestSubscribeEvent(t *testing.T) {
-	t.Skip("passed at local side, but failed on GitHub")
+	// t.Skip("passed at local side, but failed on GitHub")
 	api := sui.NewSuiWebsocketClient(conn.MainnetWebsocketEndpointUrl)
 
 	type args struct {
