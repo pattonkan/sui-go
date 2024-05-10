@@ -22,7 +22,7 @@ func NewIscClient(api *sui.ImplSuiAPI) *Client {
 	}
 }
 
-// starts a new chain and transfer the AnchorCap to the signer
+// starts a new chain and transfer the Anchor to the signer
 func (c *Client) StartNewChain(
 	ctx context.Context,
 	signer *sui_signer.Signer,
@@ -32,6 +32,7 @@ func (c *Client) StartNewChain(
 ) (*models.SuiTransactionBlockResponse, error) {
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 
+	// the return object is an Anchor object
 	arg1 := ptb.Command(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
@@ -73,6 +74,39 @@ func (c *Client) StartNewChain(
 	}
 
 	txnResponse, err := c.SignAndExecuteTransaction(ctx, signer, txnBytes, execOptions)
+	if err != nil {
+		return nil, fmt.Errorf("can't execute the transaction: %w", err)
+	}
+
+	return txnResponse, nil
+}
+
+func (c *Client) SendCoin(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	anchorPackageID *sui_types.PackageID,
+	anchorAddress *sui_types.ObjectID,
+	coinType string,
+	coinObject *sui_types.ObjectID,
+	gasBudget uint64,
+	execOptions *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	txnBytes, err := c.MoveCall(
+		ctx,
+		signer.Address,
+		anchorPackageID,
+		"anchor",
+		"send_coin",
+		[]string{coinType},
+		[]any{anchorAddress.String(), coinObject.String()},
+		nil,
+		models.NewSafeSuiBigInt(gasBudget),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call send_coin() move call: %w", err)
+	}
+
+	txnResponse, err := c.SignAndExecuteTransaction(ctx, signer, txnBytes.TxBytes, execOptions)
 	if err != nil {
 		return nil, fmt.Errorf("can't execute the transaction: %w", err)
 	}

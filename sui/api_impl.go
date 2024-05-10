@@ -22,3 +22,7 @@ func NewSuiWebsocketClient(url string) *ImplSuiAPI {
 		websocket: conn.NewWebsocketClient(url),
 	}
 }
+
+const (
+	DefaultGasBudget uint64 = 10000000
+)
