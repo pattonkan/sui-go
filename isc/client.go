@@ -113,3 +113,36 @@ func (c *Client) SendCoin(
 
 	return txnResponse, nil
 }
+
+func (c *Client) ReceiveCoin(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	anchorPackageID *sui_types.PackageID,
+	anchorAddress *sui_types.ObjectID,
+	coinType string,
+	coinObject *sui_types.ObjectID,
+	gasBudget uint64,
+	execOptions *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	txnBytes, err := c.MoveCall(
+		ctx,
+		signer.Address,
+		anchorPackageID,
+		"anchor",
+		"receive_coin",
+		[]string{coinType},
+		[]any{anchorAddress.String(), coinObject.String()},
+		nil,
+		models.NewSafeSuiBigInt(gasBudget),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call receive_coin() move call: %w", err)
+	}
+
+	txnResponse, err := c.SignAndExecuteTransaction(ctx, signer, txnBytes.TxBytes, execOptions)
+	if err != nil {
+		return nil, fmt.Errorf("can't execute the transaction: %w", err)
+	}
+
+	return txnResponse, nil
+}

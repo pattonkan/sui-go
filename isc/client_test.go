@@ -112,6 +112,75 @@ func TestSendCoin(t *testing.T) {
 	require.Equal(t, anchorObjID.String(), getObjectRes.Data.Owner.ObjectOwnerInternal.AddressOwner.String())
 }
 
+func TestReceiveCoin(t *testing.T) {
+	t.Skip("only for localnet")
+	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
+
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	require.NoError(t, err)
+
+	iscPackageID := buildAndDeployIscContracts(t, client, signer)
+	tokenPackageID, _ := buildDeployMintTestcoin(t, client, signer)
+
+	// start a new chain
+	startNewChainRes, err := client.StartNewChain(
+		context.Background(),
+		signer,
+		iscPackageID,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+
+	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
+	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
+	require.NoError(t, err)
+	// the signer should have only one coin object which belongs to testcoin type
+	coins, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, 10)
+	require.NoError(t, err)
+
+	sendCoinRes, err := client.SendCoin(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		coinType,
+		coins.Data[0].CoinObjectID,
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+
+	getObjectRes, err := client.GetObject(context.Background(), coins.Data[0].CoinObjectID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.Equal(t, anchorObjID.String(), getObjectRes.Data.Owner.ObjectOwnerInternal.AddressOwner.String())
+
+	receiveCoinRes, err := client.ReceiveCoin(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		coinType,
+		coins.Data[0].CoinObjectID,
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, receiveCoinRes.Effects.Data.V1.Status.Status)
+
+	// TODO we should check the isc on-chain balance
+}
+
 func buildAndDeployIscContracts(t *testing.T, client *isc.Client, signer *sui_signer.Signer) *sui_types.PackageID {
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
