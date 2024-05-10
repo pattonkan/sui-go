@@ -157,6 +157,10 @@ func (c *HttpClient) BatchCallContext(ctx context.Context, b []BatchElem) error 
 	return nil
 }
 
+func (c *HttpClient) Url() string {
+	return c.url
+}
+
 func (c *HttpClient) nextID() json.RawMessage {
 	id := atomic.AddUint32(&c.idCounter, 1)
 	return strconv.AppendUint(nil, uint64(id), 10)
