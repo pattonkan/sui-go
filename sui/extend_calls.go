@@ -48,3 +48,35 @@ func (s *ImplSuiAPI) SignAndExecuteTransaction(
 	}
 	return resp, nil
 }
+
+func (s *ImplSuiAPI) MintToken(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	packageID *sui_types.PackageID,
+	tokenName string,
+	treasuryCap *sui_types.ObjectID,
+	mintAmount uint64,
+	options *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	txnBytes, err := s.MoveCall(
+		ctx,
+		signer.Address,
+		packageID,
+		tokenName,
+		"mint",
+		[]string{},
+		[]any{treasuryCap.String(), fmt.Sprintf("%d", mintAmount), signer.Address.String()},
+		nil,
+		models.NewSafeSuiBigInt(DefaultGasBudget),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call mint() move call: %w", err)
+	}
+
+	txnResponse, err := s.SignAndExecuteTransaction(ctx, signer, txnBytes.TxBytes, options)
+	if err != nil {
+		return nil, fmt.Errorf("can't execute the transaction: %w", err)
+	}
+
+	return txnResponse, nil
+}

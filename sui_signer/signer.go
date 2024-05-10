@@ -46,6 +46,8 @@ func NewSigner(seed []byte) *Signer {
 	}
 }
 
+// TODO add NewSignerWithFund
+
 func NewSignerWithMnemonic(mnemonic string) (*Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
