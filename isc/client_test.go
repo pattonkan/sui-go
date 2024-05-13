@@ -191,3 +191,51 @@ func TestReceiveCoin(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, assets2.Coins, 1)
 }
+
+func TestCreateRequest(t *testing.T) {
+	t.Skip("only for localnet")
+	var err error
+	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
+
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	require.NoError(t, err)
+
+	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+
+	// start a new chain
+	startNewChainRes, err := client.StartNewChain(
+		context.Background(),
+		signer,
+		iscPackageID,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+
+	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
+	require.NoError(t, err)
+
+	sendCoinRes, err := client.CreateRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		"isc_test_contract_name",
+		"isc_test_func_name",
+		[][]byte{}, // func input
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+
+	_, _, err = sui.GetCreatedObjectIdAndType(sendCoinRes, "request", "Request")
+	require.NoError(t, err)
+}

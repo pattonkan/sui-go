@@ -212,3 +212,65 @@ func (c *Client) GetAssets(
 	}
 	return &assets, nil
 }
+
+func (c *Client) CreateRequest(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	packageID *sui_types.PackageID,
+	anchorAddress *sui_types.ObjectID,
+	iscContractName string,
+	iscFunctionName string,
+	args [][]byte,
+	gasBudget uint64,
+	execOptions *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	ptb := sui_types.NewProgrammableTransactionBuilder()
+
+	// the return object is an Anchor object
+	arg1 := ptb.Command(
+		sui_types.Command{
+			MoveCall: &sui_types.ProgrammableMoveCall{
+				Package:       packageID,
+				Module:        "request",
+				Function:      "create_request",
+				TypeArguments: []sui_types.TypeTag{},
+				Arguments:     []sui_types.Argument{ptb.MustPure(iscContractName), ptb.MustPure(iscFunctionName), ptb.MustPure(args)},
+			},
+		},
+	)
+
+	ptb.Command(
+		sui_types.Command{
+			TransferObjects: &sui_types.ProgrammableTransferObjects{
+				Objects: []sui_types.Argument{arg1},
+				Address: ptb.MustPure(signer.Address),
+			},
+		},
+	)
+	pt := ptb.Finish()
+
+	// FIXME set the proper gas price
+	coins, err := c.GetCoinObjectForGasFee(ctx, signer.Address, 10000, gasBudget)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
+	}
+
+	tx := sui_types.NewProgrammable(
+		signer.Address,
+		pt,
+		coins.CoinRefs(),
+		gasBudget,
+		1000, // TODO we may need to pass gas price
+	)
+	txnBytes, err := bcs.Marshal(tx)
+	if err != nil {
+		return nil, fmt.Errorf("can't marshal transaction into BCS encoding: %w", err)
+	}
+
+	txnResponse, err := c.SignAndExecuteTransaction(ctx, signer, txnBytes, execOptions)
+	if err != nil {
+		return nil, fmt.Errorf("can't execute the transaction: %w", err)
+	}
+
+	return txnResponse, nil
+}
