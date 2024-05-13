@@ -140,12 +140,12 @@ func TestReceiveCoin(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
 
-	var assets1, assets2 *isc.NormalizedAssets
+	var assets1, assets2 *isc.Assets
 	for _, change := range startNewChainRes.ObjectChanges {
 		if change.Data.Created != nil {
-			assets1, err = client.GetAssetsFromAnchor(context.Background(), iscPackageID, &change.Data.Created.ObjectID)
+			assets1, err = client.GetAssets(context.Background(), iscPackageID, &change.Data.Created.ObjectID)
 			require.NoError(t, err)
-			require.Equal(t, "0", assets1.Fields.Coins.Fields.Size)
+			require.Len(t, assets1.Coins, 0)
 		}
 	}
 
@@ -187,7 +187,7 @@ func TestReceiveCoin(t *testing.T) {
 		})
 	require.NoError(t, err)
 	require.Equal(t, models.ExecutionStatusSuccess, receiveCoinRes.Effects.Data.V1.Status.Status)
-	assets2, err = client.GetAssetsFromAnchor(context.Background(), iscPackageID, anchorObjID)
+	assets2, err = client.GetAssets(context.Background(), iscPackageID, anchorObjID)
 	require.NoError(t, err)
-	require.Equal(t, "1", assets2.Fields.Coins.Fields.Size)
+	require.Len(t, assets2.Coins, 1)
 }
