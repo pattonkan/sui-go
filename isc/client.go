@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/howjmay/sui-go/models"
@@ -148,12 +149,13 @@ func (c *Client) ReceiveCoin(
 	return txnResponse, nil
 }
 
-func (c *Client) GetAssetsFromAnchor(
+// object 'Assets' is owned by the Anchor object, and an 'Assets' object doesn't have ID, because it is a dynamic-field of Anchor object.
+func (c *Client) GetAssets(
 	ctx context.Context,
 	anchorPackageID *sui_types.PackageID,
 	anchorAddress *sui_types.ObjectID,
-) (*NormalizedAssets, error) {
-	res, err := c.GetObject(
+) (*Assets, error) {
+	resGetObject, err := c.GetObject(
 		context.Background(),
 		anchorAddress,
 		&models.SuiObjectDataOptions{
@@ -163,14 +165,50 @@ func (c *Client) GetAssetsFromAnchor(
 		return nil, fmt.Errorf("failed to call GetObject(): %w", err)
 	}
 
-	b, err := json.Marshal(res.Data.Content.Data.MoveObject.Fields.(map[string]interface{})["assets"])
+	b, err := json.Marshal(resGetObject.Data.Content.Data.MoveObject.Fields.(map[string]interface{})["assets"])
 	if err != nil {
 		return nil, fmt.Errorf("failed to access 'assets' fields: %w", err)
 	}
-	var assets NormalizedAssets
-	err = json.Unmarshal(b, &assets)
+	var normalizedAssets NormalizedAssets
+	err = json.Unmarshal(b, &normalizedAssets)
 	if err != nil {
 		return nil, fmt.Errorf("failed to cast to 'NormalizedAssets' type: %w", err)
+	}
+
+	CoinsID := normalizedAssets.Fields.Coins.Fields.ID.ID
+	resDynamicFields, err := c.GetDynamicFields(
+		context.Background(),
+		sui_types.MustObjectIDFromHex(CoinsID),
+		nil,
+		nil,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call GetDynamicFields(): %w", err)
+	}
+
+	var assets Assets
+	assets.Coins = make([]*models.Coin, len(resDynamicFields.Data))
+	for i, coin := range resDynamicFields.Data {
+		assets.Coins[i] = &models.Coin{
+			CoinType:     coin.Name.Value.(string),
+			CoinObjectID: &coin.ObjectID,
+			Digest:       &coin.Digest,
+		}
+	}
+
+	for _, coin := range assets.Coins {
+		res, err := c.GetObject(
+			context.Background(),
+			coin.CoinObjectID,
+			&models.SuiObjectDataOptions{
+				ShowContent: true,
+			})
+		if err != nil {
+			return nil, fmt.Errorf("failed to call GetObject(): %w", err)
+		}
+		fieldsMap := res.Data.Content.Data.MoveObject.Fields.((map[string]interface{}))
+		bal, _ := strconv.ParseUint(fieldsMap["value"].(string), 10, 64)
+		coin.Balance = models.NewSafeSuiBigInt(bal)
 	}
 	return &assets, nil
 }
