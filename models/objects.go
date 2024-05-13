@@ -42,7 +42,8 @@ type SuiMovePackage struct {
 type SuiParsedMoveObject struct {
 	Type              string `json:"type"`
 	HasPublicTransfer bool   `json:"hasPublicTransfer"`
-	Fields            any    `json:"fields"`
+	// maybe use reflect to solve this
+	Fields any `json:"fields"`
 }
 
 type SuiRawData struct {

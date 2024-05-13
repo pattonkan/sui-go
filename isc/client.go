@@ -2,6 +2,7 @@ package isc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/fardream/go-bcs/bcs"
@@ -145,4 +146,31 @@ func (c *Client) ReceiveCoin(
 	}
 
 	return txnResponse, nil
+}
+
+func (c *Client) GetAssetsFromAnchor(
+	ctx context.Context,
+	anchorPackageID *sui_types.PackageID,
+	anchorAddress *sui_types.ObjectID,
+) (*NormalizedAssets, error) {
+	res, err := c.GetObject(
+		context.Background(),
+		anchorAddress,
+		&models.SuiObjectDataOptions{
+			ShowContent: true,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("failed to call GetObject(): %w", err)
+	}
+
+	b, err := json.Marshal(res.Data.Content.Data.MoveObject.Fields.(map[string]interface{})["assets"])
+	if err != nil {
+		return nil, fmt.Errorf("failed to access 'assets' fields: %w", err)
+	}
+	var assets NormalizedAssets
+	err = json.Unmarshal(b, &assets)
+	if err != nil {
+		return nil, fmt.Errorf("failed to cast to 'NormalizedAssets' type: %w", err)
+	}
+	return &assets, nil
 }
