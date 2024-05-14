@@ -191,3 +191,209 @@ func TestReceiveCoin(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, assets2.Coins, 1)
 }
+
+func TestCreateRequest(t *testing.T) {
+	t.Skip("only for localnet")
+	var err error
+	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
+
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	require.NoError(t, err)
+
+	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+
+	// start a new chain
+	startNewChainRes, err := client.StartNewChain(
+		context.Background(),
+		signer,
+		iscPackageID,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+
+	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
+	require.NoError(t, err)
+
+	createReqRes, err := client.CreateRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		"isc_test_contract_name",
+		"isc_test_func_name",
+		[][]byte{}, // func input
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		})
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+
+	_, _, err = sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
+	require.NoError(t, err)
+}
+
+func TestSendRequest(t *testing.T) {
+	t.Skip("only for localnet")
+	var err error
+	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
+
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	require.NoError(t, err)
+
+	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+
+	// start a new chain
+	startNewChainRes, err := client.StartNewChain(
+		context.Background(),
+		signer,
+		iscPackageID,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+
+	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
+	require.NoError(t, err)
+
+	createReqRes, err := client.CreateRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		"isc_test_contract_name",
+		"isc_test_func_name",
+		[][]byte{}, // func input
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+
+	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
+	require.NoError(t, err)
+	getObjectRes, err := client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.Equal(t, signer.Address, getObjectRes.Data.Owner.AddressOwner)
+
+	sendReqRes, err := client.SendRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		reqObjID,
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+
+	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.Equal(t, anchorObjID, getObjectRes.Data.Owner.AddressOwner)
+}
+
+func TestReceiveRequest(t *testing.T) {
+	t.Skip("only for localnet")
+	var err error
+	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
+
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	require.NoError(t, err)
+
+	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	require.NoError(t, err)
+
+	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+
+	// start a new chain
+	startNewChainRes, err := client.StartNewChain(
+		context.Background(),
+		signer,
+		iscPackageID,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+
+	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
+	require.NoError(t, err)
+
+	createReqRes, err := client.CreateRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		"isc_test_contract_name", // FIXME set up the proper ISC target contract name
+		"isc_test_func_name",     // FIXME set up the proper ISC target func name
+		[][]byte{},               // func input
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+
+	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
+	require.NoError(t, err)
+	getObjectRes, err := client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.Equal(t, signer.Address, getObjectRes.Data.Owner.AddressOwner)
+
+	sendReqRes, err := client.SendRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		reqObjID,
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+
+	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.Equal(t, anchorObjID, getObjectRes.Data.Owner.AddressOwner)
+
+	receiveReqRes, err := client.ReceiveRequest(
+		context.Background(),
+		signer,
+		iscPackageID,
+		anchorObjID,
+		reqObjID,
+		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, receiveReqRes.Effects.Data.V1.Status.Status)
+
+	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
+	require.NoError(t, err)
+	require.NotNil(t, getObjectRes.Error.Data.Deleted)
+}
