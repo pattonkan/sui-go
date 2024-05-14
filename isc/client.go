@@ -274,3 +274,35 @@ func (c *Client) CreateRequest(
 
 	return txnResponse, nil
 }
+
+func (c *Client) SendRequest(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	packageID *sui_types.PackageID,
+	anchorAddress *sui_types.ObjectID,
+	reqObjID *sui_types.ObjectID,
+	gasBudget uint64,
+	execOptions *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, error) {
+	txnBytes, err := c.MoveCall(
+		ctx,
+		signer.Address,
+		packageID,
+		"anchor",
+		"send_request",
+		[]string{},
+		[]any{anchorAddress.String(), reqObjID.String()},
+		nil,
+		models.NewSafeSuiBigInt(gasBudget),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call send_request() move call: %w", err)
+	}
+
+	txnResponse, err := c.SignAndExecuteTransaction(ctx, signer, txnBytes.TxBytes, execOptions)
+	if err != nil {
+		return nil, fmt.Errorf("can't execute the transaction: %w", err)
+	}
+
+	return txnResponse, nil
+}
