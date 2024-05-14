@@ -3,6 +3,7 @@ package sui_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"os"
 	"testing"
@@ -48,17 +49,20 @@ func TestMergeCoins(t *testing.T) {
 }
 
 func TestMoveCall(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewSuiClient(conn.LocalnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	// client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+	// signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	// require.NoError(t, err)
 
 	// directly build (need sui toolchain)
-	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/contract_tests/")
+	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/sdk_tests/")
+	require.NoError(t, err)
+	// jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_tests/contract_base64.json")
 	// require.NoError(t, err)
-	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/contract_tests/contract_base64.json")
-	require.NoError(t, err)
 
-	var modules utils.CompiledMoveModules
-	err = json.Unmarshal(jsonData, &modules)
-	require.NoError(t, err)
+	// var modules utils.CompiledMoveModules
+	// err = json.Unmarshal(jsonData, &modules)
+	// require.NoError(t, err)
 
 	txnBytes, err := client.Publish(
 		context.Background(),
@@ -82,55 +86,134 @@ func TestMoveCall(t *testing.T) {
 	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
 
 	packageID := txnResponse.GetPublishedPackageID()
-
-	// test MoveCall with byte array input
-	input := []string{"haha", "gogo"}
-	txnBytes, err = client.MoveCall(
-		context.Background(),
-		signer.Address,
-		packageID,
-		"contract_tests",
-		"read_input_bytes_array",
-		[]string{},
-		[]any{input},
-		nil,
-		models.NewSafeSuiBigInt(uint64(sui.DefaultGasBudget)),
-	)
-	require.NoError(t, err)
-
-	txnResponse, err = client.SignAndExecuteTransaction(
-		context.Background(),
-		signer,
-		txnBytes.TxBytes,
-		&models.SuiTransactionBlockResponseOptions{
-			ShowEffects:       true,
-			ShowObjectChanges: true,
+	fmt.Println("packageID: ", packageID)
+	type args struct {
+		module    string
+		function  string
+		typeArgs  []string
+		arguments []sui.SuiJsonArg
+	}
+	tests := []struct {
+		name        string
+		client      *sui.ImplSuiAPI
+		args        args
+		wantErr     error
+		wantErrExec error
+		afterFunc   func(t *testing.T, res *models.SuiTransactionBlockResponse)
+	}{
+		{
+			name:   "byte_array_of_arrays",
+			client: client,
+			args: args{
+				"sdk_tests",
+				"input_byte_array_of_arrays",
+				[]string{},
+				// []sui.SuiJsonArg{sui.ToSuiJsonArg([]string{"haha", "abc"})}, // directly pass string array works
+				// []sui.SuiJsonArg{sui.ToSuiJsonArg([]string{"68616861", "616263"})}, // encode each []byte to hex string works
+				// []sui.SuiJsonArg{sui.ToSuiJsonArg([][]byte{[]byte{104, 97, 104, 97}, []byte{97, 98, 99}})},
+				[]sui.SuiJsonArg{[][]byte{[]byte{104, 97, 104, 97}, []byte{97, 98, 99}}},
+			},
+			wantErr: nil,
+			afterFunc: func(t *testing.T, res *models.SuiTransactionBlockResponse) {
+				type InputByteArrayOfArrays struct {
+					Data [][]byte
+				}
+				queryEventsRes, err := client.QueryEvents(
+					context.Background(),
+					&models.EventFilter{
+						Transaction: &txnResponse.Digest,
+					},
+					nil,
+					nil,
+					false,
+				)
+				require.NoError(t, err)
+				b, err := json.Marshal(queryEventsRes.Data[0].ParsedJson.(map[string]interface{}))
+				require.NoError(t, err)
+				var eventRes InputByteArrayOfArrays
+				err = json.Unmarshal(b, &eventRes)
+				require.NoError(t, err)
+				fmt.Println("eventRes.Data: ", string(eventRes.Data[0]))
+				fmt.Println("eventRes.Data: ", string(eventRes.Data[1]))
+				require.Equal(t, []byte("haha"), eventRes.Data[0])
+				require.Equal(t, []byte("abc"), eventRes.Data[1])
+			},
 		},
-	)
-	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+		// {
+		// 	name:   "ints",
+		// 	client: client,
+		// 	args: args{
+		// 		"sdk_tests",
+		// 		"input_ints",
+		// 		[]string{},
+		// 		[]sui.SuiJsonArg{sui.ToSuiJsonArg(uint8(12)), sui.ToSuiJsonArg(uint16(511)), sui.ToSuiJsonArg(uint32(80000)), sui.ToSuiJsonArg(uint64(12))},
+		// 	},
+		// 	wantErr: nil,
+		// 	afterFunc: func(t *testing.T, res *models.SuiTransactionBlockResponse) {
+		// 		type InputByteArrayOfArrays struct {
+		// 			Input0 uint8
+		// 			Input1 uint16
+		// 			Input2 uint32
+		// 			Input3 uint64
+		// 		}
+		// 		queryEventsRes, err := client.QueryEvents(
+		// 			context.Background(),
+		// 			&models.EventFilter{
+		// 				Transaction: &txnResponse.Digest,
+		// 			},
+		// 			nil,
+		// 			nil,
+		// 			false,
+		// 		)
+		// 		require.NoError(t, err)
+		// 		b, err := json.Marshal(queryEventsRes.Data[0].ParsedJson.(map[string]interface{}))
+		// 		require.NoError(t, err)
+		// 		var eventRes InputByteArrayOfArrays
+		// 		err = json.Unmarshal(b, &eventRes)
+		// 		require.NoError(t, err)
 
-	queryEventsRes, err := client.QueryEvents(
-		context.Background(),
-		&models.EventFilter{
-			Transaction: &txnResponse.Digest,
-		},
-		nil,
-		nil,
-		false,
-	)
-	require.NoError(t, err)
-	queryEventsResMap := queryEventsRes.Data[0].ParsedJson.(map[string]interface{})
-	b, err := json.Marshal(queryEventsResMap["data"])
-	require.NoError(t, err)
-	var res [][]byte
-	err = json.Unmarshal(b, &res)
-	require.NoError(t, err)
+		// 		require.Equal(t, uint8(12), eventRes.Input0)
+		// 		require.Equal(t, uint16(511), eventRes.Input1)
+		// 		require.Equal(t, uint32(80000), eventRes.Input2)
+		// 		require.Equal(t, uint64(12), eventRes.Input3)
+		// 	},
+		// },
+	}
+	for _, tt := range tests {
+		fmt.Println("string: ", []sui.SuiJsonArg{sui.ToSuiJsonArg([]string{"haha", "abc"})})
+		fmt.Println("bytes: ", []sui.SuiJsonArg{[]string{"haha", "abc"}})
+		t.Run(
+			tt.name, func(t *testing.T) {
+				got, err := tt.client.MoveCall(
+					context.Background(),
+					signer.Address,
+					packageID,
+					tt.args.module,
+					tt.args.function,
+					tt.args.typeArgs,
+					tt.args.arguments,
+					nil,
+					models.NewSafeSuiBigInt(uint64(sui.DefaultGasBudget)),
+				)
+				require.ErrorIs(t, err, tt.wantErr)
 
-	require.Equal(t, []byte("haha"), res[0])
-	require.Equal(t, []byte("gogo"), res[1])
-	// // try dry-run
-	// dryRunTxn(t, client, txnBytes.TxBytes, true)
+				txnResponse, err = client.SignAndExecuteTransaction(
+					context.Background(),
+					signer,
+					got.TxBytes,
+					&models.SuiTransactionBlockResponseOptions{
+						ShowEffects:       true,
+						ShowObjectChanges: true,
+					},
+				)
+				require.ErrorIs(t, err, tt.wantErrExec)
+				// FIXME this should be false for the test cases which should be failed
+				require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+
+				tt.afterFunc(t, txnResponse)
+			},
+		)
+	}
 }
 
 func TestPay(t *testing.T) {

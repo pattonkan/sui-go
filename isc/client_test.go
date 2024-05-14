@@ -60,7 +60,7 @@ func TestStartNewChain(t *testing.T) {
 }
 
 func TestSendCoin(t *testing.T) {
-	t.Skip("only for localnet")
+	// t.Skip("only for localnet")
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
@@ -113,7 +113,7 @@ func TestSendCoin(t *testing.T) {
 }
 
 func TestReceiveCoin(t *testing.T) {
-	t.Skip("only for localnet")
+	// t.Skip("only for localnet")
 	var err error
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
@@ -193,7 +193,7 @@ func TestReceiveCoin(t *testing.T) {
 }
 
 func TestCreateRequest(t *testing.T) {
-	t.Skip("only for localnet")
+	// t.Skip("only for localnet")
 	var err error
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
@@ -241,7 +241,7 @@ func TestCreateRequest(t *testing.T) {
 }
 
 func TestSendRequest(t *testing.T) {
-	t.Skip("only for localnet")
+	// t.Skip("only for localnet")
 	var err error
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 
@@ -311,7 +311,7 @@ func TestSendRequest(t *testing.T) {
 }
 
 func TestReceiveRequest(t *testing.T) {
-	t.Skip("only for localnet")
+	// t.Skip("only for localnet")
 	var err error
 	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
 

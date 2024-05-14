@@ -16,6 +16,9 @@ type CompiledMoveModules struct {
 	Digest       []int                   `json:"digest"`
 }
 
+// Build move contract to bytecode in base64 format and unmarshal the bytecode
+// into 'CompiledMoveModules' object which can be directly published
+// sui cli is necessary for this func
 func MoveBuild(contractPath string) (*CompiledMoveModules, error) {
 	var err error
 	cmd := exec.Command("sui", "move", "build", "--dump-bytecode-as-base64")

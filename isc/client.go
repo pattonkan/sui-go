@@ -100,7 +100,7 @@ func (c *Client) SendCoin(
 		"anchor",
 		"send_coin",
 		[]string{coinType},
-		[]any{anchorAddress.String(), coinObject.String()},
+		[]sui.SuiJsonArg{sui.ToSuiJsonArg(anchorAddress), sui.ToSuiJsonArg(coinObject)},
 		nil,
 		models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -133,7 +133,7 @@ func (c *Client) ReceiveCoin(
 		"anchor",
 		"receive_coin",
 		[]string{coinType},
-		[]any{anchorAddress.String(), coinObject.String()},
+		[]sui.SuiJsonArg{sui.ToSuiJsonArg(anchorAddress), sui.ToSuiJsonArg(coinObject)},
 		nil,
 		models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -291,7 +291,7 @@ func (c *Client) SendRequest(
 		"anchor",
 		"send_request",
 		[]string{},
-		[]any{anchorAddress.String(), reqObjID.String()},
+		[]sui.SuiJsonArg{sui.ToSuiJsonArg(anchorAddress), sui.ToSuiJsonArg(reqObjID)},
 		nil,
 		models.NewSafeSuiBigInt(gasBudget),
 	)
@@ -323,7 +323,7 @@ func (c *Client) ReceiveRequest(
 		"anchor",
 		"receive_request",
 		[]string{},
-		[]any{anchorAddress.String(), reqObjID.String()},
+		[]sui.SuiJsonArg{sui.ToSuiJsonArg(anchorAddress), sui.ToSuiJsonArg(reqObjID)},
 		nil,
 		models.NewSafeSuiBigInt(gasBudget),
 	)

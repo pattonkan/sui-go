@@ -65,7 +65,7 @@ func (s *ImplSuiAPI) MintToken(
 		tokenName,
 		"mint",
 		[]string{},
-		[]any{treasuryCap.String(), fmt.Sprintf("%d", mintAmount), signer.Address.String()},
+		[]SuiJsonArg{treasuryCap.String(), fmt.Sprintf("%d", mintAmount), signer.Address.String()},
 		nil,
 		models.NewSafeSuiBigInt(DefaultGasBudget),
 	)

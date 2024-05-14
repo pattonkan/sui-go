@@ -30,7 +30,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		"eventpub",
 		"emit_clock",
 		[]string{},
-		[]any{},
+		[]sui.SuiJsonArg{},
 		nil,
 		models.NewSafeSuiBigInt(uint64(100000)),
 	)

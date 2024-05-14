@@ -2,6 +2,7 @@ package sui
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
@@ -42,11 +43,12 @@ func (s *ImplSuiAPI) MoveCall(
 	module string,
 	function string,
 	typeArgs []string,
-	arguments []any,
+	arguments []SuiJsonArg,
 	gas *sui_types.ObjectID,
 	gasBudget models.SafeSuiBigInt[uint64],
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
+	fmt.Println("arguments: ", arguments)
 	return &resp, s.http.CallContext(
 		ctx,
 		&resp,
