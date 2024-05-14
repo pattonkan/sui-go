@@ -48,45 +48,89 @@ func TestMergeCoins(t *testing.T) {
 }
 
 func TestMoveCall(t *testing.T) {
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+
+	// directly build (need sui toolchain)
+	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/contract_tests/")
+	// require.NoError(t, err)
+	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/contract_tests/contract_base64.json")
 	require.NoError(t, err)
 
-	t.Log("sui_signer: ", signer.Address)
-	digest, err := sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
-	require.NoError(t, err)
-	t.Log("digest: ", digest)
-
-	packageID, err := sui_types.SuiAddressFromHex("0x2")
+	var modules utils.CompiledMoveModules
+	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
-	txnBytes, err := api.MoveCall(
+	txnBytes, err := client.Publish(
+		context.Background(),
+		sui_signer.TEST_ADDRESS,
+		modules.Modules,
+		modules.Dependencies,
+		nil,
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+	)
+	require.NoError(t, err)
+	txnResponse, err := client.SignAndExecuteTransaction(
+		context.Background(),
+		signer,
+		txnBytes.TxBytes,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+
+	packageID := txnResponse.GetPublishedPackageID()
+
+	// test MoveCall with byte array input
+	input := []string{"haha", "gogo"}
+	txnBytes, err = client.MoveCall(
 		context.Background(),
 		signer.Address,
 		packageID,
-		"address",
-		"length",
+		"contract_tests",
+		"read_input_bytes_array",
 		[]string{},
-		[]any{},
+		[]any{input},
 		nil,
-		models.NewSafeSuiBigInt(uint64(10000000)),
+		models.NewSafeSuiBigInt(uint64(sui.DefaultGasBudget)),
 	)
 	require.NoError(t, err)
 
-	signature, err := signer.SignTransactionBlock(txnBytes.TxBytes.Data(), sui_signer.DefaultIntent())
+	txnResponse, err = client.SignAndExecuteTransaction(
+		context.Background(),
+		signer,
+		txnBytes.TxBytes,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
 	require.NoError(t, err)
-	txnResponse, err := api.ExecuteTransactionBlock(context.TODO(), txnBytes.TxBytes.Data(), []*sui_signer.Signature{&signature}, &models.SuiTransactionBlockResponseOptions{
-		ShowInput:          true,
-		ShowEffects:        true,
-		ShowEvents:         true,
-		ShowObjectChanges:  true,
-		ShowBalanceChanges: true,
-	}, models.TxnRequestTypeWaitForLocalExecution)
-	require.NoError(t, err)
-	t.Log(txnResponse)
+	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
 
-	// try dry-run
-	dryRunTxn(t, api, txnBytes.TxBytes, true)
+	queryEventsRes, err := client.QueryEvents(
+		context.Background(),
+		&models.EventFilter{
+			Transaction: &txnResponse.Digest,
+		},
+		nil,
+		nil,
+		false,
+	)
+	require.NoError(t, err)
+	queryEventsResMap := queryEventsRes.Data[0].ParsedJson.(map[string]interface{})
+	b, err := json.Marshal(queryEventsResMap["data"])
+	require.NoError(t, err)
+	var res [][]byte
+	err = json.Unmarshal(b, &res)
+	require.NoError(t, err)
+
+	require.Equal(t, []byte("haha"), res[0])
+	require.Equal(t, []byte("gogo"), res[1])
+	// // try dry-run
+	// dryRunTxn(t, client, txnBytes.TxBytes, true)
 }
 
 func TestPay(t *testing.T) {
