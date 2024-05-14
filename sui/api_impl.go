@@ -17,7 +17,7 @@ func NewSuiClient(url string) *ImplSuiAPI {
 }
 
 // test only func, which supports only testnet/devnet/localnet
-func (i *ImplSuiAPI) WithSignerAndFund(mnemonic string) *ImplSuiAPI {
+func (i *ImplSuiAPI) WithSignerAndFund(mnemonic string) (*ImplSuiAPI, *sui_signer.Signer) {
 	signer, err := sui_signer.NewSignerWithMnemonic(mnemonic)
 	if err != nil {
 		panic(err)
@@ -37,7 +37,7 @@ func (i *ImplSuiAPI) WithSignerAndFund(mnemonic string) *ImplSuiAPI {
 	if err != nil {
 		panic(err)
 	}
-	return i
+	return i, signer
 }
 
 func (i *ImplSuiAPI) WithWebsocket(url string) {
