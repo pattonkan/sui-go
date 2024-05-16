@@ -51,9 +51,9 @@ func TestMoveCall(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
 
 	// directly build (need sui toolchain)
-	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/contract_tests/")
+	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/sdk_verify/")
 	// require.NoError(t, err)
-	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/contract_tests/contract_base64.json")
+	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
 	require.NoError(t, err)
 
 	var modules utils.CompiledMoveModules
@@ -89,7 +89,7 @@ func TestMoveCall(t *testing.T) {
 		context.Background(),
 		signer.Address,
 		packageID,
-		"contract_tests",
+		"sdk_verify",
 		"read_input_bytes_array",
 		[]string{},
 		[]any{input},
