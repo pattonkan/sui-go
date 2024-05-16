@@ -24,10 +24,11 @@ jobs:
         mkdir -p sui-testnet-v1.25.0-ubuntu-x86_64
         tar -xzvf sui-testnet-v1.25.0-ubuntu-x86_64.tgz -C sui-testnet-v1.25.0-ubuntu-x86_64
         ls sui-testnet-v1.25.0-ubuntu-x86_64
-        export PATH=sui-testnet-v1.25.0-ubuntu-x86_64:$PATH
+        export PATH=$(pwd)/sui-testnet-v1.25.0-ubuntu-x86_64:$PATH
+
     - name: start sui-test-validator
       run: |
-        sui-testnet-v1.25.0-ubuntu-x86_64/sui-test-validator &
+        sui-test-validator &
     - name: Test
       run: go test -v ./...
 
