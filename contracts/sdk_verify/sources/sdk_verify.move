@@ -1,5 +1,5 @@
-// Module: contract_tests
-module contract_tests::contract_tests {
+// Module: sdk_verify
+module sdk_verify::sdk_verify {
     use std::debug;
     use sui::event;
 
