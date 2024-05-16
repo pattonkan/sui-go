@@ -48,7 +48,7 @@ func TestMergeCoins(t *testing.T) {
 }
 
 func TestMoveCall(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewSuiClient(conn.LocalnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
 
 	// directly build (need sui toolchain)
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/sdk_verify/")
