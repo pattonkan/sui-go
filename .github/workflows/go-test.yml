@@ -18,6 +18,13 @@ jobs:
       with:
         go-version: '1.21'
 
+    - name: set up Sui toolchain
+      run: |
+        wget https://github.com/MystenLabs/sui/releases/download/testnet-v1.25.0/sui-testnet-v1.25.0-ubuntu-x86_64.tgz -O sui-testnet-v1.25.0-ubuntu-x86_64.tgz
+        mkdir -p sui-testnet-v1.25.0-ubuntu-x86_64
+        tar -xzvf sui-testnet-v1.25.0-ubuntu-x86_64.tgz -C sui-testnet-v1.25.0-ubuntu-x86_64
+        export PATH=sui-testnet-v1.25.0-ubuntu-x86_64:$PATH
+
     - name: Test
       run: go test -v ./...
 
