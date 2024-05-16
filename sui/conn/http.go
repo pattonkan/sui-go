@@ -52,7 +52,7 @@ const (
 
 	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/gas"
 	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/gas"
-	LocalnetFaucetUrl = "http://127.0.0.1:9123/gas"
+	LocalnetFaucetUrl = "http://0.0.0.0:9123/gas"
 )
 
 func NewHttpClient(url string) *HttpClient {
