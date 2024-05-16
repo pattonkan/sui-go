@@ -43,16 +43,16 @@ const (
 	DevnetEndpointUrl   = "https://fullnode.devnet.sui.io"
 	TestnetEndpointUrl  = "https://fullnode.testnet.sui.io"
 	MainnetEndpointUrl  = "https://fullnode.mainnet.sui.io"
-	LocalnetEndpointUrl = "http://localhost:9000"
+	LocalnetEndpointUrl = "http://127.0.0.1:9000"
 
 	DevnetWebsocketEndpointUrl   = "wss://rpc.devnet.sui.io:443"
 	TestnetWebsocketEndpointUrl  = "wss://rpc.testnet.sui.io:443"
 	MainnetWebsocketEndpointUrl  = "wss://rpc.mainnet.sui.io:443"
-	LocalnetWebsocketEndpointUrl = "wss://localhost:9000" // FIXME this may be wrong
+	LocalnetWebsocketEndpointUrl = "wss://127.0.0.1:9000" // FIXME this may be wrong
 
 	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/gas"
 	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/gas"
-	LocalnetFaucetUrl = "http://localhost:9123/gas"
+	LocalnetFaucetUrl = "http://127.0.0.1:9123/gas"
 )
 
 func NewHttpClient(url string) *HttpClient {
