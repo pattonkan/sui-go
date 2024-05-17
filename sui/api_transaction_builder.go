@@ -35,6 +35,8 @@ func (s *ImplSuiAPI) MergeCoins(
 // TODO: not support param `typeArguments` yet.
 // So now only methods with `typeArguments` are supported
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
+// `arguments: []any` *SuiAddress can be arguments here, it will automatically convert to Address in hex string.
+// [][]byte can't be passed. User should encode array of hex string.
 func (s *ImplSuiAPI) MoveCall(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,

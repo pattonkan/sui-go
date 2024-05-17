@@ -12,46 +12,42 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-func RequestFundFromFaucet(address *sui_types.SuiAddress, faucetUrl string) (string, error) {
+// refer the implementation of `request_tokens_from_faucet()` in
+// https://github.com/MystenLabs/sui/blob/main/crates/sui-sdk/examples/utils.rs#L91
+func RequestFundFromFaucet(address *sui_types.SuiAddress, faucetUrl string) error {
 	paramJson := fmt.Sprintf(`{"FixedAmountRequest":{"recipient":"%v"}}`, address)
 	request, err := http.NewRequest(http.MethodPost, faucetUrl, bytes.NewBuffer([]byte(paramJson)))
 	if err != nil {
-		return "", err
+		return err
 	}
 	request.Header.Set("Content-Type", "application/json")
 	client := http.Client{}
 	res, err := client.Do(request)
 	if err != nil {
-		return "", err
+		return err
 	}
-	if res.StatusCode != 200 && res.StatusCode != 201 {
-		return "", fmt.Errorf("post %v response code: %v", faucetUrl, res.Status)
+	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusAccepted {
+		return fmt.Errorf("post %v response code: %v", faucetUrl, res.Status)
 	}
 	defer res.Body.Close()
 
 	resByte, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return err
 	}
 
+	//
 	var response struct {
-		TransferredGasObjects []struct {
-			Amount uint64 `json:"amount"`
-			Id     string `json:"id"`
-			Digest string `json:"transferTxDigest"`
-		} `json:"transferredGasObjects,omitempty"`
+		Task  string `json:"task,omitempty"`
 		Error string `json:"error,omitempty"`
 	}
 	err = json.Unmarshal(resByte, &response)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if strings.TrimSpace(response.Error) != "" {
-		return "", errors.New(response.Error)
-	}
-	if len(response.TransferredGasObjects) <= 0 {
-		return "", errors.New("transaction not found")
+		return errors.New(response.Error)
 	}
 
-	return response.TransferredGasObjects[0].Digest, nil
+	return nil
 }

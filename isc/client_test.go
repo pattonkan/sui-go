@@ -26,7 +26,7 @@ func TestStartNewChain(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
@@ -66,7 +66,7 @@ func TestSendCoin(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -120,7 +120,7 @@ func TestReceiveCoin(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -200,7 +200,7 @@ func TestCreateRequest(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -248,7 +248,7 @@ func TestSendRequest(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -318,7 +318,7 @@ func TestReceiveRequest(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)

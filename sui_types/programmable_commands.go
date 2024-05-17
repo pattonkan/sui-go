@@ -7,9 +7,13 @@ type Command struct {
 	TransferObjects *ProgrammableTransferObjects
 	SplitCoins      *ProgrammableSplitCoins
 	MergeCoins      *ProgrammableMergeCoins
-	Publish         *ProgrammablePublish
-	MakeMoveVec     *ProgrammableMakeMoveVec
-	Upgrade         *ProgrammableUpgrade
+	// `Publish` publishes a Move package. Returns the upgrade capability object.
+	Publish *ProgrammablePublish
+	// `MakeMoveVec` constructs a vector of objects that can be passed into a moveCall.
+	// This is required as there’s no way to define a vector as an input.
+	MakeMoveVec *ProgrammableMakeMoveVec
+	// upgrades a Move package
+	Upgrade *ProgrammableUpgrade
 }
 
 func (c Command) IsBcsEnum() {}
