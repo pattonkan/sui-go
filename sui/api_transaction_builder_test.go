@@ -214,7 +214,7 @@ func TestPublish(t *testing.T) {
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
 
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")

@@ -21,7 +21,7 @@ func TestMintToken(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
 	require.NoError(t, err)
-	_, err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 
 	// module name is 'testcoin'

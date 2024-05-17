@@ -24,11 +24,10 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	digest, err := sui.RequestFundFromFaucet(sender.Address, conn.TestnetFaucetUrl)
+	err = sui.RequestFundFromFaucet(sender.Address, conn.TestnetFaucetUrl)
 	if err != nil {
 		log.Panic(err)
 	}
-	log.Println("digest: ", digest)
 
 	packageID, err := sui_types.PackageIDFromHex("")
 	if err != nil {

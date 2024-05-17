@@ -33,7 +33,7 @@ func (i *ImplSuiAPI) WithSignerAndFund(mnemonic string) (*ImplSuiAPI, *sui_signe
 	default:
 		panic("not supported network")
 	}
-	_, err = RequestFundFromFaucet(signer.Address, faucetUrl)
+	err = RequestFundFromFaucet(signer.Address, faucetUrl)
 	if err != nil {
 		panic(err)
 	}

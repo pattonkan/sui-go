@@ -16,15 +16,6 @@ type BuilderArg struct {
 	ForcedNonUniquePure *uint
 }
 
-// func (b BuilderArg) String() string {
-// 	// TODO we can implement our own hash func for go structs
-// 	hash, err := hashstructure.Hash(b, hashstructure.FormatV2, nil)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return strconv.FormatUint(hash, 10)
-// }
-
 func (b BuilderArg) GetHash() uint64 {
 	// TODO we can implement our own hash func for go structs
 	hash, err := hashstructure.Hash(b, hashstructure.FormatV2, nil)
