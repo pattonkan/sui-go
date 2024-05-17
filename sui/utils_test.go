@@ -13,11 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AddressFromStrMust(str string) *sui_types.SuiAddress {
-	s, _ := sui_types.SuiAddressFromHex(str)
-	return s
-}
-
 // @return types.DryRunTransactionBlockResponse
 func dryRunTxn(
 	t *testing.T,

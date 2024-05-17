@@ -24,7 +24,7 @@ func BuildAndDeployIscContracts(t *testing.T, client *Client, signer *sui_signer
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 
@@ -43,7 +43,7 @@ func BuildDeployMintTestcoin(t *testing.T, client *Client, signer *sui_signer.Si
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 
@@ -64,7 +64,7 @@ func BuildDeployMintTestcoin(t *testing.T, client *Client, signer *sui_signer.Si
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnRes.Effects.Data.V1.Status.Status)
+	require.True(t, txnRes.Effects.Data.IsSuccess())
 
 	return packageID, treasuryCap
 }

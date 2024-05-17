@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -23,14 +24,15 @@ func MoveBuild(contractPath string) (*CompiledMoveModules, error) {
 	// cmd := exec.Command("sui", "move", "build", "--dump-bytecode-as-base64", "--skip-fetch-latest-git-deps")
 	cmd.Dir = contractPath
 
-	output, err := cmd.Output()
-	if err != nil {
-		// FIXME propagate the stderr message
-		return nil, fmt.Errorf("failed to execute sui cli: %w", err)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("failed to execute sui cli: %w, stderr: '%s'", err, stderr.String())
 	}
 
 	var modules CompiledMoveModules
-	err = json.Unmarshal(output, &modules)
+	err = json.Unmarshal(stdout.Bytes(), &modules)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse move build result: %w", err)
 	}

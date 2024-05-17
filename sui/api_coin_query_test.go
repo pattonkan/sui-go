@@ -41,8 +41,8 @@ func TestGetAllCoins(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "test case 1",
-			a:    sui.NewSuiClient(conn.DevnetEndpointUrl),
+			name: "successful case",
+			a:    sui.NewSuiClient(conn.TestnetEndpointUrl),
 			args: args{
 				ctx:     context.TODO(),
 				address: sui_signer.TEST_ADDRESS,
@@ -60,7 +60,9 @@ func TestGetAllCoins(t *testing.T) {
 					t.Errorf("GetAllCoins() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				t.Logf("%#v", got)
+				// we have called multiple times RequestFundFromFaucet() on testnet, so the account have several SUI objects.
+				require.Len(t, got.Data, 3)
+				require.NotNil(t, got.NextCursor)
 			},
 		)
 	}
@@ -81,18 +83,29 @@ func TestGetCoinMetadata(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	metadata, err := api.GetCoinMetadata(context.TODO(), models.SuiCoinType)
 	require.NoError(t, err)
-	t.Logf("%#v", metadata)
+
+	testSuiMetadata := &models.SuiCoinMetadata{
+		Decimals:    9,
+		Description: "",
+		IconUrl:     "",
+		Id:          sui_types.MustObjectIDFromHex("0xe2b963d0f0812976c48f0f22536041b9de1518516962a0ac56df63ce61757baf"),
+		Name:        "Sui",
+		Symbol:      "SUI",
+	}
+	require.Equal(t, testSuiMetadata, metadata)
 }
 
 func TestGetCoins(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	defaultCoinType := models.SuiCoinType
-	coins, err := api.GetCoins(context.TODO(), sui_signer.TEST_ADDRESS, &defaultCoinType, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), sui_signer.TEST_ADDRESS, &defaultCoinType, nil, 3)
 	require.NoError(t, err)
-	t.Logf("%#v", coins)
-	require.GreaterOrEqual(t, len(coins.Data), 0)
-	require.Equal(t, models.SuiCoinType, coins.Data[0].CoinType)
-	require.Greater(t, coins.Data[0].Balance.Int64(), int64(0))
+
+	require.Len(t, coins.Data, 3)
+	for _, data := range coins.Data {
+		require.Equal(t, models.SuiCoinType, data.CoinType)
+		require.Greater(t, data.Balance.Int64(), int64(0))
+	}
 }
 
 func TestGetTotalSupply(t *testing.T) {
@@ -109,7 +122,7 @@ func TestGetTotalSupply(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "test 1",
+			name: "get Sui supply",
 			api:  sui.NewSuiClient(conn.DevnetEndpointUrl),
 			args: args{
 				context.TODO(),
@@ -126,7 +139,8 @@ func TestGetTotalSupply(t *testing.T) {
 					t.Errorf("GetTotalSupply() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				t.Logf("%d", got)
+				targetSupply := &models.Supply{Value: models.NewSafeSuiBigInt(uint64(10000000000000000000))}
+				require.Equal(t, targetSupply, got)
 			},
 		)
 	}

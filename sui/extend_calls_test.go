@@ -40,7 +40,7 @@ func TestMintToken(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnRes.Effects.Data.V1.Status.Status)
+	require.True(t, txnRes.Effects.Data.IsSuccess())
 	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
 
 	// all the minted tokens were sent to the signer, so we should find a single object contains all the minted token
@@ -65,7 +65,7 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 

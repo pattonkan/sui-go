@@ -2,6 +2,7 @@ package sui_test
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/howjmay/sui-go/models"
@@ -13,19 +14,29 @@ import (
 )
 
 func TestGetEvents(t *testing.T) {
-	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	digest, err := sui_types.NewDigest("3vVi8XZgNpzQ34PFgwJTQqWtPMU84njcBX1EUxUHhyDk")
 	require.NoError(t, err)
-	res, err := api.GetEvents(context.Background(), digest)
+	events, err := client.GetEvents(context.Background(), digest)
 	require.NoError(t, err)
-	t.Log(res)
+	require.Len(t, events, 1)
+	for _, event := range events {
+		require.Equal(t, digest, &event.Id.TxDigest)
+		require.Equal(t, sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"), &event.PackageId)
+		require.Equal(t, "clob_v2", event.TransactionModule)
+		require.Equal(t, sui_types.MustSuiAddressFromHex("0xf0f13f7ef773c6246e87a8f059a684d60773f85e992e128b8272245c38c94076"), &event.Sender)
+		require.Equal(t, "0xdee9::clob_v2::OrderPlaced<0x2::sui::SUI, 0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>", event.Type)
+		// TODO check ParsedJson map
+	}
 }
 
 func TestGetLatestCheckpointSequenceNumber(t *testing.T) {
-	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	res, err := api.GetLatestCheckpointSequenceNumber(context.Background())
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	sequenceNumber, err := client.GetLatestCheckpointSequenceNumber(context.Background())
 	require.NoError(t, err)
-	t.Log(res)
+	num, err := strconv.Atoi(sequenceNumber)
+	require.NoError(t, err)
+	require.Greater(t, num, 34317507)
 }
 
 func TestGetObject(t *testing.T) {

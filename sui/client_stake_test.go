@@ -17,27 +17,6 @@ const (
 	ComingChatValidatorAddress = "0x520289e77c838bae8501ae92b151b99a54407288fdd20dee6e5416bfe943eb7a"
 )
 
-func TestGetDelegatedStakes(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-
-	address, err := sui_types.SuiAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
-	require.NoError(t, err)
-	stakes, err := api.GetStakes(context.Background(), address)
-	require.NoError(t, err)
-
-	for _, validator := range stakes {
-		for _, stake := range validator.Stakes {
-			if stake.Data.StakeStatus.Data.Active != nil {
-				t.Logf(
-					"earned amount %10v at %v",
-					stake.Data.StakeStatus.Data.Active.EstimatedReward.Uint64(),
-					validator.ValidatorAddress,
-				)
-			}
-		}
-	}
-}
-
 func TestRequestAddDelegation(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_signer.TEST_ADDRESS

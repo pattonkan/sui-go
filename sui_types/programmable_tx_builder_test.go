@@ -17,7 +17,7 @@ func TestTransferSui(t *testing.T) {
 	err = ptb.TransferSui(recipient, &amount)
 	require.NoError(t, err)
 	pt := ptb.Finish()
-	digest := sui_types.NewDigestMust("HvbE2UZny6cP4KukaXetmj4jjpKTDTjVo23XEcu7VgSn")
+	digest := sui_types.MustNewDigest("HvbE2UZny6cP4KukaXetmj4jjpKTDTjVo23XEcu7VgSn")
 	objectId, err := sui_types.SuiAddressFromHex("0x13c1c3d0e15b4039cec4291c75b77c972c10c8e8e70ab4ca174cf336917cb4db")
 	require.NoError(t, err)
 	tx := sui_types.NewProgrammable(

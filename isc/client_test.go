@@ -39,7 +39,7 @@ func TestStartNewChain(t *testing.T) {
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 	t.Log("packageID: ", packageID)
@@ -55,7 +55,7 @@ func TestStartNewChain(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 	t.Logf("StartNewChain response: %#v\n", startNewChainRes)
 }
 
@@ -84,7 +84,7 @@ func TestSendCoin(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 
 	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
 	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
@@ -105,7 +105,7 @@ func TestSendCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendCoinRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err := client.GetObject(context.Background(), coins.Data[0].CoinObjectID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -138,7 +138,7 @@ func TestReceiveCoin(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 
 	var assets1, assets2 *isc.Assets
 	for _, change := range startNewChainRes.ObjectChanges {
@@ -168,7 +168,7 @@ func TestReceiveCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendCoinRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err := client.GetObject(context.Background(), coins.Data[0].CoinObjectID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -186,7 +186,7 @@ func TestReceiveCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, receiveCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, receiveCoinRes.Effects.Data.IsSuccess())
 	assets2, err = client.GetAssets(context.Background(), iscPackageID, anchorObjID)
 	require.NoError(t, err)
 	require.Len(t, assets2.Coins, 1)
@@ -234,7 +234,7 @@ func TestCreateRequest(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	_, _, err = sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -283,7 +283,7 @@ func TestSendRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -303,7 +303,7 @@ func TestSendRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -353,7 +353,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -373,7 +373,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -391,7 +391,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, receiveReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, receiveReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)

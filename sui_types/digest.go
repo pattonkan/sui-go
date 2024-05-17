@@ -13,7 +13,7 @@ func NewDigest(str string) (*Digest, error) {
 	return NewBase58(str)
 }
 
-func NewDigestMust(str string) *Digest {
+func MustNewDigest(str string) *Digest {
 	digest, err := NewBase58(str)
 	if err != nil {
 		panic(err)

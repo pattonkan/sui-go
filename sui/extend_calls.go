@@ -43,7 +43,7 @@ func (s *ImplSuiAPI) SignAndExecuteTransaction(
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute transaction: %w", err)
 	}
-	if options.ShowEffects && resp.Effects.Data.V1.Status.Status != models.ExecutionStatusSuccess {
+	if options.ShowEffects && !resp.Effects.Data.IsSuccess() {
 		return resp, fmt.Errorf("failed to execute transaction: %v", resp.Effects.Data.V1.Status)
 	}
 	return resp, nil
