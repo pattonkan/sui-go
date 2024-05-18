@@ -13,13 +13,13 @@ const (
 	SignatureFlagEd25519   = 0x0
 	SignatureFlagSecp256k1 = 0x1
 
-	DerivationPathEd25519   = `m/44'/784'/0'/0'/0'`
-	DerivationPathSecp256k1 = `m/54'/784'/0'/0/0`
+	DerivationPathEd25519   = `m/44'/4218'/0'/0'/0'`
+	DerivationPathSecp256k1 = `m/54'/4218'/0'/0/0`
 )
 
 var (
 	TEST_MNEMONIC = "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-	TEST_ADDRESS  = sui_types.MustSuiAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
+	TEST_ADDRESS  = sui_types.MustSuiAddressFromHex("0x786dff8a4ee13d45b502c8f22f398e3517e6ec78aa4ae564c348acb07fad7f50")
 )
 
 // FIXME support more than ed25519
@@ -33,7 +33,7 @@ func NewSigner(seed []byte) *Signer {
 	prikey := ed25519.NewKeyFromSeed(seed[:])
 	pubkey := prikey.Public().(ed25519.PublicKey)
 
-	buf := append([]byte{FlagEd25519.Byte()}, pubkey...)
+	buf := append([]byte{ /*FlagEd25519.Byte()*/ }, pubkey...)
 	addrBytes := blake2b.Sum256(buf)
 	addr := "0x" + hex.EncodeToString(addrBytes[:])
 
