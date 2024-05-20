@@ -42,7 +42,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, client, txBytes, true)
+	dryRunTxn(t, client, txBytes, false)
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
@@ -67,5 +67,5 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txBytes, true)
+	dryRunTxn(t, api, txBytes, false)
 }

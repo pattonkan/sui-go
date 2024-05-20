@@ -24,8 +24,8 @@ func NewProgrammable(
 	sender *SuiAddress,
 	pt ProgrammableTransaction,
 	gasPayment []*ObjectRef,
-	gasBudget uint64,
-	gasPrice uint64,
+	gasBudget uint64, // TODO set this to bigint
+	gasPrice uint64, // TODO set this to bigint
 ) TransactionData {
 	return NewProgrammableAllowSponsor(*sender, pt, gasPayment, gasBudget, gasPrice, *sender)
 }
@@ -34,8 +34,8 @@ func NewProgrammableAllowSponsor(
 	sender SuiAddress,
 	pt ProgrammableTransaction,
 	gasPayment []*ObjectRef,
-	gasBudget,
-	gasPrice uint64,
+	gasBudget uint64, // TODO set this to bigint
+	gasPrice uint64, // TODO set this to bigint
 	sponsor SuiAddress,
 ) TransactionData {
 	kind := TransactionKind{

@@ -48,7 +48,7 @@ func TestPTB_PaySui(t *testing.T) {
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
 
-	resp := dryRunTxn(t, api, txBytesBCS, true)
+	resp := dryRunTxn(t, api, txBytesBCS, false)
 	gasFee := resp.Effects.Data.GasFee()
 	t.Log(gasFee)
 
@@ -233,7 +233,7 @@ func TestPTB_Pay(t *testing.T) {
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
 
-	resp := dryRunTxn(t, api, txBytesBCS, true)
+	resp := dryRunTxn(t, api, txBytesBCS, false)
 	gasfee := resp.Effects.Data.GasFee()
 	t.Log(gasfee)
 

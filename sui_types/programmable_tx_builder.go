@@ -115,6 +115,7 @@ func (p *ProgrammableTransactionBuilder) MustPure(value any) Argument {
 	return p.pureBytes(pureData, false)
 }
 
+// refer crates/sui-types/src/programmable_transaction_builder.rs
 func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error) {
 	id := objArg.id()
 	var oj ObjectArg
@@ -195,6 +196,7 @@ func (p *ProgrammableTransactionBuilder) MakeObjList(objs []ObjectArg) (Argument
 	return arg, nil
 }
 
+// Add command to `ProgrammableTransactionBuilder.Commands`, and return the result in `Argument` type
 func (p *ProgrammableTransactionBuilder) Command(command Command) Argument {
 	p.Commands = append(p.Commands, command)
 	i := uint16(len(p.Commands)) - 1
@@ -301,17 +303,6 @@ func (p *ProgrammableTransactionBuilder) MoveCall(
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) PaySui(
-	recipients []*SuiAddress,
-	amounts []uint64,
-) error {
-	return p.PayMulInternal(
-		recipients, amounts, Argument{
-			GasCoin: &serialization.EmptyEnum{},
-		},
-	)
-}
-
 func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error {
 	recArg, err := p.Pure(recipient)
 	if err != nil {
@@ -328,30 +319,30 @@ func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error 
 	return nil
 }
 
+func (p *ProgrammableTransactionBuilder) PaySui(
+	recipients []*SuiAddress,
+	amounts []uint64,
+) error {
+	return p.payImpl(recipients, amounts, Argument{GasCoin: &serialization.EmptyEnum{}})
+}
+
 func (p *ProgrammableTransactionBuilder) Pay(
 	coins []*ObjectRef,
 	recipients []*SuiAddress,
 	amounts []uint64,
 ) error {
 	if len(coins) == 0 {
-		return errors.New("coins is empty")
+		return errors.New("coins vector is empty")
 	}
-	coinArg, err := p.Obj(
-		ObjectArg{
-			ImmOrOwnedObject: coins[0],
-		},
-	)
-	coins = coins[1:]
+	coinArg, err := p.Obj(ObjectArg{ImmOrOwnedObject: coins[0]})
 	if err != nil {
 		return err
 	}
+	coins = coins[1:]
+
 	var mergeArgs []Argument
 	for _, v := range coins {
-		mergeCoin, err := p.Obj(
-			ObjectArg{
-				ImmOrOwnedObject: v,
-			},
-		)
+		mergeCoin, err := p.Obj(ObjectArg{ImmOrOwnedObject: v})
 		if err != nil {
 			return err
 		}
@@ -367,12 +358,15 @@ func (p *ProgrammableTransactionBuilder) Pay(
 			},
 		)
 	}
-	return p.PayMulInternal(recipients, amounts, coinArg)
+	return p.payImpl(recipients, amounts, coinArg)
 }
 
-func (p *ProgrammableTransactionBuilder) PayMulInternal(
+// And the commands to pay coins to multiple
+// golang implementation of pay_impl() in `sui/crates/sui-types/src/programmable_transaction_builder.rs`
+func (p *ProgrammableTransactionBuilder) payImpl(
 	recipients []*SuiAddress,
-	amounts []uint64, coin Argument,
+	amounts []uint64,
+	coin Argument,
 ) error {
 	if len(recipients) != len(amounts) {
 		return fmt.Errorf(
@@ -384,19 +378,21 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 	if len(amounts) == 0 {
 		return nil
 	}
-	var (
-		amtArgs              []Argument
-		recipientMap         = make(map[SuiAddress][]int)
-		recipientMapKeyIndex []SuiAddress
-	)
+
+	var amtArgs []Argument
+	// map[<recipients accounts>]<index in input amounts array>. The `[]int` array is `split_secondaries` in rust-sdk
+	var recipientMap = make(map[*SuiAddress][]int)
+	// this allows us to traverse the `recipientMap` with order (like indexmap)
+	var recipientMapKeyIndex []*SuiAddress
+
 	for i := 0; i < len(amounts); i++ {
 		amt, err := p.Pure(amounts[i])
 		if err != nil {
 			return err
 		}
-		recipientMap[*recipients[i]] = append(recipientMap[*recipients[i]], i)
-		if len(recipientMap[*recipients[i]]) == 1 {
-			recipientMapKeyIndex = append(recipientMapKeyIndex, *recipients[i])
+		recipientMap[recipients[i]] = append(recipientMap[recipients[i]], i)
+		if len(recipientMap[recipients[i]]) == 1 {
+			recipientMapKeyIndex = append(recipientMapKeyIndex, recipients[i])
 		}
 		amtArgs = append(amtArgs, amt)
 	}
@@ -418,13 +414,14 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 		}
 		var coins []Argument
 		for _, j := range recipientMap[v] {
-			sdCoin := Argument{
+			// the portions of the coins that slipt from the given coin, which are going to pay for recipients
+			coinTransfer := Argument{
 				NestedResult: &struct {
 					Result1 uint16
 					Result2 uint16
 				}{Result1: *splitCoinResult.Result, Result2: uint16(j)},
 			}
-			coins = append(coins, sdCoin)
+			coins = append(coins, coinTransfer)
 		}
 		p.Command(
 			Command{

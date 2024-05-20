@@ -98,10 +98,10 @@ func TestGetTotalTransactionBlocks(t *testing.T) {
 }
 
 func TestGetTransactionBlock(t *testing.T) {
-	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 	require.NoError(t, err)
-	resp, err := api.GetTransactionBlock(
+	resp, err := client.GetTransactionBlock(
 		context.Background(), digest, &models.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
 			ShowEffects:        true,
@@ -111,9 +111,21 @@ func TestGetTransactionBlock(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	t.Logf("%#v", resp)
 
+	gasCostSummary := models.GasCostSummary{
+		ComputationCost:         models.NewSafeSuiBigInt(uint64(750000)),
+		StorageCost:             models.NewSafeSuiBigInt(uint64(32383600)),
+		StorageRebate:           models.NewSafeSuiBigInt(uint64(21955032)),
+		NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(221768)),
+	}
+
+	require.Equal(t, digest, &resp.Digest)
+
+	require.True(t, resp.Effects.Data.IsSuccess())
+	require.Equal(t, int64(183), resp.Effects.Data.V1.ExecutedEpoch.Int64())
+	require.Equal(t, gasCostSummary, resp.Effects.Data.V1.GasUsed)
 	require.Equal(t, int64(11178568), resp.Effects.Data.GasFee())
+	// TODO check all the fields
 }
 
 func TestMultiGetObjects(t *testing.T) {

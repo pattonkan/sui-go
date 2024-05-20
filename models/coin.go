@@ -8,8 +8,8 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-const MAX_INPUT_COUNT_MERGE = 256 - 1
-const MAX_INPUT_COUNT_STAKE = 512 - 1
+const MAX_INPUT_COUNT_MERGE = 256 - 1 // TODO find reference in Sui monorepo repo
+const MAX_INPUT_COUNT_STAKE = 512 - 1 // TODO find reference in Sui monorepo repo
 
 type Coin struct {
 	CoinType     string                  `json:"coinType"`

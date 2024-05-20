@@ -2,6 +2,7 @@ package sui_types
 
 import "github.com/howjmay/sui-go/sui_types/serialization"
 
+// https://sdk.mystenlabs.com/typescript/transaction-building/basics#object-references
 type Command struct {
 	MoveCall        *ProgrammableMoveCall
 	TransferObjects *ProgrammableTransferObjects
@@ -19,9 +20,13 @@ type Command struct {
 func (c Command) IsBcsEnum() {}
 
 type Argument struct {
-	GasCoin      *serialization.EmptyEnum
-	Input        *uint16
-	Result       *uint16
+	GasCoin *serialization.EmptyEnum
+	// One of the input objects or primitive values (from `ProgrammableTransaction` inputs)
+	Input *uint16
+	// The result of another transaction (from `ProgrammableTransaction` transactions)
+	Result *uint16
+	// Like a `Result` but it accesses a nested result. Currently, the only usage of this is to access a
+	// value from a Move call with multiple return values.
 	NestedResult *struct {
 		Result1 uint16
 		Result2 uint16
