@@ -215,39 +215,85 @@ func TestPayAllSui(t *testing.T) {
 	// one output balance and one input balance
 	require.Len(t, simulate.BalanceChanges, 2)
 	for _, balChange := range simulate.BalanceChanges {
-		if balChange.Owner.AddressOwner == recipient.Address {
-			amt, _ := new(big.Int).SetString(balChange.Amount, 10)
-			require.Equal(t, totalBal, amt)
-		} else if balChange.Owner.AddressOwner == signer.Address {
+		if balChange.Owner.AddressOwner == signer.Address {
 			require.Equal(t, totalBal.Neg(totalBal), balChange.Amount)
+		} else if balChange.Owner.AddressOwner == recipient.Address {
+			require.Equal(t, totalBal, balChange.Amount)
 		}
 	}
 }
 
 func TestPaySui(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	signer := sui_signer.TEST_ADDRESS
-	recipient := sui_signer.TEST_ADDRESS
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
-	require.NoError(t, err)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	recipients := []*sui_signer.Signer{
+		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
+		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
+	}
 
-	amount := sui_types.SUI(0.001).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), gasBudget, 0, 0)
+	coinType := models.SuiCoinType
+	limit := uint(4)
+	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)
 	require.NoError(t, err)
+	coins := models.Coins(coinPages.Data)
 
-	txn, err := api.PaySui(
-		context.Background(), signer,
-		pickedCoins.CoinIds(),
-		[]*sui_types.SuiAddress{recipient},
-		[]models.SafeSuiBigInt[uint64]{
-			models.NewSafeSuiBigInt(amount),
+	sentAmounts := []uint64{123, 456, 789}
+	txn, err := client.PaySui(
+		context.Background(),
+		signer.Address,
+		coins.ObjectIDs(),
+		[]*sui_types.SuiAddress{
+			recipients[0].Address,
+			recipients[1].Address,
+			recipients[1].Address,
 		},
-		models.NewSafeSuiBigInt(gasBudget),
+		[]models.SafeSuiBigInt[uint64]{
+			models.NewSafeSuiBigInt(sentAmounts[0]), // to recipients[0]
+			models.NewSafeSuiBigInt(sentAmounts[1]), // to recipients[1]
+			models.NewSafeSuiBigInt(sentAmounts[2]), // to recipients[1]
+		},
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txn.TxBytes, true)
+	simulate, err := client.DryRunTransaction(context.Background(), txn.TxBytes)
+	require.NoError(t, err)
+	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+	require.True(t, simulate.Effects.Data.IsSuccess())
+
+	// 3 stands for the three amounts (3 crated SUI objects) in unsafe_paySui API
+	amountNum := uint(3)
+	require.Len(t, simulate.ObjectChanges, int(limit)+int(amountNum))
+	delObjNum := uint(0)
+	createdObjNum := uint(0)
+	for _, change := range simulate.ObjectChanges {
+		if change.Data.Mutated != nil {
+			require.Equal(t, *signer.Address, change.Data.Mutated.Sender)
+			require.Contains(t, coins.ObjectIDVals(), change.Data.Mutated.ObjectID)
+		} else if change.Data.Created != nil {
+			createdObjNum += 1
+			require.Equal(t, *signer.Address, change.Data.Created.Sender)
+		} else if change.Data.Deleted != nil {
+			delObjNum += 1
+		}
+	}
+
+	// all the input objects are merged into the first input object
+	// except the first input object, all the other input objects are deleted
+	require.Equal(t, limit-1, delObjNum)
+	// 1 for recipients[0], and 2 for recipients[1]
+	require.Equal(t, amountNum, createdObjNum)
+
+	// one output balance and one input balance for recipients[0] and one input balance for recipients[1]
+	require.Len(t, simulate.BalanceChanges, 3)
+	for _, balChange := range simulate.BalanceChanges {
+		if balChange.Owner.AddressOwner == signer.Address {
+			require.Equal(t, coins.TotalBalance().Neg(coins.TotalBalance()), balChange.Amount)
+		} else if balChange.Owner.AddressOwner == recipients[0].Address {
+			require.Equal(t, sentAmounts[0], balChange.Amount)
+		} else if balChange.Owner.AddressOwner == recipients[1].Address {
+			require.Equal(t, sentAmounts[1]+sentAmounts[2], balChange.Amount)
+		}
+	}
 }
 
 func TestPublish(t *testing.T) {

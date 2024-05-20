@@ -89,6 +89,7 @@ func (s *ImplSuiAPI) PayAllSui(
 	return &resp, s.http.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
 }
 
+// see explanation in https://forums.sui.io/t/how-to-use-the-sui-paysui-method/2282
 func (s *ImplSuiAPI) PaySui(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
