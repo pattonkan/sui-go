@@ -75,7 +75,7 @@ func (cs *PickedCoins) CoinRefs() []*sui_types.ObjectRef {
 
 // @return Min(total-target, 10e9) (10 SUI)
 func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
-	sub := big.NewInt(0).Sub(p.TotalAmount, p.TargetAmount).Uint64()
+	sub := new(big.Int).Sub(p.TotalAmount, p.TargetAmount).Uint64()
 	maxGas := uint64(10e9) // 10 Sui
 	if sub <= maxGas {
 		return sub
@@ -84,7 +84,7 @@ func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
 	}
 }
 
-// Select coins that match the target amount.
+// Select coins whose sum is greater or equal to the target amount.
 // @param inputCoins queried page coin data
 // @param targetAmount total amount of coins to be selected from inputCoins
 // @param gasBudget the transaction gas budget
@@ -93,10 +93,7 @@ func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
 // @throw ErrNoCoinsFound If the count of input coins is 0.
 // @throw ErrInsufficientBalance If the input coins are all that is left and the total amount is less than the target amount.
 // @throw ErrNeedMergeCoin If there are many coins, but the total amount of coins limited is less than the target amount.
-func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, limit int, moreCount int) (
-	*PickedCoins,
-	error,
-) {
+func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, limit int, moreCount int) (*PickedCoins, error) {
 	inputCount := len(inputCoins.Data)
 	if inputCount <= 0 {
 		return nil, ErrNoCoinsFound
@@ -110,13 +107,13 @@ func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, 
 	if moreCount > limit {
 		moreCount = limit
 	}
-	totalTarget := big.NewInt(0).Add(targetAmount, big.NewInt(0).SetUint64(gasBudget))
+	totalTarget := new(big.Int).Add(targetAmount, new(big.Int).SetUint64(gasBudget))
 	coins := inputCoins.Data
 
-	total := big.NewInt(0)
+	total := new(big.Int)
 	pickedCoins := []*Coin{}
 	for idx, coin := range coins {
-		total = total.Add(total, big.NewInt(0).SetUint64(coin.Balance.Uint64()))
+		total = total.Add(total, new(big.Int).SetUint64(coin.Balance.Uint64()))
 		pickedCoins = append(pickedCoins, coin)
 		if idx+1 > limit {
 			return nil, ErrNeedMergeCoin
@@ -132,7 +129,7 @@ func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, 
 		if inputCoins.HasNextPage {
 			return nil, ErrNeedMergeCoin
 		}
-		sub := big.NewInt(0).Sub(totalTarget, total)
+		sub := new(big.Int).Sub(totalTarget, total)
 		if sub.Uint64() > gasBudget {
 			return nil, ErrInsufficientBalance
 		}
@@ -147,9 +144,9 @@ func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, 
 type Coins []*Coin
 
 func (cs Coins) TotalBalance() *big.Int {
-	total := big.NewInt(0)
+	total := new(big.Int)
 	for _, coin := range cs {
-		total = total.Add(total, big.NewInt(0).SetUint64(coin.Balance.Uint64()))
+		total = total.Add(total, new(big.Int).SetUint64(coin.Balance.Uint64()))
 	}
 	return total
 }
@@ -175,6 +172,14 @@ func (cs Coins) CoinRefs() []*sui_types.ObjectRef {
 	return coinRefs
 }
 
+func (cs Coins) ObjectIDs() []*sui_types.ObjectID {
+	coinIDs := make([]*sui_types.ObjectID, len(cs))
+	for idx, coin := range cs {
+		coinIDs[idx] = coin.CoinObjectID
+	}
+	return coinIDs
+}
+
 const (
 	PickSmaller = iota // pick smaller coins to match amount
 	PickBigger         // pick bigger coins to match amount
@@ -191,7 +196,7 @@ func (cs Coins) PickSUICoinsWithGas(amount *big.Int, gasAmount uint64, pickMetho
 		return res, nil, err
 	}
 
-	if amount.Cmp(big.NewInt(0)) == 0 && gasAmount == 0 {
+	if amount.Cmp(new(big.Int)) == 0 && gasAmount == 0 {
 		return make(Coins, 0), nil, nil
 	} else if len(cs) == 0 {
 		return cs, nil, ErrCoinsNeedMoreObject
@@ -243,10 +248,10 @@ func (cs Coins) PickCoins(amount *big.Int, pickMethod int) (Coins, error) {
 	}
 
 	result := make(Coins, 0)
-	total := big.NewInt(0)
+	total := new(big.Int)
 	for _, coin := range sortedCoins {
 		result = append(result, coin)
-		total = new(big.Int).Add(total, big.NewInt(0).SetUint64(coin.Balance.Uint64()))
+		total = new(big.Int).Add(total, new(big.Int).SetUint64(coin.Balance.Uint64()))
 		if total.Cmp(amount) >= 0 {
 			return result, nil
 		}

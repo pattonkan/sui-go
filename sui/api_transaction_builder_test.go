@@ -133,12 +133,14 @@ func TestMoveCall(t *testing.T) {
 
 func TestPay(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.TEST_ADDRESS
-	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
+	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	coinType := models.SuiCoinType
+	coins, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, 10)
 	require.NoError(t, err)
 	limit := len(coins.Data) - 1 // need reserve a coin for gas
+	totalBal := models.Coins(coins.Data).TotalBalance().Uint64()
 
-	amount := sui.DefaultGasBudget / 10
+	amount := uint64(123)
 	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), sui.DefaultGasBudget, limit, 0)
 	require.NoError(t, err)
 
@@ -146,7 +148,7 @@ func TestPay(t *testing.T) {
 		context.Background(),
 		signer.Address,
 		pickedCoins.CoinIds(),
-		[]*sui_types.SuiAddress{recipient},
+		[]*sui_types.SuiAddress{recipient.Address},
 		[]models.SafeSuiBigInt[uint64]{
 			models.NewSafeSuiBigInt(amount),
 		},
@@ -159,22 +161,34 @@ func TestPay(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
-	// TODO check the simulate result in more detailed
+
+	require.Len(t, simulate.BalanceChanges, 2)
+	for _, balChange := range simulate.BalanceChanges {
+		if balChange.Owner.AddressOwner == recipient.Address {
+			require.Equal(t, amount, balChange.Amount)
+		} else if balChange.Owner.AddressOwner == signer.Address {
+			require.Equal(t, totalBal-amount, balChange.Amount)
+		}
+	}
 }
 
 func TestPayAllSui(t *testing.T) {
-	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.TEST_ADDRESS
-	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 3)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	coinType := models.SuiCoinType
+	limit := uint(3)
+	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)
 	require.NoError(t, err)
-
-	amount := sui.DefaultGasBudget / 10
-	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), sui.DefaultGasBudget, 3, 0)
-	require.NoError(t, err)
+	coins := models.Coins(coinPages.Data)
+	// assume the account holds more than 'limit' amount Sui token objects
+	require.Len(t, coinPages.Data, 3)
+	totalBal := coins.TotalBalance()
 
 	txn, err := client.PayAllSui(
-		context.Background(), signer.Address, recipient,
-		pickedCoins.CoinIds(),
+		context.Background(),
+		signer.Address,
+		recipient.Address,
+		coins.ObjectIDs(),
 		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
@@ -183,7 +197,24 @@ func TestPayAllSui(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
-	// TODO check the simulate result in more detailed
+
+	require.Len(t, simulate.ObjectChanges, int(limit))
+	for _, change := range simulate.ObjectChanges {
+		require.NotNil(t, change.Data.Mutated)
+		require.Equal(t, signer.Address, change.Data.Mutated.Sender)
+		require.Contains(t, coins.ObjectIDs(), change.Data.Mutated.ObjectID)
+	}
+
+	// one output balance and one input balance
+	require.Len(t, simulate.BalanceChanges, 2)
+	for _, balChange := range simulate.BalanceChanges {
+		if balChange.Owner.AddressOwner == recipient.Address {
+			amt, _ := new(big.Int).SetString(balChange.Amount, 10)
+			require.Equal(t, totalBal, amt)
+		} else if balChange.Owner.AddressOwner == signer.Address {
+			require.Equal(t, totalBal.Neg(totalBal), balChange.Amount)
+		}
+	}
 }
 
 func TestPaySui(t *testing.T) {
@@ -195,7 +226,7 @@ func TestPaySui(t *testing.T) {
 
 	amount := sui_types.SUI(0.001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	txn, err := api.PaySui(
@@ -213,7 +244,6 @@ func TestPaySui(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
@@ -229,8 +259,7 @@ func TestPublish(t *testing.T) {
 
 	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
-	gasBudget := uint64(1000000000)
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(1000000), gasBudget, 10, 10)
+	pickedCoins, err := models.PickupCoins(coins, big.NewInt(1000000), sui.DefaultGasBudget, 10, 10)
 	require.NoError(t, err)
 
 	txnBytes, err := client.Publish(
@@ -239,7 +268,7 @@ func TestPublish(t *testing.T) {
 		modules.Modules,
 		modules.Dependencies,
 		pickedCoins.CoinIds()[0],
-		models.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -251,26 +280,26 @@ func TestPublish(t *testing.T) {
 }
 
 func TestSplitCoin(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	signer := sui_signer.TEST_ADDRESS
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), 0, 1, 0)
 	require.NoError(t, err)
 	splitCoins := []models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount / 2)}
 
-	txn, err := api.SplitCoin(
-		context.Background(), signer,
+	txn, err := client.SplitCoin(
+		context.Background(),
+		signer.Address,
 		pickedCoins.Coins[0].CoinObjectID,
 		splitCoins,
-		nil, models.NewSafeSuiBigInt(gasBudget),
+		nil,
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txn.TxBytes, false)
+	dryRunTxn(t, client, txn.TxBytes, false)
 }
 
 func TestSplitCoinEqual(t *testing.T) {
@@ -280,15 +309,16 @@ func TestSplitCoinEqual(t *testing.T) {
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(0.01).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), 0, 1, 0)
 	require.NoError(t, err)
 
 	txn, err := api.SplitCoinEqual(
-		context.Background(), signer,
+		context.Background(),
+		signer,
 		pickedCoins.Coins[0].CoinObjectID,
 		models.NewSafeSuiBigInt(uint64(2)),
-		nil, models.NewSafeSuiBigInt(gasBudget),
+		nil,
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -327,7 +357,7 @@ func TestTransferSui(t *testing.T) {
 
 	amount := sui_types.SUI(0.0001).Uint64()
 	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 1, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), gasBudget, 1, 0)
 	require.NoError(t, err)
 
 	txn, err := api.TransferSui(

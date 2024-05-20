@@ -2,7 +2,9 @@ package sui_signer
 
 import (
 	"crypto/ed25519"
+	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/tyler-smith/go-bip39"
@@ -57,6 +59,14 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 		},
 		Address: sui_types.MustSuiAddressFromHex(addr),
 	}
+}
+
+func NewRandomSigner(flag KeySchemeFlag) *Signer {
+	seed := make([]byte, 32)
+	if _, err := rand.Read(seed); err != nil {
+		panic(fmt.Sprintln("Error generating random bytes:", err))
+	}
+	return NewSigner(seed, flag)
 }
 
 func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error) {
