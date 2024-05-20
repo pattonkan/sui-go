@@ -48,7 +48,7 @@ func TestMergeCoins(t *testing.T) {
 }
 
 func TestMoveCall(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
 	// directly build (need sui toolchain)
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/sdk_verify/")
@@ -62,7 +62,7 @@ func TestMoveCall(t *testing.T) {
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		sui_signer.TEST_ADDRESS,
+		signer.Address,
 		modules.Modules,
 		modules.Dependencies,
 		nil,
@@ -79,7 +79,7 @@ func TestMoveCall(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 
@@ -108,7 +108,7 @@ func TestMoveCall(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	queryEventsRes, err := client.QueryEvents(
 		context.Background(),
@@ -129,58 +129,61 @@ func TestMoveCall(t *testing.T) {
 
 	require.Equal(t, []byte("haha"), res[0])
 	require.Equal(t, []byte("gogo"), res[1])
-	// // try dry-run
-	// dryRunTxn(t, client, txnBytes.TxBytes, true)
 }
 
 func TestPay(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	signer := sui_signer.TEST_ADDRESS
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	recipient := sui_signer.TEST_ADDRESS
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
 	limit := len(coins.Data) - 1 // need reserve a coin for gas
 
-	amount := sui_types.SUI(0.001).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, limit, 0)
+	amount := sui.DefaultGasBudget / 10
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), sui.DefaultGasBudget, limit, 0)
 	require.NoError(t, err)
 
-	txn, err := api.Pay(
-		context.Background(), signer,
+	txn, err := client.Pay(
+		context.Background(),
+		signer.Address,
 		pickedCoins.CoinIds(),
 		[]*sui_types.SuiAddress{recipient},
 		[]models.SafeSuiBigInt[uint64]{
 			models.NewSafeSuiBigInt(amount),
 		},
 		nil,
-		models.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txn.TxBytes, true)
+	simulate, err := client.DryRunTransaction(context.Background(), txn.TxBytes)
+	require.NoError(t, err)
+	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+	require.True(t, simulate.Effects.Data.IsSuccess())
+	// TODO check the simulate result in more detailed
 }
 
 func TestPayAllSui(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	signer := sui_signer.TEST_ADDRESS
-	recipient := signer
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	recipient := sui_signer.TEST_ADDRESS
+	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 3)
 	require.NoError(t, err)
 
-	amount := sui_types.SUI(0.001).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), gasBudget, 0, 0)
+	amount := sui.DefaultGasBudget / 10
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), sui.DefaultGasBudget, 3, 0)
 	require.NoError(t, err)
 
-	txn, err := api.PayAllSui(
-		context.Background(), signer, recipient,
+	txn, err := client.PayAllSui(
+		context.Background(), signer.Address, recipient,
 		pickedCoins.CoinIds(),
-		models.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txn.TxBytes, true)
+	simulate, err := client.DryRunTransaction(context.Background(), txn.TxBytes)
+	require.NoError(t, err)
+	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+	require.True(t, simulate.Effects.Data.IsSuccess())
+	// TODO check the simulate result in more detailed
 }
 
 func TestPaySui(t *testing.T) {
@@ -211,11 +214,8 @@ func TestPaySui(t *testing.T) {
 
 func TestPublish(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
-	err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
-	require.NoError(t, err)
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
 	// require.NoError(t, err)
@@ -247,7 +247,7 @@ func TestPublish(t *testing.T) {
 		ShowEffects: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 }
 
 func TestSplitCoin(t *testing.T) {

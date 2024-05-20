@@ -21,25 +21,20 @@ type Client struct {
 
 func TestStartNewChain(t *testing.T) {
 	t.Skip("only for localnet")
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 	t.Log("packageID: ", packageID)
@@ -55,19 +50,14 @@ func TestStartNewChain(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 	t.Logf("StartNewChain response: %#v\n", startNewChainRes)
 }
 
 func TestSendCoin(t *testing.T) {
 	t.Skip("only for localnet")
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
@@ -84,7 +74,7 @@ func TestSendCoin(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 
 	anchorObjID, _, err := sui.GetCreatedObjectIdAndType(startNewChainRes, "anchor", "Anchor")
 	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
@@ -105,7 +95,7 @@ func TestSendCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendCoinRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err := client.GetObject(context.Background(), coins.Data[0].CoinObjectID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -115,13 +105,8 @@ func TestSendCoin(t *testing.T) {
 func TestReceiveCoin(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
@@ -138,7 +123,7 @@ func TestReceiveCoin(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, startNewChainRes.Effects.Data.V1.Status.Status)
+	require.True(t, startNewChainRes.Effects.Data.IsSuccess())
 
 	var assets1, assets2 *isc.Assets
 	for _, change := range startNewChainRes.ObjectChanges {
@@ -168,7 +153,7 @@ func TestReceiveCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendCoinRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err := client.GetObject(context.Background(), coins.Data[0].CoinObjectID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -186,7 +171,7 @@ func TestReceiveCoin(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, receiveCoinRes.Effects.Data.V1.Status.Status)
+	require.True(t, receiveCoinRes.Effects.Data.IsSuccess())
 	assets2, err = client.GetAssets(context.Background(), iscPackageID, anchorObjID)
 	require.NoError(t, err)
 	require.Len(t, assets2.Coins, 1)
@@ -195,13 +180,8 @@ func TestReceiveCoin(t *testing.T) {
 func TestCreateRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 
@@ -234,7 +214,7 @@ func TestCreateRequest(t *testing.T) {
 			ShowObjectChanges: true,
 		})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	_, _, err = sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -243,13 +223,8 @@ func TestCreateRequest(t *testing.T) {
 func TestSendRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 
@@ -283,7 +258,7 @@ func TestSendRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -303,7 +278,7 @@ func TestSendRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -313,13 +288,8 @@ func TestSendRequest(t *testing.T) {
 func TestReceiveRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 
@@ -353,7 +323,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, createReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, createReqRes.Effects.Data.IsSuccess())
 
 	reqObjID, _, err := sui.GetCreatedObjectIdAndType(createReqRes, "request", "Request")
 	require.NoError(t, err)
@@ -373,7 +343,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, sendReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, sendReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)
@@ -391,7 +361,7 @@ func TestReceiveRequest(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, receiveReqRes.Effects.Data.V1.Status.Status)
+	require.True(t, receiveReqRes.Effects.Data.IsSuccess())
 
 	getObjectRes, err = client.GetObject(context.Background(), reqObjID, &models.SuiObjectDataOptions{ShowOwner: true})
 	require.NoError(t, err)

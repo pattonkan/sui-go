@@ -17,14 +17,14 @@ func BuildAndDeployIscContracts(t *testing.T, client *Client, signer *sui_signer
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 
@@ -36,14 +36,14 @@ func BuildDeployMintTestcoin(t *testing.T, client *Client, signer *sui_signer.Si
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin/")
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 
@@ -64,7 +64,7 @@ func BuildDeployMintTestcoin(t *testing.T, client *Client, signer *sui_signer.Si
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnRes.Effects.Data.V1.Status.Status)
+	require.True(t, txnRes.Effects.Data.IsSuccess())
 
 	return packageID, treasuryCap
 }

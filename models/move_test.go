@@ -19,16 +19,16 @@ func TestNewResourceType(t *testing.T) {
 		{
 			name: "sample",
 			str:  "0x23::coin::Xxxx",
-			want: &models.ResourceType{addressFromHex(t, "0x23"), "coin", "Xxxx", nil},
+			want: &models.ResourceType{sui_types.MustSuiAddressFromHex("0x23"), "coin", "Xxxx", nil},
 		},
 		{
 			name: "three level",
 			str:  "0xabc::Coin::Xxxx<0x789::AAA::ppp<0x111::mod3::func3>>",
 			want: &models.ResourceType{
-				addressFromHex(t, "0xabc"), "Coin", "Xxxx",
+				sui_types.MustSuiAddressFromHex("0xabc"), "Coin", "Xxxx",
 				&models.ResourceType{
-					addressFromHex(t, "0x789"), "AAA", "ppp",
-					&models.ResourceType{addressFromHex(t, "0x111"), "mod3", "func3", nil},
+					sui_types.MustSuiAddressFromHex("0x789"), "AAA", "ppp",
+					&models.ResourceType{sui_types.MustSuiAddressFromHex("0x111"), "mod3", "func3", nil},
 				},
 			},
 		},
@@ -85,15 +85,15 @@ func TestResourceType_ShortString(t *testing.T) {
 		want string
 	}{
 		{
-			arg:  &models.ResourceType{addressFromHex(t, "0x1"), "m1", "f1", nil},
+			arg:  &models.ResourceType{sui_types.MustSuiAddressFromHex("0x1"), "m1", "f1", nil},
 			want: "0x1::m1::f1",
 		},
 		{
 			arg: &models.ResourceType{
-				addressFromHex(t, "0x1"), "m1", "f1",
+				sui_types.MustSuiAddressFromHex("0x1"), "m1", "f1",
 				&models.ResourceType{
-					addressFromHex(t, "2"), "m2", "f2",
-					&models.ResourceType{addressFromHex(t, "0x123abcdef"), "m3", "f3", nil},
+					sui_types.MustSuiAddressFromHex("2"), "m2", "f2",
+					&models.ResourceType{sui_types.MustSuiAddressFromHex("0x123abcdef"), "m3", "f3", nil},
 				},
 			},
 			want: "0x1::m1::f1<0x2::m2::f2<0x123abcdef::m3::f3>>",
@@ -108,10 +108,4 @@ func TestResourceType_ShortString(t *testing.T) {
 			},
 		)
 	}
-}
-
-func addressFromHex(t *testing.T, hex string) *sui_types.SuiAddress {
-	addr, err := sui_types.SuiAddressFromHex(hex)
-	require.NoError(t, err)
-	return addr
 }

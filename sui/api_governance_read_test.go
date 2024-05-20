@@ -14,17 +14,38 @@ func TestGetLatestSuiSystemState(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	state, err := api.GetLatestSuiSystemState(context.Background())
 	require.NoError(t, err)
-	t.Logf("system state: %v", state)
+	require.NotNil(t, state)
 }
 
 func TestGetReferenceGasPrice(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	gasPrice, err := api.GetReferenceGasPrice(context.Background())
 	require.NoError(t, err)
-	t.Logf("current gas price: %v", gasPrice)
+	require.GreaterOrEqual(t, gasPrice.Int64(), int64(1000))
 }
 
-// TODO Add TestGetStakes
+func TestGetStakes(t *testing.T) {
+	// FIXME change the valid staking sui address
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+
+	address, err := sui_types.SuiAddressFromHex("0x8ecaf4b95b3c82c712d3ddb22e7da88d2286c4653f3753a86b6f7a216a3ca518")
+	require.NoError(t, err)
+	stakes, err := client.GetStakes(context.Background(), address)
+	require.NoError(t, err)
+	require.Greater(t, len(stakes), 0)
+	for _, validator := range stakes {
+		require.Equal(t, address, &validator.ValidatorAddress)
+		for _, stake := range validator.Stakes {
+			if stake.Data.StakeStatus.Data.Active != nil {
+				t.Logf(
+					"earned amount %10v at %v",
+					stake.Data.StakeStatus.Data.Active.EstimatedReward.Uint64(),
+					validator.ValidatorAddress,
+				)
+			}
+		}
+	}
+}
 
 func TestGetStakesByIds(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)

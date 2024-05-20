@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSuiAddressFromHex(t *testing.T) {
-	addr := addressFromHex(t, "0x2")
-	require.Equal(t, addr.ShortString(), "0x2")
-	t.Log(addr)
-}
-
 func TestObjectOwnerJsonENDE(t *testing.T) {
 	{
 		var dataStruct struct {

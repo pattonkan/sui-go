@@ -18,11 +18,7 @@ import (
 )
 
 func TestMintToken(t *testing.T) {
-	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-	err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
-	require.NoError(t, err)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
 	// module name is 'testcoin'
 	tokenPackageID, treasuryCap := deployTestcoin(t, client, signer)
@@ -40,7 +36,7 @@ func TestMintToken(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnRes.Effects.Data.V1.Status.Status)
+	require.True(t, txnRes.Effects.Data.IsSuccess())
 	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
 
 	// all the minted tokens were sent to the signer, so we should find a single object contains all the minted token
@@ -58,14 +54,21 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(
+		context.Background(),
+		signer.Address,
+		modules.Modules,
+		modules.Dependencies,
+		nil,
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget*10),
+	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,
 		ShowObjectChanges: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, models.ExecutionStatusSuccess, txnResponse.Effects.Data.V1.Status.Status)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
 	packageID := txnResponse.GetPublishedPackageID()
 

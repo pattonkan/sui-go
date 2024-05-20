@@ -36,12 +36,12 @@ func (r *ExecuteTransactionResponse) TransactionDigest() string {
 }
 
 type SuiCoinMetadata struct {
-	Decimals    uint8              `json:"decimals"`
-	Description string             `json:"description"`
-	IconUrl     string             `json:"iconUrl,omitempty"`
-	Id          sui_types.ObjectID `json:"id"`
-	Name        string             `json:"name"`
-	Symbol      string             `json:"symbol"`
+	Decimals    uint8               `json:"decimals"`
+	Description string              `json:"description"`
+	IconUrl     string              `json:"iconUrl,omitempty"`
+	Id          *sui_types.ObjectID `json:"id"`
+	Name        string              `json:"name"`
+	Symbol      string              `json:"symbol"`
 }
 
 type DevInspectResult struct {

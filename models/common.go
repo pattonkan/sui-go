@@ -85,7 +85,9 @@ type ObjectOwner struct {
 
 type Page[T SuiTransactionBlockResponse | SuiEvent | Coin | *Coin | SuiObjectResponse | DynamicFieldInfo | string,
 	C sui_types.TransactionDigest | EventId | sui_types.ObjectID] struct {
-	Data        []T  `json:"data"`
+	Data []T `json:"data"`
+	// 'NextCursor' points to the last item in the page.
+	// Reading with next_cursor will start from the next item after next_cursor
 	NextCursor  *C   `json:"nextCursor,omitempty"`
 	HasNextPage bool `json:"hasNextPage"`
 }
