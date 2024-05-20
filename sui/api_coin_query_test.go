@@ -80,15 +80,14 @@ func TestGetBalance(t *testing.T) {
 }
 
 func TestGetCoinMetadata(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
+	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	metadata, err := api.GetCoinMetadata(context.TODO(), models.SuiCoinType)
 	require.NoError(t, err)
-
 	testSuiMetadata := &models.SuiCoinMetadata{
 		Decimals:    9,
 		Description: "",
 		IconUrl:     "",
-		Id:          sui_types.MustObjectIDFromHex("0xe2b963d0f0812976c48f0f22536041b9de1518516962a0ac56df63ce61757baf"),
+		Id:          sui_types.MustObjectIDFromHex("0x587c29de216efd4219573e08a1f6964d4fa7cb714518c2c8a0f29abfa264327d"),
 		Name:        "Sui",
 		Symbol:      "SUI",
 	}

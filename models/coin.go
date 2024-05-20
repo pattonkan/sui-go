@@ -180,6 +180,14 @@ func (cs Coins) ObjectIDs() []*sui_types.ObjectID {
 	return coinIDs
 }
 
+func (cs Coins) ObjectIDVals() []sui_types.ObjectID {
+	coinIDs := make([]sui_types.ObjectID, len(cs))
+	for idx, coin := range cs {
+		coinIDs[idx] = *coin.CoinObjectID
+	}
+	return coinIDs
+}
+
 const (
 	PickSmaller = iota // pick smaller coins to match amount
 	PickBigger         // pick bigger coins to match amount

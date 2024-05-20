@@ -199,11 +199,18 @@ func TestPayAllSui(t *testing.T) {
 	require.True(t, simulate.Effects.Data.IsSuccess())
 
 	require.Len(t, simulate.ObjectChanges, int(limit))
+	delObjNum := uint(0)
 	for _, change := range simulate.ObjectChanges {
-		require.NotNil(t, change.Data.Mutated)
-		require.Equal(t, signer.Address, change.Data.Mutated.Sender)
-		require.Contains(t, coins.ObjectIDs(), change.Data.Mutated.ObjectID)
+		if change.Data.Mutated != nil {
+			require.Equal(t, *signer.Address, change.Data.Mutated.Sender)
+			require.Contains(t, coins.ObjectIDVals(), change.Data.Mutated.ObjectID)
+		} else if change.Data.Deleted != nil {
+			delObjNum += 1
+		}
 	}
+	// all the input objects are merged into the first input object
+	// except the first input object, all the other input objects are deleted
+	require.Equal(t, limit-1, delObjNum)
 
 	// one output balance and one input balance
 	require.Len(t, simulate.BalanceChanges, 2)
@@ -257,24 +264,24 @@ func TestPublish(t *testing.T) {
 	err = json.Unmarshal(jsonData, &modules)
 	require.NoError(t, err)
 
-	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
-	require.NoError(t, err)
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(1000000), sui.DefaultGasBudget, 10, 10)
-	require.NoError(t, err)
-
 	txnBytes, err := client.Publish(
 		context.Background(),
 		signer.Address,
 		modules.Modules,
 		modules.Dependencies,
-		pickedCoins.CoinIds()[0],
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		nil, // 'unsafe_publish' API can automatically assign gas object
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget*5),
 	)
 	require.NoError(t, err)
 
-	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
-		ShowEffects: true,
-	})
+	txnResponse, err := client.SignAndExecuteTransaction(
+		context.Background(),
+		signer,
+		txnBytes.TxBytes,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects: true,
+		},
+	)
 	require.NoError(t, err)
 	require.True(t, txnResponse.Effects.Data.IsSuccess())
 }
