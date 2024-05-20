@@ -18,10 +18,9 @@ const (
 )
 
 func TestRequestAddDelegation(t *testing.T) {
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer := sui_signer.TEST_ADDRESS
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
 
 	amount := sui_types.SUI(1).Uint64()
@@ -34,7 +33,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	txBytes, err := sui.BCS_RequestAddStake(
-		signer,
+		signer.Address,
 		pickedCoins.CoinRefs(),
 		models.NewSafeSuiBigInt(amount),
 		validator,
@@ -43,7 +42,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txBytes, true)
+	dryRunTxn(t, client, txBytes, true)
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {

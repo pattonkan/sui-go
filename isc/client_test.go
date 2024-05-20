@@ -21,18 +21,13 @@ type Client struct {
 
 func TestStartNewChain(t *testing.T) {
 	t.Skip("only for localnet")
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), sui_signer.TEST_ADDRESS, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,
@@ -61,13 +56,8 @@ func TestStartNewChain(t *testing.T) {
 
 func TestSendCoin(t *testing.T) {
 	t.Skip("only for localnet")
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
@@ -115,13 +105,8 @@ func TestSendCoin(t *testing.T) {
 func TestReceiveCoin(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
@@ -195,13 +180,8 @@ func TestReceiveCoin(t *testing.T) {
 func TestCreateRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 
@@ -243,13 +223,8 @@ func TestCreateRequest(t *testing.T) {
 func TestSendRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 
@@ -313,13 +288,8 @@ func TestSendRequest(t *testing.T) {
 func TestReceiveRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	client := isc.NewIscClient(sui.NewSuiClient(conn.LocalnetEndpointUrl))
-
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
-
-	err = sui.RequestFundFromFaucet(signer.Address, conn.LocalnetFaucetUrl)
-	require.NoError(t, err)
+	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
 

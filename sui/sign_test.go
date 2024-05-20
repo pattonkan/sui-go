@@ -14,7 +14,7 @@ import (
 )
 
 func TestAccountSignAndSend(t *testing.T) {
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC, sui_signer.KeySchemeFlagDefault)
 	require.NoError(t, err)
 	t.Log(signer.Address)
 

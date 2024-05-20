@@ -13,6 +13,7 @@ const (
 	SignatureFlagEd25519   = 0x0
 	SignatureFlagSecp256k1 = 0x1
 
+	// IOTA_DIFF 4218 is for iota
 	DerivationPathEd25519   = `m/44'/4218'/0'/0'/0'`
 	DerivationPathSecp256k1 = `m/54'/4218'/0'/0/0`
 )
@@ -29,11 +30,23 @@ type Signer struct {
 	Address *sui_types.SuiAddress
 }
 
-func NewSigner(seed []byte) *Signer {
+func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 	prikey := ed25519.NewKeyFromSeed(seed[:])
 	pubkey := prikey.Public().(ed25519.PublicKey)
 
-	buf := append([]byte{ /*FlagEd25519.Byte()*/ }, pubkey...)
+	// IOTA_DIFF iota ignore flag when signature scheme is ed25519
+	var buf []byte
+	switch flag {
+	case KeySchemeFlagEd25519:
+		buf = []byte{KeySchemeFlagEd25519.Byte()}
+	case KeySchemeFlagSecp256k1:
+		buf = []byte{KeySchemeFlagEd25519.Byte()}
+	case KeySchemeFlagIotaEd25519:
+		buf = []byte{}
+	default:
+		panic("unrecognizable key scheme flag")
+	}
+	buf = append(buf, pubkey...)
 	addrBytes := blake2b.Sum256(buf)
 	addr := "0x" + hex.EncodeToString(addrBytes[:])
 
@@ -46,9 +59,7 @@ func NewSigner(seed []byte) *Signer {
 	}
 }
 
-// TODO add NewSignerWithFund
-
-func NewSignerWithMnemonic(mnemonic string) (*Signer, error) {
+func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
 		return nil, err
@@ -57,7 +68,7 @@ func NewSignerWithMnemonic(mnemonic string) (*Signer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewSigner(key.Key), nil
+	return NewSigner(key.Key, flag), nil
 }
 
 func (s *Signer) PrivateKey() []byte {

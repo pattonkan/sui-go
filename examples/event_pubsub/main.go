@@ -20,7 +20,7 @@ func main() {
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	sender, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	sender, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC, sui_signer.KeySchemeFlagDefault)
 	if err != nil {
 		log.Panic(err)
 	}

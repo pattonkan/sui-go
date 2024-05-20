@@ -48,7 +48,7 @@ func TestMergeCoins(t *testing.T) {
 }
 
 func TestMoveCall(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
 	// directly build (need sui toolchain)
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/sdk_verify/")
@@ -62,7 +62,7 @@ func TestMoveCall(t *testing.T) {
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		sui_signer.TEST_ADDRESS,
+		signer.Address,
 		modules.Modules,
 		modules.Dependencies,
 		nil,
@@ -132,7 +132,7 @@ func TestMoveCall(t *testing.T) {
 }
 
 func TestPay(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.DevnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	recipient := sui_signer.TEST_ADDRESS
 	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
@@ -163,7 +163,7 @@ func TestPay(t *testing.T) {
 }
 
 func TestPayAllSui(t *testing.T) {
-	client, signer := sui.NewSuiClient(conn.DevnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	recipient := sui_signer.TEST_ADDRESS
 	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 3)
 	require.NoError(t, err)
@@ -214,11 +214,8 @@ func TestPaySui(t *testing.T) {
 
 func TestPublish(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
-	require.NoError(t, err)
+	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
-	err = sui.RequestFundFromFaucet(signer.Address, conn.TestnetFaucetUrl)
-	require.NoError(t, err)
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
 	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
 	// require.NoError(t, err)
