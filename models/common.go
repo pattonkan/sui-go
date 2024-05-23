@@ -60,7 +60,7 @@ func (s SafeSuiBigInt[T]) Uint64() uint64 {
 }
 
 func (s *SafeSuiBigInt[T]) Decimal() decimal.Decimal {
-	return decimal.NewFromBigInt(big.NewInt(0).SetUint64(s.Uint64()), 0)
+	return decimal.NewFromBigInt(new(big.Int).SetUint64(s.Uint64()), 0)
 }
 
 // export const ObjectID = string();

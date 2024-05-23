@@ -89,6 +89,7 @@ func (s *ImplSuiAPI) PayAllSui(
 	return &resp, s.http.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
 }
 
+// see explanation in https://forums.sui.io/t/how-to-use-the-sui-paysui-method/2282
 func (s *ImplSuiAPI) PaySui(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
@@ -137,7 +138,8 @@ func (s *ImplSuiAPI) RequestWithdrawStake(
 	return &resp, s.http.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
 }
 
-// SplitCoin Create an unsigned transaction to split a coin object into multiple coins.
+// SplitCoin Creates an unsigned transaction to split a coin object into multiple coins.
+// better to replace with unsafe_pay API which consumes less gas
 func (s *ImplSuiAPI) SplitCoin(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,
@@ -150,7 +152,8 @@ func (s *ImplSuiAPI) SplitCoin(
 	return &resp, s.http.CallContext(ctx, &resp, splitCoin, signer, coin, splitAmounts, gas, gasBudget)
 }
 
-// SplitCoinEqual Create an unsigned transaction to split a coin object into multiple equal-size coins.
+// SplitCoinEqual Creates an unsigned transaction to split a coin object into multiple equal-size coins.
+// better to replace with unsafe_pay API which consumes less gas
 func (s *ImplSuiAPI) SplitCoinEqual(
 	ctx context.Context,
 	signer *sui_types.SuiAddress,

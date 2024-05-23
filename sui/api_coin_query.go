@@ -17,7 +17,7 @@ func (s *ImplSuiAPI) GetAllCoins(
 	ctx context.Context,
 	owner *sui_types.SuiAddress,
 	cursor *sui_types.ObjectID,
-	limit uint,
+	limit uint, // TODO set it into ptr
 ) (*models.CoinPage, error) {
 	var resp models.CoinPage
 	return &resp, s.http.CallContext(ctx, &resp, getAllCoins, owner, cursor, limit)
@@ -45,7 +45,7 @@ func (s *ImplSuiAPI) GetCoins(
 	owner *sui_types.SuiAddress,
 	coinType *string,
 	cursor *sui_types.ObjectID,
-	limit uint,
+	limit uint, // TODO set it into ptr
 ) (*models.CoinPage, error) {
 	var resp models.CoinPage
 	return &resp, s.http.CallContext(ctx, &resp, getCoins, owner, coinType, cursor, limit)

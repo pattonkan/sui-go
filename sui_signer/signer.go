@@ -3,6 +3,7 @@ package sui_signer
 import (
 	"crypto/ed25519"
 	"encoding/hex"
+	math_rand "math/rand"
 
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/tyler-smith/go-bip39"
@@ -57,6 +58,21 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 		},
 		Address: sui_types.MustSuiAddressFromHex(addr),
 	}
+}
+
+// test only function. It will always generate the same sequence of rand singers,
+// because it is using a local random generator with a unchanged seed
+func NewRandomSigners(flag KeySchemeFlag, genNum int) []*Signer {
+	returnSigners := make([]*Signer, genNum)
+	r := math_rand.New(math_rand.NewSource(0))
+	seed := make([]byte, 32)
+	for i := 0; i < genNum; i++ {
+		for i := 0; i < 32; i++ {
+			seed[i] = byte(r.Intn(256))
+		}
+		returnSigners[i] = NewSigner(seed, flag)
+	}
+	return returnSigners
 }
 
 func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error) {

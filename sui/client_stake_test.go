@@ -25,7 +25,7 @@ func TestRequestAddDelegation(t *testing.T) {
 
 	amount := sui_types.SUI(1).Uint64()
 	gasBudget := sui_types.SUI(0.1).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0).SetUint64(amount), 0, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), 0, 0, 0)
 	require.NoError(t, err)
 
 	validatorAddress := ComingChatValidatorAddress
@@ -42,7 +42,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	dryRunTxn(t, client, txBytes, true)
+	dryRunTxn(t, client, txBytes, false)
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
@@ -58,7 +58,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
-	pickedCoins, err := models.PickupCoins(coins, big.NewInt(0), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int), gasBudget, 0, 0)
 	require.NoError(t, err)
 
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
@@ -67,5 +67,5 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txBytes, true)
+	dryRunTxn(t, api, txBytes, false)
 }

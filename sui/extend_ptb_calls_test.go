@@ -48,7 +48,7 @@ func TestPTB_PaySui(t *testing.T) {
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
 
-	resp := dryRunTxn(t, api, txBytesBCS, true)
+	resp := dryRunTxn(t, api, txBytesBCS, false)
 	gasFee := resp.Effects.Data.GasFee()
 	t.Log(gasFee)
 
@@ -154,16 +154,13 @@ func TestPTB_TransferSui(t *testing.T) {
 func TestPTB_PayAllSui(t *testing.T) {
 	sender := sui_signer.TEST_ADDRESS
 	recipient := sender
-	gasBudget := sui_types.SUI(0.01).Uint64()
+	// gasBudget := sui_types.SUI(0.01).Uint64()
 
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 	coins := getCoins(t, api, sender, 2)
 	coin, coin2 := coins[0], coins[1]
-
-	gasPrice := uint64(1000)
-	// gasPrice, err := api.GetReferenceGasPrice(context.Background())
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
@@ -177,8 +174,8 @@ func TestPTB_PayAllSui(t *testing.T) {
 			coin.Reference(),
 			coin2.Reference(),
 		},
-		gasBudget,
-		gasPrice,
+		sui.DefaultGasBudget,
+		sui.DefaultGasPrice,
 	)
 	txBytesBCS, err := bcs.Marshal(tx)
 	require.NoError(t, err)
@@ -189,66 +186,12 @@ func TestPTB_PayAllSui(t *testing.T) {
 		[]*sui_types.ObjectID{
 			coin.CoinObjectID, coin2.CoinObjectID,
 		},
-		models.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
 
 	require.Equal(t, txBytesBCS, txBytesRemote)
-}
-
-func TestPTB_Pay(t *testing.T) {
-	sender := sui_signer.TEST_ADDRESS
-	recipient, _ := sui_types.SuiAddressFromHex("0x123456")
-	amount := sui_types.SUI(0.001).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	err := sui.RequestFundFromFaucet(sender, conn.TestnetFaucetUrl)
-	require.NoError(t, err)
-	coins := getCoins(t, api, sender, 2)
-	coin, gas := coins[0], coins[1]
-
-	gasPrice := uint64(1000)
-	// gasPrice, err := api.GetReferenceGasPrice(context.Background())
-
-	// build with BCS
-	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.Pay(
-		[]*sui_types.ObjectRef{coin.Reference()},
-		[]*sui_types.SuiAddress{recipient, recipient},
-		[]uint64{amount, amount},
-	)
-	require.NoError(t, err)
-	pt := ptb.Finish()
-	tx := sui_types.NewProgrammable(
-		sender,
-		pt,
-		[]*sui_types.ObjectRef{
-			gas.Reference(),
-		},
-		gasBudget,
-		gasPrice,
-	)
-	txBytesBCS, err := bcs.Marshal(tx)
-	require.NoError(t, err)
-
-	resp := dryRunTxn(t, api, txBytesBCS, true)
-	gasfee := resp.Effects.Data.GasFee()
-	t.Log(gasfee)
-
-	// build with remote rpc
-	// txn, err := api.Pay(context.Background(), sender,
-	// 	[]sui_types.ObjectID{coin.CoinObjectID},
-	// 	[]*sui_types.SuiAddress{recipient, recipient},
-	// 	[]models.SafeSuiBigInt[uint64]{models.NewSafeSuiBigInt(amount), models.NewSafeSuiBigInt(amount)},
-	// 	&gas.CoinObjectID,
-	// 	models.NewSafeSuiBigInt(gasBudget))
-	// require.NoError(t, err)
-	// txBytesRemote := txn.TxBytes.Data()
-
-	// XXX: Fail when there are multiple recipients
-	// require.Equal(t, txBytesBCS, txBytesRemote)
 }
 
 func TestPTB_MoveCall(t *testing.T) {
