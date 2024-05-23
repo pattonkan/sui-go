@@ -15,10 +15,7 @@ import (
 
 func TestPTB_Pay(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipients := []*sui_signer.Signer{
-		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
-		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
-	}
+	recipients := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 2)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)

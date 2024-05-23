@@ -134,7 +134,7 @@ func TestMoveCall(t *testing.T) {
 
 func TestPay(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
 	coinType := models.SuiCoinType
 	coins, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, 10)
 	require.NoError(t, err)
@@ -175,7 +175,7 @@ func TestPay(t *testing.T) {
 
 func TestPayAllSui(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)
@@ -226,10 +226,7 @@ func TestPayAllSui(t *testing.T) {
 
 func TestPaySui(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipients := []*sui_signer.Signer{
-		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
-		sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault),
-	}
+	recipients := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 2)
 
 	coinType := models.SuiCoinType
 	limit := uint(4)
@@ -402,7 +399,7 @@ func TestSplitCoinEqual(t *testing.T) {
 
 func TestTransferObject(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)
@@ -432,7 +429,7 @@ func TestTransferObject(t *testing.T) {
 
 func TestTransferSui(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigner(sui_signer.KeySchemeFlagDefault)
+	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), signer.Address, &coinType, nil, limit)
