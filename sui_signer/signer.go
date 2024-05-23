@@ -61,6 +61,9 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 	}
 }
 
+// test only function. It will always generate the same sequence of rand singers,
+// because it is using a local random generator with a unchanged seed
+// TODO impl with above description
 func NewRandomSigner(flag KeySchemeFlag) *Signer {
 	seed := make([]byte, 32)
 	if _, err := rand.Read(seed); err != nil {

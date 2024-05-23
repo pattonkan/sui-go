@@ -361,7 +361,7 @@ func (p *ProgrammableTransactionBuilder) Pay(
 	return p.payImpl(recipients, amounts, coinArg)
 }
 
-// And the commands to pay coins to multiple
+// And the commands to pay a coin object to multiple recipients
 // golang implementation of pay_impl() in `sui/crates/sui-types/src/programmable_transaction_builder.rs`
 func (p *ProgrammableTransactionBuilder) payImpl(
 	recipients []*SuiAddress,

@@ -3,6 +3,7 @@ package sui_types
 import "github.com/howjmay/sui-go/sui_types/serialization"
 
 // https://sdk.mystenlabs.com/typescript/transaction-building/basics#object-references
+// https://docs.sui.io/concepts/transactions/prog-txn-blocks
 type Command struct {
 	MoveCall        *ProgrammableMoveCall
 	TransferObjects *ProgrammableTransferObjects
