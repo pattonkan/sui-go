@@ -22,7 +22,7 @@ type Coin struct {
 	PreviousTransaction sui_types.TransactionDigest `json:"previousTransaction"`
 }
 
-func (c *Coin) Reference() *sui_types.ObjectRef {
+func (c *Coin) Ref() *sui_types.ObjectRef {
 	return &sui_types.ObjectRef{
 		Digest:   c.Digest,
 		Version:  c.Version.data,
@@ -68,7 +68,7 @@ func (cs *PickedCoins) CoinIds() []*sui_types.ObjectID {
 func (cs *PickedCoins) CoinRefs() []*sui_types.ObjectRef {
 	coinRefs := make([]*sui_types.ObjectRef, len(cs.Coins))
 	for idx, coin := range cs.Coins {
-		coinRefs[idx] = coin.Reference()
+		coinRefs[idx] = coin.Ref()
 	}
 	return coinRefs
 }
@@ -167,7 +167,7 @@ func (cs Coins) PickCoinNoLess(amount uint64) (*Coin, error) {
 func (cs Coins) CoinRefs() []*sui_types.ObjectRef {
 	coinRefs := make([]*sui_types.ObjectRef, len(cs))
 	for idx, coin := range cs {
-		coinRefs[idx] = coin.Reference()
+		coinRefs[idx] = coin.Ref()
 	}
 	return coinRefs
 }

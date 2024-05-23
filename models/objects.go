@@ -125,7 +125,7 @@ type SuiObjectData struct {
 	Display interface{} `json:"display,omitempty"`
 }
 
-func (data *SuiObjectData) Reference() sui_types.ObjectRef {
+func (data *SuiObjectData) Ref() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
 		ObjectID: data.ObjectID,
 		Version:  data.Version.data,

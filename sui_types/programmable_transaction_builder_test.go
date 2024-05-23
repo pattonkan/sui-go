@@ -38,7 +38,7 @@ func TestPTB_Pay(t *testing.T) {
 		signer.Address,
 		pt,
 		[]*sui_types.ObjectRef{
-			gasCoin.Reference(),
+			gasCoin.Ref(),
 		},
 		sui.DefaultGasBudget,
 		sui.DefaultGasPrice,
