@@ -40,7 +40,7 @@ func TestPTB_PaySui(t *testing.T) {
 		sender,
 		pt,
 		[]*sui_types.ObjectRef{
-			coin.Reference(),
+			coin.Ref(),
 		},
 		gasBudget,
 		gasPrice,
@@ -80,14 +80,14 @@ func TestPTB_TransferObject(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	err = ptb.TransferObject(recipient, []*sui_types.ObjectRef{coin.Reference()})
+	err = ptb.TransferObject(recipient, []*sui_types.ObjectRef{coin.Ref()})
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
 		sender,
 		pt,
 		[]*sui_types.ObjectRef{
-			gas.Reference(),
+			gas.Ref(),
 		},
 		gasBudget,
 		gasPrice,
@@ -131,7 +131,7 @@ func TestPTB_TransferSui(t *testing.T) {
 		sender,
 		pt,
 		[]*sui_types.ObjectRef{
-			coin.Reference(),
+			coin.Ref(),
 		},
 		gasBudget,
 		gasPrice,
@@ -171,8 +171,8 @@ func TestPTB_PayAllSui(t *testing.T) {
 		sender,
 		pt,
 		[]*sui_types.ObjectRef{
-			coin.Reference(),
-			coin2.Reference(),
+			coin.Ref(),
+			coin2.Ref(),
 		},
 		sui.DefaultGasBudget,
 		sui.DefaultGasPrice,
@@ -243,8 +243,8 @@ func TestPTB_MoveCall(t *testing.T) {
 		sender,
 		pt,
 		[]*sui_types.ObjectRef{
-			coin.Reference(),
-			coin2.Reference(),
+			coin.Ref(),
+			coin2.Ref(),
 		},
 		gasBudget,
 		gasPrice,
@@ -253,7 +253,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	// case 2: direct stake the specified coin
 	// coinArg := sui_types.CallArg{
 	// 	Object: &sui_types.ObjectArg{
-	// 		ImmOrOwnedObject: coin.Reference(),
+	// 		ImmOrOwnedObject: coin.Ref(),
 	// 	},
 	// }
 	// addrBytes := validatorAddress.Data()
@@ -275,7 +275,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	// pt := ptb.Finish()
 	// tx := sui_types.NewProgrammable(
 	// 	sender, []*sui_types.ObjectRef{
-	// 		coin2.Reference(),
+	// 		coin2.Ref(),
 	// 	},
 	// 	pt, gasBudget, gasPrice,
 	// )

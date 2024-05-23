@@ -64,7 +64,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
 	detail, err := api.GetObject(context.Background(), &stakeId, nil)
 	require.NoError(t, err)
-	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Reference(), pickedCoins.CoinRefs(), gasBudget, 1000)
+	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Ref(), pickedCoins.CoinRefs(), gasBudget, 1000)
 	require.NoError(t, err)
 
 	dryRunTxn(t, api, txBytes, false)
