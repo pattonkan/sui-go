@@ -82,7 +82,8 @@ func TestMoveCall(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
-	packageID := txnResponse.GetPublishedPackageID()
+	packageID, err := txnResponse.GetPublishedPackageID()
+	require.NoError(t, err)
 
 	// test MoveCall with byte array input
 	input := []string{"haha", "gogo"}

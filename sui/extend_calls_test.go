@@ -75,7 +75,8 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 	require.NoError(t, err)
 	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
-	packageID := txnResponse.GetPublishedPackageID()
+	packageID, err := txnResponse.GetPublishedPackageID()
+	require.NoError(t, err)
 
 	treasuryCap, _, err := sui.GetCreatedObjectIdAndType(txnResponse, "coin", "TreasuryCap")
 	require.NoError(t, err)

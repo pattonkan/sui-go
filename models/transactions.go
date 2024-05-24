@@ -1,6 +1,9 @@
 package models
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/serialization"
 )
@@ -268,15 +271,18 @@ type SuiTransactionBlockResponse struct {
 }
 
 // requires to set 'models.SuiTransactionBlockResponseOptions.ShowObjectChanges' to true
-func (r *SuiTransactionBlockResponse) GetPublishedPackageID() *sui_types.PackageID {
+func (r *SuiTransactionBlockResponse) GetPublishedPackageID() (*sui_types.PackageID, error) {
+	if r.ObjectChanges == nil {
+		return nil, errors.New("no 'SuiTransactionBlockResponse.ObjectChanges' object")
+	}
 	var packageID sui_types.PackageID
 	for _, change := range r.ObjectChanges {
 		if change.Data.Published != nil {
 			packageID = change.Data.Published.PackageId
-			return &packageID
+			return &packageID, nil
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("not found")
 }
 
 type ReturnValueType interface{}

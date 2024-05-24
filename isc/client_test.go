@@ -36,7 +36,8 @@ func TestStartNewChain(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
-	packageID := txnResponse.GetPublishedPackageID()
+	packageID, err := txnResponse.GetPublishedPackageID()
+	require.NoError(t, err)
 	t.Log("packageID: ", packageID)
 
 	startNewChainRes, err := client.StartNewChain(
@@ -59,8 +60,20 @@ func TestSendCoin(t *testing.T) {
 	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	client := isc.NewIscClient(suiClient)
 
-	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
-	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
+	iscPackageID := sui.BuildDeployContract(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/isc/contracts/isc/",
+	)
+	tokenPackageID, _ := sui.BuildDeployMintCoin(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/contracts/testcoin/",
+		100000,
+		"testtoken",
+	)
 
 	// start a new chain
 	startNewChainRes, err := client.StartNewChain(
@@ -108,8 +121,20 @@ func TestReceiveCoin(t *testing.T) {
 	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	client := isc.NewIscClient(suiClient)
 
-	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
-	tokenPackageID, _ := isc.BuildDeployMintTestcoin(t, client, signer)
+	iscPackageID := sui.BuildDeployContract(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/isc/contracts/isc/",
+	)
+	tokenPackageID, _ := sui.BuildDeployMintCoin(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/contracts/testcoin/",
+		100000,
+		"testtoken",
+	)
 
 	// start a new chain
 	startNewChainRes, err := client.StartNewChain(
@@ -183,7 +208,12 @@ func TestCreateRequest(t *testing.T) {
 	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	client := isc.NewIscClient(suiClient)
 
-	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+	iscPackageID := sui.BuildDeployContract(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/isc/contracts/isc/",
+	)
 
 	// start a new chain
 	startNewChainRes, err := client.StartNewChain(
@@ -226,7 +256,12 @@ func TestSendRequest(t *testing.T) {
 	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	client := isc.NewIscClient(suiClient)
 
-	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+	iscPackageID := sui.BuildDeployContract(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/isc/contracts/isc/",
+	)
 
 	// start a new chain
 	startNewChainRes, err := client.StartNewChain(
@@ -291,7 +326,12 @@ func TestReceiveRequest(t *testing.T) {
 	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	client := isc.NewIscClient(suiClient)
 
-	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
+	iscPackageID := sui.BuildDeployContract(
+		t,
+		client.ImplSuiAPI,
+		signer,
+		utils.GetGitRoot()+"/isc/contracts/isc/",
+	)
 
 	// start a new chain
 	startNewChainRes, err := client.StartNewChain(
