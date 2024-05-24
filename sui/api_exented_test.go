@@ -162,7 +162,11 @@ func TestQueryEvents(t *testing.T) {
 
 				for _, event := range got.Data {
 					// FIXME we should change other filter to, so we can verify each fields of event more detailed.
-					require.Equal(t, sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"), &event.PackageId)
+					require.Equal(
+						t,
+						sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
+						&event.PackageId,
+					)
 					require.Equal(t, "clob_v2", event.TransactionModule)
 					require.Equal(t, tt.args.query.Sender, &event.Sender)
 				}

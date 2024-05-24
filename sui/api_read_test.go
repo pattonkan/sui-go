@@ -22,10 +22,22 @@ func TestGetEvents(t *testing.T) {
 	require.Len(t, events, 1)
 	for _, event := range events {
 		require.Equal(t, digest, &event.Id.TxDigest)
-		require.Equal(t, sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"), &event.PackageId)
+		require.Equal(
+			t,
+			sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
+			&event.PackageId,
+		)
 		require.Equal(t, "clob_v2", event.TransactionModule)
-		require.Equal(t, sui_types.MustSuiAddressFromHex("0xf0f13f7ef773c6246e87a8f059a684d60773f85e992e128b8272245c38c94076"), &event.Sender)
-		require.Equal(t, "0xdee9::clob_v2::OrderPlaced<0x2::sui::SUI, 0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>", event.Type)
+		require.Equal(
+			t,
+			sui_types.MustSuiAddressFromHex("0xf0f13f7ef773c6246e87a8f059a684d60773f85e992e128b8272245c38c94076"),
+			&event.Sender,
+		)
+		require.Equal(
+			t,
+			"0xdee9::clob_v2::OrderPlaced<0x2::sui::SUI, 0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>",
+			event.Type,
+		)
 		// TODO check ParsedJson map
 	}
 }

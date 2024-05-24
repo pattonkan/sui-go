@@ -9,7 +9,11 @@ import (
 )
 
 // requires `ShowObjectChanges: true`
-func GetCreatedObjectIdAndType(txRes *models.SuiTransactionBlockResponse, moduleName string, objectName string) (*sui_types.ObjectID, string, error) {
+func GetCreatedObjectIdAndType(
+	txRes *models.SuiTransactionBlockResponse,
+	moduleName string,
+	objectName string,
+) (*sui_types.ObjectID, string, error) {
 	if txRes.ObjectChanges == nil {
 		return nil, "", fmt.Errorf("no ObjectChanges")
 	}
