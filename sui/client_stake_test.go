@@ -19,12 +19,10 @@ const (
 
 func TestRequestAddDelegation(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-
 	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
 
-	amount := sui_types.SUI(1).Uint64()
-	gasBudget := sui_types.SUI(0.1).Uint64()
+	amount := uint64(sui_types.UnitSui)
 	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), 0, 0, 0)
 	require.NoError(t, err)
 
@@ -37,8 +35,8 @@ func TestRequestAddDelegation(t *testing.T) {
 		pickedCoins.CoinRefs(),
 		models.NewSafeSuiBigInt(amount),
 		validator,
-		gasBudget,
-		1000,
+		sui.DefaultGasBudget,
+		sui.DefaultGasPrice,
 	)
 	require.NoError(t, err)
 
@@ -46,26 +44,25 @@ func TestRequestAddDelegation(t *testing.T) {
 }
 
 func TestRequestWithdrawDelegation(t *testing.T) {
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	gasBudget := sui_types.SUI(1).Uint64()
+	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 
 	signer, err := sui_types.SuiAddressFromHex("0xd77955e670f42c1bc5e94b9e68e5fe9bdbed9134d784f2a14dfe5fc1b24b5d9f")
 	require.NoError(t, err)
-	stakes, err := api.GetStakes(context.Background(), signer)
+	stakes, err := client.GetStakes(context.Background(), signer)
 	require.NoError(t, err)
 	require.True(t, len(stakes) > 0)
 	require.True(t, len(stakes[0].Stakes) > 0)
 
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := client.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
-	pickedCoins, err := models.PickupCoins(coins, new(big.Int), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int), sui.DefaultGasBudget, 0, 0)
 	require.NoError(t, err)
 
 	stakeId := stakes[0].Stakes[0].Data.StakedSuiId
-	detail, err := api.GetObject(context.Background(), &stakeId, nil)
+	detail, err := client.GetObject(context.Background(), &stakeId, nil)
 	require.NoError(t, err)
-	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Ref(), pickedCoins.CoinRefs(), gasBudget, 1000)
+	txBytes, err := sui.BCS_RequestWithdrawStake(signer, detail.Data.Ref(), pickedCoins.CoinRefs(), sui.DefaultGasBudget, 1000)
 	require.NoError(t, err)
 
-	dryRunTxn(t, api, txBytes, false)
+	dryRunTxn(t, client, txBytes, false)
 }

@@ -43,14 +43,13 @@ func TestDryRunTransaction(t *testing.T) {
 	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
 	require.NoError(t, err)
 
-	amount := sui_types.SUI(0.01).Uint64()
-	gasBudget := sui_types.SUI(0.01).Uint64()
-	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), gasBudget, 0, 0)
+	amount := uint64(sui_types.UnitSui / 100)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(amount), sui.DefaultGasBudget, 0, 0)
 	require.NoError(t, err)
 	tx, err := api.PayAllSui(
 		context.Background(), signer, signer,
 		pickedCoins.CoinIds(),
-		models.NewSafeSuiBigInt(gasBudget),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
