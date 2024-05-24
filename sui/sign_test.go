@@ -21,13 +21,13 @@ func TestAccountSignAndSend(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	coins, err := api.GetSuiCoinsOwnedByAddress(context.Background(), signer.Address)
 	require.NoError(t, err)
-	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
+	require.Greater(t, coins.TotalBalance().Int64(), int64(sui_types.UnitSui)/100, "insufficient balance")
 
 	coinIDs := make([]*sui_types.ObjectID, len(coins))
 	for i, c := range coins {
 		coinIDs[i] = c.CoinObjectID
 	}
-	gasBudget := models.NewSafeSuiBigInt(uint64(10000000))
+	gasBudget := models.NewSafeSuiBigInt(sui.DefaultGasBudget)
 	txn, err := api.PayAllSui(context.Background(), signer.Address, signer.Address, coinIDs, gasBudget)
 	require.NoError(t, err)
 
