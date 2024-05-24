@@ -39,7 +39,13 @@ func (s *ImplSuiAPI) SignAndExecuteTransaction(
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign transaction block: %w", err)
 	}
-	resp, err := s.ExecuteTransactionBlock(ctx, txBytes, []*sui_signer.Signature{&signature}, options, models.TxnRequestTypeWaitForLocalExecution)
+	resp, err := s.ExecuteTransactionBlock(
+		ctx,
+		txBytes,
+		[]*sui_signer.Signature{&signature},
+		options,
+		models.TxnRequestTypeWaitForLocalExecution,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute transaction: %w", err)
 	}

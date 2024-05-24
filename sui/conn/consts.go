@@ -9,7 +9,7 @@ const (
 	DevnetWebsocketEndpointUrl   = "wss://rpc.devnet.sui.io:443"
 	TestnetWebsocketEndpointUrl  = "wss://rpc.testnet.sui.io:443"
 	MainnetWebsocketEndpointUrl  = "wss://rpc.mainnet.sui.io:443"
-	LocalnetWebsocketEndpointUrl = "wss://localhost:9000" // FIXME this may be wrong
+	LocalnetWebsocketEndpointUrl = "ws://localhost:9000"
 
 	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/v1/gas"
 	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/v1/gas"

@@ -2,10 +2,6 @@ package sui_types
 
 import "github.com/howjmay/sui-go/sui_types/serialization"
 
-const (
-	ObjectStartVersion = SequenceNumber(1)
-)
-
 type Data struct {
 	Move    *MoveObject
 	Package *MovePackage

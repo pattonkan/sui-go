@@ -37,9 +37,9 @@ type Argument struct {
 func (a Argument) IsBcsEnum() {}
 
 type ProgrammableMoveCall struct {
-	Package       *ObjectID
-	Module        string
-	Function      string
+	Package       *PackageID
+	Module        Identifier
+	Function      Identifier
 	TypeArguments []TypeTag
 	Arguments     []Argument
 }
@@ -61,7 +61,7 @@ type ProgrammableMergeCoins struct {
 
 type ProgrammablePublish struct {
 	Modules      [][]byte
-	Dependencies []ObjectID
+	Dependencies []*ObjectID
 }
 
 type ProgrammableMakeMoveVec struct {
@@ -71,7 +71,7 @@ type ProgrammableMakeMoveVec struct {
 
 type ProgrammableUpgrade struct {
 	Modules      [][]byte
-	Dependencies []ObjectID
-	PackageId    ObjectID
+	Dependencies []*ObjectID
+	PackageId    *PackageID
 	Ticket       Argument
 }

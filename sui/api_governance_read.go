@@ -24,7 +24,10 @@ func (s *ImplSuiAPI) GetStakes(ctx context.Context, owner *sui_types.SuiAddress)
 	return resp, s.http.CallContext(ctx, &resp, getStakes, owner)
 }
 
-func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]*models.DelegatedStake, error) {
+func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) (
+	[]*models.DelegatedStake,
+	error,
+) {
 	var resp []*models.DelegatedStake
 	return resp, s.http.CallContext(ctx, &resp, getStakesByIds, stakedSuiIds)
 }

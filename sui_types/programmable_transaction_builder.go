@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/howjmay/sui-go/sui_types/serialization"
+	"github.com/howjmay/sui-go/utils/indexmap"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/mitchellh/hashstructure/v2"
 )
 
 type BuilderArg struct {
@@ -16,87 +16,26 @@ type BuilderArg struct {
 	ForcedNonUniquePure *uint
 }
 
-func (b BuilderArg) GetHash() uint64 {
-	// TODO we can implement our own hash func for go structs
-	hash, err := hashstructure.Hash(b, hashstructure.FormatV2, nil)
-	if err != nil {
-		panic(err)
-	}
-	return hash
-}
-
 type ProgrammableTransactionBuilder struct {
-	Inputs         map[uint64]CallArg //maybe has hash clash
-	InputsKeyOrder []BuilderArg
-	Commands       []Command
+	Inputs   *indexmap.IndexMap[BuilderArg, CallArg] //maybe has hash clash
+	Commands []Command
 }
 
 func NewProgrammableTransactionBuilder() *ProgrammableTransactionBuilder {
 	return &ProgrammableTransactionBuilder{
-		Inputs: make(map[uint64]CallArg),
+		Inputs: indexmap.NewIndexMap[BuilderArg, CallArg](),
 	}
 }
 
 func (p *ProgrammableTransactionBuilder) Finish() ProgrammableTransaction {
 	var inputs []CallArg
-	for _, v := range p.InputsKeyOrder {
-		inputs = append(inputs, p.Inputs[v.GetHash()])
-	}
+	p.Inputs.ForEach(func(k BuilderArg, v CallArg) {
+		inputs = append(inputs, v)
+	})
 	return ProgrammableTransaction{
 		Inputs:   inputs,
 		Commands: p.Commands,
 	}
-}
-
-func (p *ProgrammableTransactionBuilder) ForceSeparatePure(value any) (Argument, error) {
-	pureData, err := bcs.Marshal(value)
-	if err != nil {
-		return Argument{}, err
-	}
-	return p.pureBytes(pureData, true), nil
-}
-
-func (p *ProgrammableTransactionBuilder) pureBytes(bytes []byte, forceSeparate bool) Argument {
-	var arg BuilderArg
-	if forceSeparate {
-		length := uint(len(p.Inputs))
-		arg = BuilderArg{
-			ForcedNonUniquePure: &length,
-		}
-	} else {
-		arg = BuilderArg{
-			Pure: &bytes,
-		}
-	}
-	i := p.insertFull(
-		arg,
-		CallArg{
-			Pure: &bytes,
-		},
-	)
-	return Argument{
-		Input: &i,
-	}
-}
-
-// `insertFull` is the go implementation of rust crate `indexmap::insert_full()`
-// It inserts the key/value pair into the map
-// see more info in https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html#method.insert
-func (p *ProgrammableTransactionBuilder) insertFull(key BuilderArg, value CallArg) uint16 {
-	builderArgHash := key.GetHash()
-
-	_, ok := p.Inputs[builderArgHash]
-	p.Inputs[builderArgHash] = value
-	if !ok {
-		p.InputsKeyOrder = append(p.InputsKeyOrder, key)
-		return uint16(len(p.InputsKeyOrder) - 1)
-	}
-	for i, v := range p.InputsKeyOrder {
-		if v.GetHash() == builderArgHash {
-			return uint16(i)
-		}
-	}
-	return 0
 }
 
 func (p *ProgrammableTransactionBuilder) Pure(value any) (Argument, error) {
@@ -119,7 +58,7 @@ func (p *ProgrammableTransactionBuilder) MustPure(value any) Argument {
 func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error) {
 	id := objArg.id()
 	var oj ObjectArg
-	if oldValue, ok := p.Inputs[BuilderArg{Object: id}.GetHash()]; ok {
+	if oldValue, ok := p.Inputs.Get(BuilderArg{Object: id}); ok {
 		var oldObjArg ObjectArg
 		switch {
 		case oldValue.Pure != nil:
@@ -156,18 +95,45 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 	} else {
 		oj = objArg
 	}
-	i := p.insertFull(
-		BuilderArg{
-			Object: id,
-		}, CallArg{
-			Object: &oj,
-		},
-	)
-	return Argument{
-		Input: &i,
-	}, nil
+	i := uint16(p.Inputs.InsertFull(
+		BuilderArg{Object: id},
+		CallArg{Object: &oj},
+	))
+	return Argument{Input: &i}, nil
 }
 
+func (p *ProgrammableTransactionBuilder) ForceSeparatePure(value any) (Argument, error) {
+	pureData, err := bcs.Marshal(value)
+	if err != nil {
+		return Argument{}, err
+	}
+	return p.pureBytes(pureData, true), nil
+}
+
+func (p *ProgrammableTransactionBuilder) pureBytes(bytes []byte, forceSeparate bool) Argument {
+	var arg BuilderArg
+	if forceSeparate {
+		length := uint(p.Inputs.Len())
+		arg = BuilderArg{
+			ForcedNonUniquePure: &length,
+		}
+	} else {
+		arg = BuilderArg{
+			Pure: &bytes,
+		}
+	}
+	i := uint16(p.Inputs.InsertFull(
+		arg,
+		CallArg{Pure: &bytes},
+	))
+	return Argument{
+		Input: &i,
+	}
+}
+
+// developers should only use `Pure()`, `MustPure()` and `Obj()` to create PTB Arguments
+// `Input()` is a function for internal usage
+// TODO add explanation for `Input()`
 func (p *ProgrammableTransactionBuilder) Input(callArg CallArg) (Argument, error) {
 	switch {
 	case callArg.Pure != nil:
@@ -179,23 +145,6 @@ func (p *ProgrammableTransactionBuilder) Input(callArg CallArg) (Argument, error
 	}
 }
 
-func (p *ProgrammableTransactionBuilder) MakeObjList(objs []ObjectArg) (Argument, error) {
-	var objArgs []Argument
-	for _, v := range objs {
-		objArg, err := p.Obj(v)
-		if err != nil {
-			return Argument{}, err
-		}
-		objArgs = append(objArgs, objArg)
-	}
-	arg := p.Command(
-		Command{
-			MakeMoveVec: &ProgrammableMakeMoveVec{Type: nil, Objects: objArgs},
-		},
-	)
-	return arg, nil
-}
-
 // Add command to `ProgrammableTransactionBuilder.Commands`, and return the result in `Argument` type
 func (p *ProgrammableTransactionBuilder) Command(command Command) Argument {
 	p.Commands = append(p.Commands, command)
@@ -205,79 +154,28 @@ func (p *ProgrammableTransactionBuilder) Command(command Command) Argument {
 	}
 }
 
-func (p *ProgrammableTransactionBuilder) TransferObject(
-	recipient *SuiAddress,
-	objectRefs []*ObjectRef,
-) error {
-	recArg, err := p.Pure(recipient)
-	if err != nil {
-		return err
-	}
+//// ProgrammableTransactionBuilder fast API calls ////
+
+func (p *ProgrammableTransactionBuilder) MakeObjVec(objs []ObjectArg) (Argument, error) {
 	var objArgs []Argument
-	for _, v := range objectRefs {
-		objArg, err := p.Obj(
-			ObjectArg{
-				ImmOrOwnedObject: v,
-			},
-		)
+	for _, v := range objs {
+		objArg, err := p.Obj(v)
 		if err != nil {
-			return err
+			return Argument{}, err
 		}
 		objArgs = append(objArgs, objArg)
 	}
-	p.Command(
-		Command{
-			TransferObjects: &ProgrammableTransferObjects{Objects: objArgs, Address: recArg},
-		},
-	)
-	return nil
+	arg := p.Command(Command{
+		MakeMoveVec: &ProgrammableMakeMoveVec{Type: nil, Objects: objArgs},
+	})
+	return arg, nil
 }
 
-func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amount *uint64) error {
-	recArg, err := p.Pure(recipient)
-	if err != nil {
-		return err
-	}
-	var coinArg Argument
-	if amount == nil {
-		coinArg = Argument{
-			GasCoin: &serialization.EmptyEnum{},
-		}
-	} else {
-		amtArg, err := p.Pure(*amount)
-		if err != nil {
-			return err
-		}
-		coinArg = p.Command(
-			Command{
-				SplitCoins: &ProgrammableSplitCoins{
-					Coin: Argument{
-						GasCoin: &serialization.EmptyEnum{},
-					},
-					Amounts: []Argument{
-						amtArg,
-					},
-				},
-			},
-		)
-	}
-	p.Command(
-		Command{
-			TransferObjects: &ProgrammableTransferObjects{
-				Objects: []Argument{
-					coinArg,
-				},
-				Address: recArg,
-			},
-		},
-	)
-	return nil
-}
-
+// construct `move_call` with argument `CallArg` type
 func (p *ProgrammableTransactionBuilder) MoveCall(
-	packageID *ObjectID,
-	module *string,
-	function *string,
+	packageID *PackageID,
+	module Identifier,
+	function Identifier,
 	typeArguments []TypeTag,
 	callArgs []CallArg,
 ) error {
@@ -289,43 +187,148 @@ func (p *ProgrammableTransactionBuilder) MoveCall(
 		}
 		arguments = append(arguments, argument)
 	}
-	p.Command(
-		Command{
-			MoveCall: &ProgrammableMoveCall{
-				Package:       packageID,
-				Module:        *module,
-				Function:      *function,
-				TypeArguments: typeArguments,
-				Arguments:     arguments,
-			},
-		},
+	p.Command(Command{
+		MoveCall: &ProgrammableMoveCall{
+			Package:       packageID,
+			Module:        module,
+			Function:      function,
+			TypeArguments: typeArguments,
+			Arguments:     arguments,
+		}},
 	)
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error {
-	recArg, err := p.Pure(recipient)
+// construct `move_call` with argument `Argument` type, and return `Argument`
+func (p *ProgrammableTransactionBuilder) ProgrammableMoveCall(
+	packageID *PackageID,
+	module Identifier,
+	function Identifier,
+	typeArguments []TypeTag,
+	arguments []Argument,
+) Argument {
+	return p.Command(Command{
+		MoveCall: &ProgrammableMoveCall{
+			Package:       packageID,
+			Module:        module,
+			Function:      function,
+			TypeArguments: typeArguments,
+			Arguments:     arguments,
+		}},
+	)
+}
+
+func (p *ProgrammableTransactionBuilder) PublishUpgradeable(
+	modules [][]byte,
+	dependencies []*ObjectID,
+) Argument {
+	return p.Command(Command{
+		Publish: &ProgrammablePublish{
+			Modules:      modules,
+			Dependencies: dependencies,
+		}},
+	)
+}
+
+func (p *ProgrammableTransactionBuilder) PublishImmutable(
+	modules [][]byte,
+	dependencies []*ObjectID,
+) Argument {
+	return p.Command(Command{
+		MoveCall: &ProgrammableMoveCall{
+			Package:       SuiPackageIdSuiFramework,
+			Module:        SuiSystemModuleName,
+			Function:      "make_immutable",
+			TypeArguments: nil,
+			Arguments:     []Argument{p.PublishUpgradeable(modules, dependencies)},
+		}},
+	)
+}
+
+func (p *ProgrammableTransactionBuilder) Upgrade(
+	currentPackageObjectId *ObjectID,
+	upgradeTicket Argument,
+	transitiveDeps []*ObjectID,
+	modules [][]byte,
+) Argument {
+	return p.Command(Command{
+		Upgrade: &ProgrammableUpgrade{
+			Modules:      modules,
+			Dependencies: transitiveDeps,
+			PackageId:    currentPackageObjectId,
+			Ticket:       upgradeTicket,
+		}},
+	)
+}
+
+func (p *ProgrammableTransactionBuilder) TransferArg(recipient *SuiAddress, arg Argument) {
+	p.TransferArgs(recipient, []Argument{arg})
+}
+
+func (p *ProgrammableTransactionBuilder) TransferArgs(recipient *SuiAddress, args []Argument) {
+	p.Command(Command{
+		TransferObjects: &ProgrammableTransferObjects{
+			Objects: args,
+			Address: p.MustPure(recipient),
+		}},
+	)
+}
+
+func (p *ProgrammableTransactionBuilder) TransferObject(recipient *SuiAddress, objectRef *ObjectRef) error {
+	recArg := p.MustPure(recipient)
+	objArg, err := p.Obj(ObjectArg{ImmOrOwnedObject: objectRef})
 	if err != nil {
 		return err
 	}
-	p.Command(
-		Command{
-			TransferObjects: &ProgrammableTransferObjects{
-				Objects: []Argument{{GasCoin: &serialization.EmptyEnum{}}},
-				Address: recArg,
-			},
-		},
+	p.Command(Command{
+		TransferObjects: &ProgrammableTransferObjects{
+			Objects: []Argument{objArg},
+			Address: recArg,
+		}},
 	)
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) PaySui(
-	recipients []*SuiAddress,
-	amounts []uint64,
-) error {
+func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amount *uint64) {
+	recArg := p.MustPure(recipient)
+	var coinArg Argument
+	if amount != nil {
+		amtArg := p.MustPure(amount)
+		coinArg = p.Command(Command{
+			SplitCoins: &ProgrammableSplitCoins{
+				Coin:    Argument{GasCoin: &serialization.EmptyEnum{}},
+				Amounts: []Argument{amtArg},
+			}},
+		)
+	} else {
+		coinArg = Argument{GasCoin: &serialization.EmptyEnum{}}
+	}
+	p.Command(Command{
+		TransferObjects: &ProgrammableTransferObjects{
+			Objects: []Argument{coinArg},
+			Address: recArg,
+		}},
+	)
+}
+
+// the gas coin is consumed as the coin to be paid
+func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) {
+	recArg := p.MustPure(recipient)
+	p.Command(Command{
+		TransferObjects: &ProgrammableTransferObjects{
+			Objects: []Argument{{GasCoin: &serialization.EmptyEnum{}}},
+			Address: recArg,
+		}},
+	)
+}
+
+// the gas coin is consumed as the coin to be paid
+func (p *ProgrammableTransactionBuilder) PaySui(recipients []*SuiAddress, amounts []uint64) error {
 	return p.payImpl(recipients, amounts, Argument{GasCoin: &serialization.EmptyEnum{}})
 }
 
+// merge all given coins into the 1st coin, and pay it
+// with the corresponding amounts to the corresponding recipients
 func (p *ProgrammableTransactionBuilder) Pay(
 	coins []*ObjectRef,
 	recipients []*SuiAddress,
@@ -366,7 +369,7 @@ func (p *ProgrammableTransactionBuilder) Pay(
 func (p *ProgrammableTransactionBuilder) payImpl(
 	recipients []*SuiAddress,
 	amounts []uint64,
-	coin Argument,
+	coin Argument, // the coin to be consumed
 ) error {
 	if len(recipients) != len(amounts) {
 		return fmt.Errorf(
