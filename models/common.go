@@ -60,7 +60,7 @@ func (s SafeSuiBigInt[T]) Uint64() uint64 {
 }
 
 func (s *SafeSuiBigInt[T]) Decimal() decimal.Decimal {
-	return decimal.NewFromBigInt(big.NewInt(0).SetUint64(s.Uint64()), 0)
+	return decimal.NewFromBigInt(new(big.Int).SetUint64(s.Uint64()), 0)
 }
 
 // export const ObjectID = string();
@@ -83,9 +83,11 @@ type ObjectOwner struct {
 	*string
 }
 
-type Page[T SuiTransactionBlockResponse | SuiEvent | Coin | SuiObjectResponse | DynamicFieldInfo | string,
+type Page[T SuiTransactionBlockResponse | SuiEvent | Coin | *Coin | SuiObjectResponse | DynamicFieldInfo | string,
 	C sui_types.TransactionDigest | EventId | sui_types.ObjectID] struct {
-	Data        []T  `json:"data"`
+	Data []T `json:"data"`
+	// 'NextCursor' points to the last item in the page.
+	// Reading with next_cursor will start from the next item after next_cursor
 	NextCursor  *C   `json:"nextCursor,omitempty"`
 	HasNextPage bool `json:"hasNextPage"`
 }

@@ -23,8 +23,8 @@ func (s *ImplSuiAPI) GetDynamicFieldObject(
 func (s *ImplSuiAPI) GetDynamicFields(
 	ctx context.Context,
 	parentObjectID *sui_types.ObjectID,
-	cursor *sui_types.ObjectID,
-	limit *uint,
+	cursor *sui_types.ObjectID, // optional
+	limit *uint, // optional
 ) (*models.DynamicFieldPage, error) {
 	var resp models.DynamicFieldPage
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFields, parentObjectID, cursor, limit)
@@ -46,7 +46,10 @@ func (s *ImplSuiAPI) GetOwnedObjects(
 }
 
 func (s *ImplSuiAPI) QueryEvents(
-	ctx context.Context, query models.EventFilter, cursor *models.EventId, limit *uint,
+	ctx context.Context,
+	query *models.EventFilter,
+	cursor *models.EventId,
+	limit *uint,
 	descendingOrder bool,
 ) (*models.EventPage, error) {
 	var resp models.EventPage
@@ -54,8 +57,11 @@ func (s *ImplSuiAPI) QueryEvents(
 }
 
 func (s *ImplSuiAPI) QueryTransactionBlocks(
-	ctx context.Context, query models.SuiTransactionBlockResponseQuery,
-	cursor *sui_types.TransactionDigest, limit *uint, descendingOrder bool,
+	ctx context.Context,
+	query *models.SuiTransactionBlockResponseQuery,
+	cursor *sui_types.TransactionDigest,
+	limit *uint,
+	descendingOrder bool,
 ) (*models.TransactionBlocksPage, error) {
 	resp := models.TransactionBlocksPage{}
 	return &resp, s.http.CallContext(ctx, &resp, queryTransactionBlocks, query, cursor, limit, descendingOrder)
@@ -70,13 +76,21 @@ func (s *ImplSuiAPI) ResolveNameServiceAddress(ctx context.Context, suiName stri
 	return &resp, nil
 }
 
-func (s *ImplSuiAPI) ResolveNameServiceNames(ctx context.Context,
-	owner *sui_types.SuiAddress, cursor *sui_types.ObjectID, limit *uint) (*models.SuiNamePage, error) {
+func (s *ImplSuiAPI) ResolveNameServiceNames(
+	ctx context.Context,
+	owner *sui_types.SuiAddress,
+	cursor *sui_types.ObjectID,
+	limit *uint,
+) (*models.SuiNamePage, error) {
 	var resp models.SuiNamePage
 	return &resp, s.http.CallContext(ctx, &resp, resolveNameServiceNames, owner, cursor, limit)
 }
 
-func (s *ImplSuiAPI) SubscribeEvent(ctx context.Context, filter models.EventFilter, resultCh chan models.SuiEvent) error {
+func (s *ImplSuiAPI) SubscribeEvent(
+	ctx context.Context,
+	filter *models.EventFilter,
+	resultCh chan models.SuiEvent,
+) error {
 	resp := make(chan []byte, 10)
 	err := s.websocket.CallContext(ctx, resp, subscribeEvent, filter)
 	if err != nil {

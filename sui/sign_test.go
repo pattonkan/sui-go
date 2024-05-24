@@ -14,7 +14,7 @@ import (
 )
 
 func TestAccountSignAndSend(t *testing.T) {
-	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC)
+	signer, err := sui_signer.NewSignerWithMnemonic(sui_signer.TEST_MNEMONIC, sui_signer.KeySchemeFlagDefault)
 	require.NoError(t, err)
 	t.Log(signer.Address)
 
@@ -23,7 +23,7 @@ func TestAccountSignAndSend(t *testing.T) {
 	require.NoError(t, err)
 	require.Greater(t, coins.TotalBalance().Int64(), sui_types.SUI(0.01).Int64(), "insufficient balance")
 
-	coinIDs := make([]sui_types.ObjectID, len(coins))
+	coinIDs := make([]*sui_types.ObjectID, len(coins))
 	for i, c := range coins {
 		coinIDs[i] = c.CoinObjectID
 	}

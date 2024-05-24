@@ -39,22 +39,6 @@ type HttpClient struct {
 	client *http.Client
 }
 
-const (
-	DevnetEndpointUrl   = "https://fullnode.devnet.sui.io"
-	TestnetEndpointUrl  = "https://fullnode.testnet.sui.io"
-	MainnetEndpointUrl  = "https://fullnode.mainnet.sui.io"
-	LocalnetEndpointUrl = "http://localhost:9000"
-
-	DevnetWebsocketEndpointUrl   = "wss://rpc.devnet.sui.io:443"
-	TestnetWebsocketEndpointUrl  = "wss://rpc.testnet.sui.io:443"
-	MainnetWebsocketEndpointUrl  = "wss://rpc.mainnet.sui.io:443"
-	LocalnetWebsocketEndpointUrl = "wss://localhost:9000" // FIXME this may be wrong
-
-	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/gas"
-	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/gas"
-	LocalnetFaucetUrl = "http://localhost:9123/gas"
-)
-
 func NewHttpClient(url string) *HttpClient {
 	return &HttpClient{
 		url: strings.TrimRight(url, "/"),
@@ -155,6 +139,10 @@ func (c *HttpClient) BatchCallContext(ctx context.Context, b []BatchElem) error 
 		elem.Error = json.Unmarshal(resp.Result, elem.Result)
 	}
 	return nil
+}
+
+func (c *HttpClient) Url() string {
+	return c.url
 }
 
 func (c *HttpClient) nextID() json.RawMessage {

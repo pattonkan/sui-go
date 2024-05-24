@@ -13,8 +13,6 @@ import (
 // NOTE: This a copy the query limit from our Rust JSON RPC backend, this needs to be kept in sync!
 const QUERY_MAX_RESULT_LIMIT = 50
 
-type suiBase64Data = serialization.Base64Data
-
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
 func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (models.Coins, error) {
 	coinType := models.SuiCoinType
@@ -55,7 +53,7 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	if err != nil {
 		return nil, err
 	}
-	objIds := make([]sui_types.ObjectID, 0)
+	objIds := make([]*sui_types.ObjectID, 0)
 	for _, obj := range filteringObjs.Data {
 		if obj.Data == nil {
 			continue // error obj
@@ -69,7 +67,7 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	return s.MultiGetObjects(ctx, objIds, options)
 }
 
-// PTB impl
+////// PTB impl
 
 func BCS_RequestAddStake(
 	signer *sui_types.SuiAddress,
@@ -115,7 +113,7 @@ func BCS_RequestAddStake(
 	)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*signer, coins, pt, gasBudget, gasPrice,
+		signer, pt, coins, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }
@@ -145,7 +143,7 @@ func BCS_RequestWithdrawStake(signer *sui_types.SuiAddress, stakedSuiRef sui_typ
 	})
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
-		*signer, gas, pt, gasBudget, gasPrice,
+		signer, pt, gas, gasBudget, gasPrice,
 	)
 	return bcs.Marshal(tx)
 }

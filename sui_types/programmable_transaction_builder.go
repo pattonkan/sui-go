@@ -3,7 +3,6 @@ package sui_types
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/howjmay/sui-go/sui_types/serialization"
 
@@ -17,30 +16,31 @@ type BuilderArg struct {
 	ForcedNonUniquePure *uint
 }
 
-func (b BuilderArg) String() string {
+func (b BuilderArg) GetHash() uint64 {
+	// TODO we can implement our own hash func for go structs
 	hash, err := hashstructure.Hash(b, hashstructure.FormatV2, nil)
 	if err != nil {
 		panic(err)
 	}
-	return strconv.FormatUint(hash, 10)
+	return hash
 }
 
 type ProgrammableTransactionBuilder struct {
-	Inputs         map[string]CallArg //maybe has hash clash
+	Inputs         map[uint64]CallArg //maybe has hash clash
 	InputsKeyOrder []BuilderArg
 	Commands       []Command
 }
 
 func NewProgrammableTransactionBuilder() *ProgrammableTransactionBuilder {
 	return &ProgrammableTransactionBuilder{
-		Inputs: make(map[string]CallArg),
+		Inputs: make(map[uint64]CallArg),
 	}
 }
 
 func (p *ProgrammableTransactionBuilder) Finish() ProgrammableTransaction {
 	var inputs []CallArg
 	for _, v := range p.InputsKeyOrder {
-		inputs = append(inputs, p.Inputs[v.String()])
+		inputs = append(inputs, p.Inputs[v.GetHash()])
 	}
 	return ProgrammableTransaction{
 		Inputs:   inputs,
@@ -69,25 +69,30 @@ func (p *ProgrammableTransactionBuilder) pureBytes(bytes []byte, forceSeparate b
 		}
 	}
 	i := p.insertFull(
-		arg, CallArg{
+		arg,
+		CallArg{
 			Pure: &bytes,
 		},
 	)
 	return Argument{
 		Input: &i,
 	}
-
 }
 
+// `insertFull` is the go implementation of rust crate `indexmap::insert_full()`
+// It inserts the key/value pair into the map
+// see more info in https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html#method.insert
 func (p *ProgrammableTransactionBuilder) insertFull(key BuilderArg, value CallArg) uint16 {
-	_, ok := p.Inputs[key.String()]
-	p.Inputs[key.String()] = value
+	builderArgHash := key.GetHash()
+
+	_, ok := p.Inputs[builderArgHash]
+	p.Inputs[builderArgHash] = value
 	if !ok {
 		p.InputsKeyOrder = append(p.InputsKeyOrder, key)
 		return uint16(len(p.InputsKeyOrder) - 1)
 	}
 	for i, v := range p.InputsKeyOrder {
-		if v.String() == key.String() {
+		if v.GetHash() == builderArgHash {
 			return uint16(i)
 		}
 	}
@@ -102,12 +107,19 @@ func (p *ProgrammableTransactionBuilder) Pure(value any) (Argument, error) {
 	return p.pureBytes(pureData, false), nil
 }
 
+func (p *ProgrammableTransactionBuilder) MustPure(value any) Argument {
+	pureData, err := bcs.Marshal(value)
+	if err != nil {
+		panic(err)
+	}
+	return p.pureBytes(pureData, false)
+}
+
+// refer crates/sui-types/src/programmable_transaction_builder.rs
 func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error) {
 	id := objArg.id()
 	var oj ObjectArg
-	if oldValue, ok := p.Inputs[BuilderArg{
-		Object: &id,
-	}.String()]; ok {
+	if oldValue, ok := p.Inputs[BuilderArg{Object: id}.GetHash()]; ok {
 		var oldObjArg ObjectArg
 		switch {
 		case oldValue.Pure != nil:
@@ -123,7 +135,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 			}
 			oj = ObjectArg{
 				SharedObject: &struct {
-					Id                   ObjectID
+					Id                   *ObjectID
 					InitialSharedVersion SequenceNumber
 					Mutable              bool
 				}{
@@ -146,7 +158,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 	}
 	i := p.insertFull(
 		BuilderArg{
-			Object: &id,
+			Object: id,
 		}, CallArg{
 			Object: &oj,
 		},
@@ -184,6 +196,7 @@ func (p *ProgrammableTransactionBuilder) MakeObjList(objs []ObjectArg) (Argument
 	return arg, nil
 }
 
+// Add command to `ProgrammableTransactionBuilder.Commands`, and return the result in `Argument` type
 func (p *ProgrammableTransactionBuilder) Command(command Command) Argument {
 	p.Commands = append(p.Commands, command)
 	i := uint16(len(p.Commands)) - 1
@@ -290,17 +303,6 @@ func (p *ProgrammableTransactionBuilder) MoveCall(
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) PaySui(
-	recipients []*SuiAddress,
-	amounts []uint64,
-) error {
-	return p.PayMulInternal(
-		recipients, amounts, Argument{
-			GasCoin: &serialization.EmptyEnum{},
-		},
-	)
-}
-
 func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error {
 	recArg, err := p.Pure(recipient)
 	if err != nil {
@@ -317,30 +319,30 @@ func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error 
 	return nil
 }
 
+func (p *ProgrammableTransactionBuilder) PaySui(
+	recipients []*SuiAddress,
+	amounts []uint64,
+) error {
+	return p.payImpl(recipients, amounts, Argument{GasCoin: &serialization.EmptyEnum{}})
+}
+
 func (p *ProgrammableTransactionBuilder) Pay(
 	coins []*ObjectRef,
 	recipients []*SuiAddress,
 	amounts []uint64,
 ) error {
 	if len(coins) == 0 {
-		return errors.New("coins is empty")
+		return errors.New("coins vector is empty")
 	}
-	coinArg, err := p.Obj(
-		ObjectArg{
-			ImmOrOwnedObject: coins[0],
-		},
-	)
-	coins = coins[1:]
+	coinArg, err := p.Obj(ObjectArg{ImmOrOwnedObject: coins[0]})
 	if err != nil {
 		return err
 	}
+	coins = coins[1:]
+
 	var mergeArgs []Argument
 	for _, v := range coins {
-		mergeCoin, err := p.Obj(
-			ObjectArg{
-				ImmOrOwnedObject: v,
-			},
-		)
+		mergeCoin, err := p.Obj(ObjectArg{ImmOrOwnedObject: v})
 		if err != nil {
 			return err
 		}
@@ -356,12 +358,15 @@ func (p *ProgrammableTransactionBuilder) Pay(
 			},
 		)
 	}
-	return p.PayMulInternal(recipients, amounts, coinArg)
+	return p.payImpl(recipients, amounts, coinArg)
 }
 
-func (p *ProgrammableTransactionBuilder) PayMulInternal(
+// And the commands to pay a coin object to multiple recipients
+// golang implementation of pay_impl() in `sui/crates/sui-types/src/programmable_transaction_builder.rs`
+func (p *ProgrammableTransactionBuilder) payImpl(
 	recipients []*SuiAddress,
-	amounts []uint64, coin Argument,
+	amounts []uint64,
+	coin Argument,
 ) error {
 	if len(recipients) != len(amounts) {
 		return fmt.Errorf(
@@ -373,19 +378,21 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 	if len(amounts) == 0 {
 		return nil
 	}
-	var (
-		amtArgs              []Argument
-		recipientMap         = make(map[SuiAddress][]int)
-		recipientMapKeyIndex []SuiAddress
-	)
+
+	var amtArgs []Argument
+	// map[<recipients accounts>]<index in input amounts array>. The `[]int` array is `split_secondaries` in rust-sdk
+	var recipientMap = make(map[*SuiAddress][]int)
+	// this allows us to traverse the `recipientMap` with order (like indexmap)
+	var recipientMapKeyIndex []*SuiAddress
+
 	for i := 0; i < len(amounts); i++ {
 		amt, err := p.Pure(amounts[i])
 		if err != nil {
 			return err
 		}
-		recipientMap[*recipients[i]] = append(recipientMap[*recipients[i]], i)
-		if len(recipientMap[*recipients[i]]) == 1 {
-			recipientMapKeyIndex = append(recipientMapKeyIndex, *recipients[i])
+		recipientMap[recipients[i]] = append(recipientMap[recipients[i]], i)
+		if len(recipientMap[recipients[i]]) == 1 {
+			recipientMapKeyIndex = append(recipientMapKeyIndex, recipients[i])
 		}
 		amtArgs = append(amtArgs, amt)
 	}
@@ -407,13 +414,14 @@ func (p *ProgrammableTransactionBuilder) PayMulInternal(
 		}
 		var coins []Argument
 		for _, j := range recipientMap[v] {
-			sdCoin := Argument{
+			// the portions of the coins that slipt from the given coin, which are going to pay for recipients
+			coinTransfer := Argument{
 				NestedResult: &struct {
 					Result1 uint16
 					Result2 uint16
 				}{Result1: *splitCoinResult.Result, Result2: uint16(j)},
 			}
-			coins = append(coins, sdCoin)
+			coins = append(coins, coinTransfer)
 		}
 		p.Command(
 			Command{

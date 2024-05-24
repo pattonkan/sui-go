@@ -81,7 +81,7 @@ func NewEd25519SuiSignature(s *Signer, msg []byte) *Ed25519SuiSignature {
 	sig := ed25519.Sign(s.ed25519Keypair.PriKey, msg)
 
 	sigBuffer := bytes.NewBuffer([]byte{})
-	sigBuffer.WriteByte(byte(FlagEd25519))
+	sigBuffer.WriteByte(byte(KeySchemeFlagEd25519))
 	sigBuffer.Write(sig[:])
 	sigBuffer.Write(s.ed25519Keypair.PubKey)
 

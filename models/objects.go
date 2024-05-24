@@ -9,7 +9,7 @@ type SuiObjectRef struct {
 	/** Base64 string representing the object digest */
 	Digest sui_types.TransactionDigest `json:"digest"`
 	/** Hex code as string representing the object id */
-	ObjectID string `json:"objectId"`
+	ObjectID string `json:"objectId"` // TODO refactor datatype to ObjectID
 	/** Object version */
 	Version sui_types.SequenceNumber `json:"version"`
 }
@@ -42,7 +42,8 @@ type SuiMovePackage struct {
 type SuiParsedMoveObject struct {
 	Type              string `json:"type"`
 	HasPublicTransfer bool   `json:"hasPublicTransfer"`
-	Fields            any    `json:"fields"`
+	// maybe use reflect to solve this
+	Fields any `json:"fields"`
 }
 
 type SuiRawData struct {
@@ -62,14 +63,14 @@ type SuiRawMoveObject struct {
 	Type              string                   `json:"type"`
 	HasPublicTransfer bool                     `json:"hasPublicTransfer"`
 	Version           sui_types.SequenceNumber `json:"version"`
-	BcsBytes          serialization.Base64Data `json:"bcsBytes"`
+	BcsBytes          sui_types.Base64Data     `json:"bcsBytes"`
 }
 
 type SuiRawMovePackage struct {
-	Id              sui_types.ObjectID                  `json:"id"`
-	Version         sui_types.SequenceNumber            `json:"version"`
-	ModuleMap       map[string]serialization.Base64Data `json:"moduleMap"`
-	TypeOriginTable []TypeOrigin                        `json:"typeOriginTable"`
+	Id              sui_types.ObjectID              `json:"id"`
+	Version         sui_types.SequenceNumber        `json:"version"`
+	ModuleMap       map[string]sui_types.Base64Data `json:"moduleMap"`
+	TypeOriginTable []TypeOrigin                    `json:"typeOriginTable"`
 	LinkageTable    map[string]UpgradeInfo
 }
 
@@ -85,9 +86,9 @@ type TypeOrigin struct {
 }
 
 type SuiObjectData struct {
-	ObjectID sui_types.ObjectID                      `json:"objectId"`
+	ObjectID *sui_types.ObjectID                     `json:"objectId"`
 	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-	Digest   sui_types.ObjectDigest                  `json:"digest"`
+	Digest   *sui_types.ObjectDigest                 `json:"digest"`
 	/**
 	 * Type of the object, default to be undefined unless SuiObjectDataOptions.showType is set to true
 	 */
@@ -124,11 +125,11 @@ type SuiObjectData struct {
 	Display interface{} `json:"display,omitempty"`
 }
 
-func (data *SuiObjectData) Reference() sui_types.ObjectRef {
+func (data *SuiObjectData) Ref() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
 		ObjectID: data.ObjectID,
 		Version:  data.Version.data,
-		Digest:   data.Digest.Data(),
+		Digest:   data.Digest,
 	}
 }
 

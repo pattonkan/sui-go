@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/howjmay/sui-go/models"
-	"github.com/howjmay/sui-go/sui_types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -241,13 +240,13 @@ func TestCoins_PickCoins(t *testing.T) {
 }
 
 func TestPickupCoins(t *testing.T) {
-	coin := func(n uint64) models.Coin {
-		return models.Coin{Balance: balanceObject(n), CoinType: models.SuiCoinType}
+	coin := func(n uint64) *models.Coin {
+		return &models.Coin{Balance: balanceObject(n), CoinType: models.SuiCoinType}
 	}
 
 	type args struct {
 		inputCoins   *models.CoinPage
-		targetAmount big.Int
+		targetAmount *big.Int
 		gasBudget    uint64
 		limit        int
 		moreCount    int
@@ -261,87 +260,87 @@ func TestPickupCoins(t *testing.T) {
 		{
 			name: "moreCount = 3",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
 				},
-				targetAmount: *big.NewInt(1e3),
+				targetAmount: big.NewInt(1e3),
 				moreCount:    3,
 			},
 			want: &models.PickedCoins{
-				Coins: []models.Coin{
+				Coins: []*models.Coin{
 					coin(1e3), coin(1e5), coin(1e2),
 				},
-				TotalAmount:  *big.NewInt(1e3 + 1e5 + 1e2),
-				TargetAmount: *big.NewInt(1e3),
+				TotalAmount:  big.NewInt(1e3 + 1e5 + 1e2),
+				TargetAmount: big.NewInt(1e3),
 			},
 		},
 		{
 			name: "large gas",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{
 						coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 					},
 				},
-				targetAmount: *big.NewInt(1e3),
+				targetAmount: big.NewInt(1e3),
 				gasBudget:    1e9,
 				moreCount:    3,
 			},
 			want: &models.PickedCoins{
-				Coins: []models.Coin{
+				Coins: []*models.Coin{
 					coin(1e3), coin(1e5), coin(1e2), coin(1e4),
 				},
-				TotalAmount:  *big.NewInt(1e3 + 1e5 + 1e2 + 1e4),
-				TargetAmount: *big.NewInt(1e3),
+				TotalAmount:  big.NewInt(1e3 + 1e5 + 1e2 + 1e4),
+				TargetAmount: big.NewInt(1e3),
 			},
 		},
 		{
 			name: "ErrNoCoinsFound",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{},
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{},
 				},
-				targetAmount: *big.NewInt(101000),
+				targetAmount: big.NewInt(101000),
 			},
 			wantErr: models.ErrNoCoinsFound,
 		},
 		{
 			name: "ErrInsufficientBalance",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
 				},
-				targetAmount: *big.NewInt(1e9),
+				targetAmount: big.NewInt(1e9),
 			},
 			wantErr: models.ErrInsufficientBalance,
 		},
 		{
 			name: "ErrNeedMergeCoin 1",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{
 						coin(1e5), coin(1e6), coin(1e4),
 					},
 					HasNextPage: true,
 				},
-				targetAmount: *big.NewInt(1e9),
+				targetAmount: big.NewInt(1e9),
 			},
 			wantErr: models.ErrNeedMergeCoin,
 		},
 		{
 			name: "ErrNeedMergeCoin 2",
 			args: args{
-				inputCoins: &models.Page[models.Coin, sui_types.ObjectID]{
-					Data: []models.Coin{
+				inputCoins: &models.CoinPage{
+					Data: []*models.Coin{
 						coin(1e5), coin(1e6), coin(1e4), coin(1e5),
 					},
 					HasNextPage: false,
 				},
-				targetAmount: *big.NewInt(1e6 + 1e5*2 + 1e3),
+				targetAmount: big.NewInt(1e6 + 1e5*2 + 1e3),
 				limit:        3,
 			},
 			wantErr: models.ErrNeedMergeCoin,

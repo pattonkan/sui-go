@@ -5,16 +5,23 @@ import (
 	"math"
 )
 
-type KeyPair byte
+type KeySchemeFlag byte
+
+var KeySchemeFlagDefault = KeySchemeFlagEd25519
 
 const (
-	FlagEd25519 KeyPair = iota
-	FlagSecp256k1
+	KeySchemeFlagEd25519 KeySchemeFlag = iota
+	KeySchemeFlagSecp256k1
+	KeySchemeFlagSecp256r1
+	KeySchemeFlagMultiSig
+	KeySchemeFlagBLS12381
+	KeySchemeFlagZkLoginAuthenticator
 
-	FlagError = math.MaxUint8
+	KeySchemeFlagIotaEd25519 = math.MaxUint8 - 1 // special case for iota ed25519
+	KeySchemeFlagError       = math.MaxUint8
 )
 
-func (k KeyPair) Byte() byte {
+func (k KeySchemeFlag) Byte() byte {
 	return byte(k)
 }
 

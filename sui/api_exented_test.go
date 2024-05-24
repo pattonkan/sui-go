@@ -56,10 +56,8 @@ func TestGetDynamicFieldObject(t *testing.T) {
 }
 
 func TestGetDynamicFields(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	parentObjectID, err := sui_types.SuiAddressFromHex("0x1719957d7a2bf9d72459ff0eab8e600cbb1991ef41ddd5b4a8c531035933d256")
-	require.NoError(t, err)
-	limit := uint(5)
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	limit := 5
 	type args struct {
 		ctx            context.Context
 		parentObjectID *sui_types.ObjectID
@@ -70,27 +68,31 @@ func TestGetDynamicFields(t *testing.T) {
 		name    string
 		args    args
 		want    *models.DynamicFieldPage
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name: "case 1",
+			name: "a deepbook shared object",
 			args: args{
 				ctx:            context.TODO(),
-				parentObjectID: parentObjectID,
+				parentObjectID: sui_types.MustSuiAddressFromHex("0xa9d09452bba939b3172c0242d022274845cfe4e58648b73dd33b3d5b823dc8ae"),
 				cursor:         nil,
-				limit:          &limit,
+				limit:          func() *uint { tmpLimit := uint(limit); return &tmpLimit }(),
 			},
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := api.GetDynamicFields(tt.args.ctx, tt.args.parentObjectID, tt.args.cursor, tt.args.limit)
-				if (err != nil) != tt.wantErr {
-					t.Errorf("GetDynamicFields() error: %v, wantErr %v", err, tt.wantErr)
-					return
+				got, err := client.GetDynamicFields(tt.args.ctx, tt.args.parentObjectID, tt.args.cursor, tt.args.limit)
+				require.ErrorIs(t, err, tt.wantErr)
+				// object ID is '0x4405b50d791fd3346754e8171aaab6bc2ed26c2c46efdd033c14b30ae507ac33'
+				// it has 'internal_nodes' field in type '0x2::table::Table<u64, 0xdee9::critbit::InternalNode'
+				require.Len(t, got.Data, limit)
+				for _, field := range got.Data {
+					require.Equal(t, "u64", field.Name.Type)
+					require.Equal(t, "0xdee9::critbit::InternalNode", field.ObjectType)
 				}
-				t.Log(got)
 			},
 		)
 	}
@@ -116,11 +118,12 @@ func TestGetOwnedObjects(t *testing.T) {
 }
 
 func TestQueryEvents(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	limit := uint(10)
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	limit := 10
+
 	type args struct {
 		ctx             context.Context
-		query           models.EventFilter
+		query           *models.EventFilter
 		cursor          *models.EventId
 		limit           *uint
 		descendingOrder bool
@@ -129,17 +132,17 @@ func TestQueryEvents(t *testing.T) {
 		name    string
 		args    args
 		want    *models.EventPage
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name: "test for query events",
+			name: "event in deepbook.batch_cancel_order()",
 			args: args{
 				ctx: context.TODO(),
-				query: models.EventFilter{
-					Sender: sui_signer.TEST_ADDRESS,
+				query: &models.EventFilter{
+					Sender: sui_types.MustSuiAddressFromHex("0xf0f13f7ef773c6246e87a8f059a684d60773f85e992e128b8272245c38c94076"),
 				},
 				cursor:          nil,
-				limit:           &limit,
+				limit:           func() *uint { tmpLimit := uint(limit); return &tmpLimit }(),
 				descendingOrder: false,
 			},
 		},
@@ -154,11 +157,15 @@ func TestQueryEvents(t *testing.T) {
 					tt.args.limit,
 					tt.args.descendingOrder,
 				)
-				if (err != nil) != tt.wantErr {
-					t.Errorf("QueryEvents() error: %v, wantErr %v", err, tt.wantErr)
-					return
+				require.ErrorIs(t, err, tt.wantErr)
+				require.Len(t, got.Data, int(limit))
+
+				for _, event := range got.Data {
+					// FIXME we should change other filter to, so we can verify each fields of event more detailed.
+					require.Equal(t, sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"), &event.PackageId)
+					require.Equal(t, "clob_v2", event.TransactionModule)
+					require.Equal(t, tt.args.query.Sender, &event.Sender)
 				}
-				t.Log(got)
 			},
 		)
 	}
@@ -169,7 +176,7 @@ func TestQueryTransactionBlocks(t *testing.T) {
 	limit := uint(10)
 	type args struct {
 		ctx             context.Context
-		query           models.SuiTransactionBlockResponseQuery
+		query           *models.SuiTransactionBlockResponseQuery
 		cursor          *sui_types.TransactionDigest
 		limit           *uint
 		descendingOrder bool
@@ -184,7 +191,7 @@ func TestQueryTransactionBlocks(t *testing.T) {
 			name: "test for queryTransactionBlocks",
 			args: args{
 				ctx: context.TODO(),
-				query: models.SuiTransactionBlockResponseQuery{
+				query: &models.SuiTransactionBlockResponseQuery{
 					Filter: &models.TransactionFilter{
 						FromAddress: sui_signer.TEST_ADDRESS,
 					},
@@ -231,24 +238,25 @@ func TestResolveNameServiceAddress(t *testing.T) {
 
 func TestResolveNameServiceNames(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	owner := AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
+	owner := sui_types.MustSuiAddressFromHex("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
 	namePage, err := api.ResolveNameServiceNames(context.Background(), owner, nil, nil)
 	require.NoError(t, err)
 	require.NotEmpty(t, namePage.Data)
 	t.Log(namePage.Data)
 
-	owner = AddressFromStrMust("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
+	owner = sui_types.MustSuiAddressFromHex("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
 	namePage, err = api.ResolveNameServiceNames(context.Background(), owner, nil, nil)
 	require.NoError(t, err)
 	require.Empty(t, namePage.Data)
 }
 
 func TestSubscribeEvent(t *testing.T) {
+	t.Skip("passed at local side, but returned error on GitHub")
 	api := sui.NewSuiWebsocketClient(conn.MainnetWebsocketEndpointUrl)
 
 	type args struct {
 		ctx      context.Context
-		filter   models.EventFilter
+		filter   *models.EventFilter
 		resultCh chan models.SuiEvent
 	}
 	tests := []struct {
@@ -261,7 +269,7 @@ func TestSubscribeEvent(t *testing.T) {
 			name: "test for filter events",
 			args: args{
 				ctx: context.TODO(),
-				filter: models.EventFilter{
+				filter: &models.EventFilter{
 					Package: sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
 				},
 				resultCh: make(chan models.SuiEvent),

@@ -266,6 +266,18 @@ type SuiTransactionBlockResponse struct {
 	Errors []string `json:"errors,omitempty"`
 }
 
+// requires to set 'models.SuiTransactionBlockResponseOptions.ShowObjectChanges' to true
+func (r *SuiTransactionBlockResponse) GetPublishedPackageID() *sui_types.PackageID {
+	var packageID sui_types.PackageID
+	for _, change := range r.ObjectChanges {
+		if change.Data.Published != nil {
+			packageID = change.Data.Published.PackageId
+			return &packageID
+		}
+	}
+	return nil
+}
+
 type ReturnValueType interface{}
 type MutableReferenceOutputType interface{}
 type ExecutionResultType struct {
