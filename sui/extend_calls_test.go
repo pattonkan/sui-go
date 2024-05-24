@@ -82,3 +82,16 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 
 	return packageID, treasuryCap
 }
+
+func TestBatchGetObjectsOwnedByAddress(t *testing.T) {
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
+
+	options := models.SuiObjectDataOptions{
+		ShowType:    true,
+		ShowContent: true,
+	}
+	coinType := fmt.Sprintf("0x2::coin::Coin<%v>", models.SuiCoinType)
+	filterObject, err := api.BatchGetObjectsOwnedByAddress(context.TODO(), sui_signer.TEST_ADDRESS, &options, coinType)
+	require.NoError(t, err)
+	t.Log(filterObject)
+}
