@@ -229,7 +229,7 @@ func TestPTB_MoveCall(t *testing.T) {
 	ptb.Command(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
-				Package:  sui_types.SuiSystemAddress,
+				Package:  sui_types.SuiPackageIdSuiSystem,
 				Module:   sui_types.SuiSystemModuleName,
 				Function: sui_types.AddStakeFunName,
 				Arguments: []sui_types.Argument{
