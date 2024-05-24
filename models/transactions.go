@@ -46,9 +46,9 @@ type SuiTransactionBlockEffectsV1 struct {
 	Status ExecutionStatus `json:"status"`
 	/** The epoch when this transaction was executed */
 	ExecutedEpoch SafeSuiBigInt[EpochId] `json:"executedEpoch"`
+	GasUsed       GasCostSummary         `json:"gasUsed"`
 	/** The version that every modified (mutated or deleted) object had before it was modified by this transaction. **/
 	ModifiedAtVersions []SuiTransactionBlockEffectsModifiedAtVersions `json:"modifiedAtVersions,omitempty"`
-	GasUsed            GasCostSummary                                 `json:"gasUsed"`
 	/** The object references of the shared objects used in this transaction. Empty if no shared objects were used. */
 	SharedObjects []SuiObjectRef `json:"sharedObjects,omitempty"`
 	/** The transaction digest */
@@ -254,16 +254,17 @@ type BalanceChange struct {
 type SuiTransactionBlockResponse struct {
 	Digest                  sui_types.TransactionDigest                        `json:"digest"`
 	Transaction             *SuiTransactionBlock                               `json:"transaction,omitempty"`
-	RawTransaction          []byte                                             `json:"rawTransaction,omitempty"`
+	RawTransaction          sui_types.Base64Data                               `json:"rawTransaction,omitempty"` // enable by show_raw_input
 	Effects                 *serialization.TagJson[SuiTransactionBlockEffects] `json:"effects,omitempty"`
-	Events                  []SuiEvent                                         `json:"events,omitempty"`
+	Events                  []*SuiEvent                                        `json:"events,omitempty"`
 	TimestampMs             *SafeSuiBigInt[uint64]                             `json:"timestampMs,omitempty"`
 	Checkpoint              *SafeSuiBigInt[CheckpointSequenceNumber]           `json:"checkpoint,omitempty"`
 	ConfirmedLocalExecution *bool                                              `json:"confirmedLocalExecution,omitempty"`
 	ObjectChanges           []serialization.TagJson[ObjectChange]              `json:"objectChanges,omitempty"`
 	BalanceChanges          []BalanceChange                                    `json:"balanceChanges,omitempty"`
-	/* Errors that occurred in fetching/serializing the transaction. */
-	Errors []string `json:"errors,omitempty"`
+	Errors                  []string                                           `json:"errors,omitempty"` // Errors that occurred in fetching/serializing the transaction.
+	// FIXME datatype may be wrong
+	RawEffects []string `json:"rawEffects,omitempty"` // enable by show_raw_effects
 }
 
 // requires to set 'models.SuiTransactionBlockResponseOptions.ShowObjectChanges' to true
@@ -311,16 +312,20 @@ type TransactionFilter struct {
 }
 
 type SuiTransactionBlockResponseOptions struct {
-	/* Whether to show transaction input data. Default to be false. */
+	// Whether to show transaction input data. Default to be False
 	ShowInput bool `json:"showInput,omitempty"`
-	/* Whether to show transaction effects. Default to be false. */
+	// Whether to show bcs-encoded transaction input data
+	ShowRawInput bool `json:"showRawInput,omitempty"`
+	// Whether to show transaction effects. Default to be False
 	ShowEffects bool `json:"showEffects,omitempty"`
-	/* Whether to show transaction events. Default to be false. */
+	// Whether to show transaction events. Default to be False
 	ShowEvents bool `json:"showEvents,omitempty"`
-	/* Whether to show object changes. Default to be false. */
+	// Whether to show object_changes. Default to be False
 	ShowObjectChanges bool `json:"showObjectChanges,omitempty"`
-	/* Whether to show coin balance changes. Default to be false. */
+	// Whether to show balance_changes. Default to be False
 	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty"`
+	// Whether to show raw transaction effects. Default to be False
+	ShowRawEffects bool `json:"showRawEffects,omitempty"`
 }
 
 type SuiTransactionBlockResponseQuery struct {
