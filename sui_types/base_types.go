@@ -5,6 +5,7 @@ import "github.com/howjmay/sui-go/sui_types/serialization"
 type PackageID = SuiAddress
 type ObjectID = SuiAddress
 type SequenceNumber = uint64
+type Identifier = string
 
 func PackageIDFromHex(str string) (*PackageID, error) {
 	return SuiAddressFromHex(str)
