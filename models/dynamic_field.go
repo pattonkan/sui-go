@@ -6,8 +6,7 @@ import (
 )
 
 type DynamicFieldInfo struct {
-	Name sui_types.DynamicFieldName `json:"name"`
-	//Base58
+	Name       sui_types.DynamicFieldName                        `json:"name"`
 	BcsName    sui_types.Base58                                  `json:"bcsName"`
 	Type       serialization.TagJson[sui_types.DynamicFieldType] `json:"type"`
 	ObjectType string                                            `json:"objectType"`

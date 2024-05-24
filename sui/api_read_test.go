@@ -2,9 +2,11 @@ package sui_test
 
 import (
 	"context"
+	"encoding/base64"
 	"strconv"
 	"testing"
 
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
@@ -38,6 +40,8 @@ func TestGetEvents(t *testing.T) {
 			"0xdee9::clob_v2::OrderPlaced<0x2::sui::SUI, 0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>",
 			event.Type,
 		)
+		targetBcsBase85 := base58.Decode("yNS5iDS3Gvdo3DhXdtFpuTS12RrSiNkrvjcm2rejntCuqWjF1DdwnHgjowdczAkR18LQHcBqbX2tWL76rys9rTCzG6vm7Tg34yqUkpFSMqNkcS6cfWbN8SdVsxn5g4ZEQotdBgEFn8yN7hVZ7P1MKvMwWf")
+		require.Equal(t, targetBcsBase85, event.Bcs.Data())
 		// TODO check ParsedJson map
 	}
 }
@@ -116,7 +120,9 @@ func TestGetTransactionBlock(t *testing.T) {
 	resp, err := client.GetTransactionBlock(
 		context.Background(), digest, &models.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
+			ShowRawInput:       true,
 			ShowEffects:        true,
+			ShowRawEffects:     true,
 			ShowObjectChanges:  true,
 			ShowBalanceChanges: true,
 			ShowEvents:         true,
@@ -124,18 +130,20 @@ func TestGetTransactionBlock(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	gasCostSummary := models.GasCostSummary{
+	require.NoError(t, err)
+	targetGasCostSummary := models.GasCostSummary{
 		ComputationCost:         models.NewSafeSuiBigInt(uint64(750000)),
 		StorageCost:             models.NewSafeSuiBigInt(uint64(32383600)),
 		StorageRebate:           models.NewSafeSuiBigInt(uint64(21955032)),
 		NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(221768)),
 	}
-
 	require.Equal(t, digest, &resp.Digest)
-
+	targetRawTxBase64, err := base64.StdEncoding.DecodeString("AQAAAAAACgEBpqVCwrKBCI6PELxQWossTD9mgGbIy8W++ipS7CWatqOAVmEAAAAAAAEBAG85p+0UjVUsc5qkxhWSZ/qr2vghuqeSNiZr1gQzhCIAV3XJAQAAAAAgKEbgAIwWMBRZ1grRBFQ6qrSWLHa/AfKG8ubjmkxM/zoAIEnHBYEE/EtGK3r1lzrUU9QPAiTHLBd2+R8GS7k042UqAQF/3Yg8C3Qn8YzbSYxMh6SnnWvsR4PLPyGqOBa7xkzo7wDr5AEAAAAAAQEBbg3e/ArZiInAS6uWOeUSwhdmxeY2b4nmlpVtm+aVKHENAAAAAAAAAAEAERAyMjIyMjIyMjIyMjIuc3VpAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgEAAAAAAAAAAAAgVxiHQ5g2KLNHRkjYqkqe6Kvr6PaBYkN3PX6O1P2DOigAERAyMjIyMjIyMjIyMjIuc3VpACBXGIdDmDYos0dGSNiqSp7oq+vo9oFiQ3c9fo7U/YM6KAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIFa2lvc2sKYm9ycm93X3ZhbAEH7klqDMBNBqNFmCumaXyQxhkCDenidECMeBn3h/9m4aEIc3VpZnJlbnMHU3VpRnJlbgEHiJT6AvxvNsvEha6RRdBfJHp44iCBT7hBmrJhvYHwjzIJYnVsbHNoYXJrCUJ1bGxzaGFyawADAQAAAQEAAQIAAGpuoUDgld3YL3x0WQUFSzIDEp3QSgnQN1QWwxFhky0tC2ZyZWVfY2xhaW1zCmZyZWVfY2xhaW0BB+5JagzATQajRZgrpml8kMYZAg3p4nRAjHgZ94f/ZuGhCHN1aWZyZW5zB1N1aUZyZW4BB4iU+gL8bzbLxIWukUXQXyR6eOIggU+4QZqyYb2B8I8yCWJ1bGxzaGFyawlCdWxsc2hhcmsABQEDAAEEAAMAAAAAAQUAAQYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACBWtpb3NrCnJldHVybl92YWwBB+5JagzATQajRZgrpml8kMYZAg3p4nRAjHgZ94f/ZuGhCHN1aWZyZW5zB1N1aUZyZW4BB4iU+gL8bzbLxIWukUXQXyR6eOIggU+4QZqyYb2B8I8yCWJ1bGxzaGFyawlCdWxsc2hhcmsAAwEAAAMAAAAAAwAAAQAA2sImUutAC+sfXiEmRZyuju3BFrc7itYLcePo1/2zF+IMZGlyZWN0X3NldHVwEnNldF90YXJnZXRfYWRkcmVzcwAEAQQAAgEAAQcAAQYAANrCJlLrQAvrH14hJkWcro7twRa3O4rWC3Hj6Nf9sxfiDGRpcmVjdF9zZXR1cBJzZXRfcmV2ZXJzZV9sb29rdXAAAgEEAAEIAAEBAgEAAQkAVxiHQ5g2KLNHRkjYqkqe6Kvr6PaBYkN3PX6O1P2DOigBAIV+3vABgFUzNcciYyljcM6zXwvwuD9FeVw6JU3rDUD/YO8BAAAAACBmxGapu4poDXYNHxLCokFFdgFBwBhoQW8vcK8+XuklpFcYh0OYNiizR0ZI2KpKnuir6+j2gWJDdz1+jtT9gzoo7gIAAAAAAADA8MQAAAAAAAABYQBao7U4xuiDfVJM+YnHs7cBOs9VJJVriNBdHr7neIyT+M9tzPcRbANj2P9q2s21wtgIiNtayH6IAAhgFEhKsEANMFE7Y3jZzVZy0dJdgxaL8YB9JBE0745Io7/8t/XlJ3w=")
+	require.NoError(t, err)
+	require.Equal(t, targetRawTxBase64, resp.RawTransaction.Data())
 	require.True(t, resp.Effects.Data.IsSuccess())
 	require.Equal(t, int64(183), resp.Effects.Data.V1.ExecutedEpoch.Int64())
-	require.Equal(t, gasCostSummary, resp.Effects.Data.V1.GasUsed)
+	require.Equal(t, targetGasCostSummary, resp.Effects.Data.V1.GasUsed)
 	require.Equal(t, int64(11178568), resp.Effects.Data.GasFee())
 	// TODO check all the fields
 }

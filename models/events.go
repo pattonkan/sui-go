@@ -20,7 +20,7 @@ type SuiEvent struct {
 	// Parsed json value of the event
 	ParsedJson interface{} `json:"parsedJson,omitempty"`
 	// Base 58 encoded bcs bytes of the move event
-	Bcs         string                 `json:"bcs"`
+	Bcs         sui_types.Base58       `json:"bcs"`
 	TimestampMs *SafeSuiBigInt[uint64] `json:"timestampMs,omitempty"`
 }
 
