@@ -24,6 +24,8 @@ type SuiEvent struct {
 	TimestampMs *SafeSuiBigInt[uint64] `json:"timestampMs,omitempty"`
 }
 
+type EventPage = Page[SuiEvent, EventId]
+
 type EventFilter struct {
 	// Query by sender sui_types.address.
 	Sender *sui_types.SuiAddress `json:"Sender,omitempty"`
@@ -72,5 +74,3 @@ type EventFilterTimeRange struct {
 	// right endpoint of time interval, milliseconds since epoch, exclusive
 	EndTime SafeSuiBigInt[uint64] `json:"endTime"`
 }
-
-type EventPage = Page[SuiEvent, EventId]
