@@ -12,7 +12,7 @@ func (s *ImplSuiAPI) DevInspectTransactionBlock(
 	ctx context.Context,
 	senderAddress *sui_types.SuiAddress,
 	txByte sui_types.Base64Data,
-	gasPrice *models.SafeSuiBigInt[uint64],
+	gasPrice *models.BigInt,
 	epoch *uint64,
 ) (*models.DevInspectResults, error) {
 	var resp models.DevInspectResults

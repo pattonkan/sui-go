@@ -32,7 +32,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		[]string{},
 		[]any{},
 		nil,
-		models.NewSafeSuiBigInt(uint64(100000)),
+		new(models.BigInt).SetUint64(uint64(100000)),
 	)
 	if err != nil {
 		log.Panic(err)

@@ -17,9 +17,9 @@ type SuiObjectRef struct {
 type SuiGasData struct {
 	Payment []SuiObjectRef `json:"payment"`
 	/** Gas Object's owner */
-	Owner  string                `json:"owner"`
-	Price  SafeSuiBigInt[uint64] `json:"price"`
-	Budget SafeSuiBigInt[uint64] `json:"budget"`
+	Owner  string  `json:"owner"`
+	Price  *BigInt `json:"price"`
+	Budget *BigInt `json:"budget"`
 }
 
 type SuiParsedData struct {
@@ -86,9 +86,9 @@ type TypeOrigin struct {
 }
 
 type SuiObjectData struct {
-	ObjectID *sui_types.ObjectID                     `json:"objectId"`
-	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-	Digest   *sui_types.ObjectDigest                 `json:"digest"`
+	ObjectID *sui_types.ObjectID     `json:"objectId"`
+	Version  *BigInt                 `json:"version"`
+	Digest   *sui_types.ObjectDigest `json:"digest"`
 	/**
 	 * Type of the object, default to be undefined unless SuiObjectDataOptions.showType is set to true
 	 */
@@ -116,7 +116,7 @@ type SuiObjectData struct {
 	 * the present storage gas price.
 	 * Default to be undefined unless SuiObjectDataOptions.showStorageRebate is set to true
 	 */
-	StorageRebate *SafeSuiBigInt[uint64] `json:"storageRebate,omitempty"`
+	StorageRebate *BigInt `json:"storageRebate,omitempty"`
 	/**
 	 * Display metadata for this object, default to be undefined unless SuiObjectDataOptions.showDisplay is set to true
 	 * This can also be None if the struct type does not have Display defined
@@ -128,7 +128,7 @@ type SuiObjectData struct {
 func (data *SuiObjectData) Ref() sui_types.ObjectRef {
 	return sui_types.ObjectRef{
 		ObjectID: data.ObjectID,
-		Version:  data.Version.data,
+		Version:  data.Version.Uint64(),
 		Digest:   data.Digest,
 	}
 }
@@ -181,8 +181,8 @@ type SuiObjectResponse struct {
 type CheckpointSequenceNumber = uint64
 
 type CheckpointedObjectID struct {
-	ObjectID     sui_types.ObjectID                       `json:"objectId"`
-	AtCheckpoint *SafeSuiBigInt[CheckpointSequenceNumber] `json:"atCheckpoint"`
+	ObjectID     sui_types.ObjectID `json:"objectId"`
+	AtCheckpoint *BigInt            `json:"atCheckpoint"`
 }
 
 type ObjectsPage = Page[SuiObjectResponse, sui_types.ObjectID]

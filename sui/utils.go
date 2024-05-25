@@ -52,7 +52,7 @@ func BuildDeployContract(
 		modules.Modules,
 		modules.Dependencies,
 		nil,
-		models.NewSafeSuiBigInt(DefaultGasBudget),
+		new(models.BigInt).SetUint64(DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(
@@ -85,7 +85,14 @@ func BuildDeployMintCoin(
 	modules, err := utils.MoveBuild(contractPath)
 	require.NoError(t, err)
 
-	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
+	txnBytes, err := client.Publish(
+		context.Background(),
+		signer.Address,
+		modules.Modules,
+		modules.Dependencies,
+		nil,
+		new(models.BigInt).SetUint64(DefaultGasBudget),
+	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
 		ShowEffects:       true,

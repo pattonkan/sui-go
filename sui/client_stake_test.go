@@ -33,7 +33,7 @@ func TestRequestAddDelegation(t *testing.T) {
 	txBytes, err := sui.BCS_RequestAddStake(
 		signer.Address,
 		pickedCoins.CoinRefs(),
-		models.NewSafeSuiBigInt(amount),
+		new(models.BigInt).SetUint64(amount),
 		validator,
 		sui.DefaultGasBudget,
 		sui.DefaultGasPrice,

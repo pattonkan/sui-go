@@ -14,8 +14,8 @@ func (s *ImplSuiAPI) GetLatestSuiSystemState(ctx context.Context) (*models.SuiSy
 	return &resp, s.http.CallContext(ctx, &resp, getLatestSuiSystemState)
 }
 
-func (s *ImplSuiAPI) GetReferenceGasPrice(ctx context.Context) (*models.SafeSuiBigInt[uint64], error) {
-	var resp models.SafeSuiBigInt[uint64]
+func (s *ImplSuiAPI) GetReferenceGasPrice(ctx context.Context) (*models.BigInt, error) {
+	var resp models.BigInt
 	return &resp, s.http.CallContext(ctx, &resp, getReferenceGasPrice)
 }
 

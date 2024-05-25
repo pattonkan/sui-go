@@ -133,7 +133,7 @@ func TestPTBTransferObject(t *testing.T) {
 		recipient.Address,
 		transferCoin.CoinObjectID,
 		gasCoin.CoinObjectID,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -171,8 +171,8 @@ func TestPTBTransferSui(t *testing.T) {
 		sender.Address,
 		recipient.Address,
 		coin.CoinObjectID,
-		models.NewSafeSuiBigInt(amount),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(amount),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -209,7 +209,7 @@ func TestPTBPayAllSui(t *testing.T) {
 		sender.Address,
 		recipient.Address,
 		coins.ObjectIDs(),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -267,11 +267,11 @@ func TestPTBPaySui(t *testing.T) {
 		sender.Address,
 		[]*sui_types.ObjectID{coin.CoinObjectID},
 		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
-		[]models.SafeSuiBigInt[uint64]{
-			models.NewSafeSuiBigInt(uint64(123)),
-			models.NewSafeSuiBigInt(uint64(456)),
+		[]*models.BigInt{
+			new(models.BigInt).SetUint64(uint64(123)),
+			new(models.BigInt).SetUint64(uint64(456)),
 		},
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -347,12 +347,12 @@ func TestPTBPay(t *testing.T) {
 		sender.Address,
 		transferCoins.ObjectIDs(),
 		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
-		[]models.SafeSuiBigInt[uint64]{
-			models.NewSafeSuiBigInt(amounts[0]),
-			models.NewSafeSuiBigInt(amounts[1]),
+		[]*models.BigInt{
+			new(models.BigInt).SetUint64(amounts[0]),
+			new(models.BigInt).SetUint64(amounts[1]),
 		},
 		gasCoin.CoinObjectID,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()

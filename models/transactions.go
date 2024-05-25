@@ -18,10 +18,10 @@ const (
 type EpochId = uint64
 
 type GasCostSummary struct {
-	ComputationCost         SafeSuiBigInt[uint64] `json:"computationCost"`
-	StorageCost             SafeSuiBigInt[uint64] `json:"storageCost"`
-	StorageRebate           SafeSuiBigInt[uint64] `json:"storageRebate"`
-	NonRefundableStorageFee SafeSuiBigInt[uint64] `json:"nonRefundableStorageFee"`
+	ComputationCost         *BigInt `json:"computationCost"`
+	StorageCost             *BigInt `json:"storageCost"`
+	StorageRebate           *BigInt `json:"storageRebate"`
+	NonRefundableStorageFee *BigInt `json:"nonRefundableStorageFee"`
 }
 
 const (
@@ -40,16 +40,16 @@ type OwnedObjectRef struct {
 }
 
 type SuiTransactionBlockEffectsModifiedAtVersions struct {
-	ObjectID       sui_types.ObjectID                      `json:"objectId"`
-	SequenceNumber SafeSuiBigInt[sui_types.SequenceNumber] `json:"sequenceNumber"`
+	ObjectID       sui_types.ObjectID `json:"objectId"`
+	SequenceNumber *BigInt            `json:"sequenceNumber"`
 }
 
 type SuiTransactionBlockEffectsV1 struct {
 	/** The status of the execution */
 	Status ExecutionStatus `json:"status"`
 	/** The epoch when this transaction was executed */
-	ExecutedEpoch SafeSuiBigInt[EpochId] `json:"executedEpoch"`
-	GasUsed       GasCostSummary         `json:"gasUsed"`
+	ExecutedEpoch *BigInt        `json:"executedEpoch"`
+	GasUsed       GasCostSummary `json:"gasUsed"`
 	/** The version that every modified (mutated or deleted) object had before it was modified by this transaction. **/
 	ModifiedAtVersions []SuiTransactionBlockEffectsModifiedAtVersions `json:"modifiedAtVersions,omitempty"`
 	/** The object references of the shared objects used in this transaction. Empty if no shared objects were used. */
@@ -141,11 +141,11 @@ func (t TransactionBlockKind) Content() string {
 }
 
 type SuiChangeEpoch struct {
-	Epoch                 SafeSuiBigInt[EpochId] `json:"epoch"`
-	StorageCharge         uint64                 `json:"storage_charge"`
-	ComputationCharge     uint64                 `json:"computation_charge"`
-	StorageRebate         uint64                 `json:"storage_rebate"`
-	EpochStartTimestampMs uint64                 `json:"epoch_start_timestamp_ms"`
+	Epoch                 *BigInt `json:"epoch"`
+	StorageCharge         uint64  `json:"storage_charge"`
+	ComputationCharge     uint64  `json:"computation_charge"`
+	StorageRebate         uint64  `json:"storage_rebate"`
+	EpochStartTimestampMs uint64  `json:"epoch_start_timestamp_ms"`
 }
 
 type SuiGenesisTransaction struct {
@@ -190,52 +190,52 @@ type SuiTransactionBlock struct {
 
 type ObjectChange struct {
 	Published *struct {
-		PackageId sui_types.ObjectID                      `json:"packageId"`
-		Version   SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-		Digest    sui_types.ObjectDigest                  `json:"digest"`
-		Nodules   []string                                `json:"nodules"`
+		PackageId sui_types.ObjectID     `json:"packageId"`
+		Version   *BigInt                `json:"version"`
+		Digest    sui_types.ObjectDigest `json:"digest"`
+		Nodules   []string               `json:"nodules"`
 	} `json:"published,omitempty"`
 	// Transfer objects to new address / wrap in another object
 	Transferred *struct {
-		Sender     sui_types.SuiAddress                    `json:"sender"`
-		Recipient  ObjectOwner                             `json:"recipient"`
-		ObjectType string                                  `json:"objectType"`
-		ObjectID   sui_types.ObjectID                      `json:"objectId"`
-		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-		Digest     sui_types.ObjectDigest                  `json:"digest"`
+		Sender     sui_types.SuiAddress   `json:"sender"`
+		Recipient  ObjectOwner            `json:"recipient"`
+		ObjectType string                 `json:"objectType"`
+		ObjectID   sui_types.ObjectID     `json:"objectId"`
+		Version    *BigInt                `json:"version"`
+		Digest     sui_types.ObjectDigest `json:"digest"`
 	} `json:"transferred,omitempty"`
 	// Object mutated.
 	Mutated *struct {
-		Sender          sui_types.SuiAddress                    `json:"sender"`
-		Owner           ObjectOwner                             `json:"owner"`
-		ObjectType      string                                  `json:"objectType"`
-		ObjectID        sui_types.ObjectID                      `json:"objectId"`
-		Version         SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-		PreviousVersion SafeSuiBigInt[sui_types.SequenceNumber] `json:"previousVersion"`
-		Digest          sui_types.ObjectDigest                  `json:"digest"`
+		Sender          sui_types.SuiAddress   `json:"sender"`
+		Owner           ObjectOwner            `json:"owner"`
+		ObjectType      string                 `json:"objectType"`
+		ObjectID        sui_types.ObjectID     `json:"objectId"`
+		Version         *BigInt                `json:"version"`
+		PreviousVersion *BigInt                `json:"previousVersion"`
+		Digest          sui_types.ObjectDigest `json:"digest"`
 	} `json:"mutated,omitempty"`
 	// Delete object j
 	Deleted *struct {
-		Sender     sui_types.SuiAddress                    `json:"sender"`
-		ObjectType string                                  `json:"objectType"`
-		ObjectID   sui_types.ObjectID                      `json:"objectId"`
-		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
+		Sender     sui_types.SuiAddress `json:"sender"`
+		ObjectType string               `json:"objectType"`
+		ObjectID   sui_types.ObjectID   `json:"objectId"`
+		Version    *BigInt              `json:"version"`
 	} `json:"deleted,omitempty"`
 	// Wrapped object
 	Wrapped *struct {
-		Sender     sui_types.SuiAddress                    `json:"sender"`
-		ObjectType string                                  `json:"objectType"`
-		ObjectID   sui_types.ObjectID                      `json:"objectId"`
-		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
+		Sender     sui_types.SuiAddress `json:"sender"`
+		ObjectType string               `json:"objectType"`
+		ObjectID   sui_types.ObjectID   `json:"objectId"`
+		Version    *BigInt              `json:"version"`
 	} `json:"wrapped,omitempty"`
 	// New object creation
 	Created *struct {
-		Sender     sui_types.SuiAddress                    `json:"sender"`
-		Owner      ObjectOwner                             `json:"owner"`
-		ObjectType string                                  `json:"objectType"`
-		ObjectID   sui_types.ObjectID                      `json:"objectId"`
-		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
-		Digest     sui_types.ObjectDigest                  `json:"digest"`
+		Sender     sui_types.SuiAddress   `json:"sender"`
+		Owner      ObjectOwner            `json:"owner"`
+		ObjectType string                 `json:"objectType"`
+		ObjectID   sui_types.ObjectID     `json:"objectId"`
+		Version    *BigInt                `json:"version"`
+		Digest     sui_types.ObjectDigest `json:"digest"`
 	} `json:"created,omitempty"`
 }
 
@@ -260,8 +260,8 @@ type SuiTransactionBlockResponse struct {
 	RawTransaction          sui_types.Base64Data                               `json:"rawTransaction,omitempty"` // enable by show_raw_input
 	Effects                 *serialization.TagJson[SuiTransactionBlockEffects] `json:"effects,omitempty"`
 	Events                  []*SuiEvent                                        `json:"events,omitempty"`
-	TimestampMs             *SafeSuiBigInt[uint64]                             `json:"timestampMs,omitempty"`
-	Checkpoint              *SafeSuiBigInt[CheckpointSequenceNumber]           `json:"checkpoint,omitempty"`
+	TimestampMs             *BigInt                                            `json:"timestampMs,omitempty"`
+	Checkpoint              *BigInt                                            `json:"checkpoint,omitempty"`
 	ConfirmedLocalExecution *bool                                              `json:"confirmedLocalExecution,omitempty"`
 	ObjectChanges           []serialization.TagJson[ObjectChange]              `json:"objectChanges,omitempty"`
 	BalanceChanges          []BalanceChange                                    `json:"balanceChanges,omitempty"`

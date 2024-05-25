@@ -102,7 +102,7 @@ func (c *Client) SendCoin(
 		[]string{coinType},
 		[]any{anchorAddress.String(), coinObject.String()},
 		nil,
-		models.NewSafeSuiBigInt(gasBudget),
+		new(models.BigInt).SetUint64(gasBudget),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call send_coin() move call: %w", err)
@@ -135,7 +135,7 @@ func (c *Client) ReceiveCoin(
 		[]string{coinType},
 		[]any{anchorAddress.String(), coinObject.String()},
 		nil,
-		models.NewSafeSuiBigInt(gasBudget),
+		new(models.BigInt).SetUint64(gasBudget),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call receive_coin() move call: %w", err)
@@ -208,7 +208,7 @@ func (c *Client) GetAssets(
 		}
 		fieldsMap := res.Data.Content.Data.MoveObject.Fields.((map[string]interface{}))
 		bal, _ := strconv.ParseUint(fieldsMap["value"].(string), 10, 64)
-		coin.Balance = models.NewSafeSuiBigInt(bal)
+		coin.Balance = new(models.BigInt).SetUint64(bal)
 	}
 	return &assets, nil
 }
@@ -293,7 +293,7 @@ func (c *Client) SendRequest(
 		[]string{},
 		[]any{anchorAddress.String(), reqObjID.String()},
 		nil,
-		models.NewSafeSuiBigInt(gasBudget),
+		new(models.BigInt).SetUint64(gasBudget),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call send_request() move call: %w", err)
@@ -325,7 +325,7 @@ func (c *Client) ReceiveRequest(
 		[]string{},
 		[]any{anchorAddress.String(), reqObjID.String()},
 		nil,
-		models.NewSafeSuiBigInt(gasBudget),
+		new(models.BigInt).SetUint64(gasBudget),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call receive_request() move call: %w", err)

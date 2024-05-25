@@ -29,7 +29,7 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 	// 	tx, err := api.PayAllSui(context.Background(),
 	// 		signer, signer,
 	// 		pickedCoins.CoinIds(),
-	// 		models.NewSafeSuiBigInt(gasBudget))
+	// 		new(models.BigInt).SetUint64(gasBudget))
 	// 	require.NoError(t, err)
 
 	// resp, err := api.DevInspectTransactionBlock(context.Background(), signer, tx.TxBytes, price, nil)
@@ -49,7 +49,7 @@ func TestDryRunTransaction(t *testing.T) {
 	tx, err := api.PayAllSui(
 		context.Background(), signer, signer,
 		pickedCoins.CoinIds(),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		new(models.BigInt).SetUint64(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
