@@ -8,9 +8,6 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-const MAX_INPUT_COUNT_MERGE = 256 - 1 // TODO find reference in Sui monorepo repo
-const MAX_INPUT_COUNT_STAKE = 512 - 1 // TODO find reference in Sui monorepo repo
-
 type Coin struct {
 	CoinType     string                  `json:"coinType"`
 	CoinObjectID *sui_types.ObjectID     `json:"coinObjectID"`
@@ -22,6 +19,8 @@ type Coin struct {
 	PreviousTransaction sui_types.TransactionDigest `json:"previousTransaction"`
 }
 
+type CoinPage = Page[*Coin, sui_types.ObjectID]
+
 func (c *Coin) Ref() *sui_types.ObjectRef {
 	return &sui_types.ObjectRef{
 		Digest:   c.Digest,
@@ -30,115 +29,8 @@ func (c *Coin) Ref() *sui_types.ObjectRef {
 	}
 }
 
-type CoinPage = Page[*Coin, sui_types.ObjectID]
-
 func (c *Coin) IsSUI() bool {
 	return c.CoinType == SuiCoinType
-}
-
-type Balance struct {
-	CoinType        string                              `json:"coinType"`
-	CoinObjectCount uint64                              `json:"coinObjectCount"`
-	TotalBalance    SuiBigInt                           `json:"totalBalance"`
-	LockedBalance   map[SafeSuiBigInt[uint64]]SuiBigInt `json:"lockedBalance"`
-}
-
-type Supply struct {
-	Value SafeSuiBigInt[uint64] `json:"value"`
-}
-
-type PickedCoins struct {
-	Coins        Coins
-	TotalAmount  *big.Int
-	TargetAmount *big.Int
-}
-
-func (cs *PickedCoins) Count() int {
-	return len(cs.Coins)
-}
-
-func (cs *PickedCoins) CoinIds() []*sui_types.ObjectID {
-	coinIDs := make([]*sui_types.ObjectID, len(cs.Coins))
-	for idx, coin := range cs.Coins {
-		coinIDs[idx] = coin.CoinObjectID
-	}
-	return coinIDs
-}
-
-func (cs *PickedCoins) CoinRefs() []*sui_types.ObjectRef {
-	coinRefs := make([]*sui_types.ObjectRef, len(cs.Coins))
-	for idx, coin := range cs.Coins {
-		coinRefs[idx] = coin.Ref()
-	}
-	return coinRefs
-}
-
-// @return Min(total-target, 10e9) (10 SUI)
-func (p *PickedCoins) SuggestMaxGasBudget() uint64 {
-	sub := new(big.Int).Sub(p.TotalAmount, p.TargetAmount).Uint64()
-	maxGas := uint64(10e9) // 10 Sui
-	if sub <= maxGas {
-		return sub
-	} else {
-		return maxGas
-	}
-}
-
-// Select coins whose sum is greater or equal to the target amount.
-// @param inputCoins queried page coin data
-// @param targetAmount total amount of coins to be selected from inputCoins
-// @param gasBudget the transaction gas budget
-// @param limit the max number of coins selected, default (limit <= 0) is `MAX_INPUT_COUNT_MERGE`
-// @param moreCount get more count of coins as possible, maybe the caller will want to try to merge out some small coin objects, default (moreCount <= 0) is 10
-// @throw ErrNoCoinsFound If the count of input coins is 0.
-// @throw ErrInsufficientBalance If the input coins are all that is left and the total amount is less than the target amount.
-// @throw ErrNeedMergeCoin If there are many coins, but the total amount of coins limited is less than the target amount.
-func PickupCoins(inputCoins *CoinPage, targetAmount *big.Int, gasBudget uint64, limit int, moreCount int) (*PickedCoins, error) {
-	inputCount := len(inputCoins.Data)
-	if inputCount <= 0 {
-		return nil, ErrNoCoinsFound
-	}
-	if limit <= 0 {
-		limit = MAX_INPUT_COUNT_MERGE
-	}
-	if moreCount <= 0 {
-		moreCount = 10
-	}
-	if moreCount > limit {
-		moreCount = limit
-	}
-	totalTarget := new(big.Int).Add(targetAmount, new(big.Int).SetUint64(gasBudget))
-	coins := inputCoins.Data
-
-	total := new(big.Int)
-	pickedCoins := []*Coin{}
-	for idx, coin := range coins {
-		total = total.Add(total, new(big.Int).SetUint64(coin.Balance.Uint64()))
-		pickedCoins = append(pickedCoins, coin)
-		if idx+1 > limit {
-			return nil, ErrNeedMergeCoin
-		}
-		if idx+1 < moreCount {
-			continue
-		}
-		if total.Cmp(totalTarget) >= 0 {
-			break
-		}
-	}
-	if total.Cmp(totalTarget) < 0 {
-		if inputCoins.HasNextPage {
-			return nil, ErrNeedMergeCoin
-		}
-		sub := new(big.Int).Sub(totalTarget, total)
-		if sub.Uint64() > gasBudget {
-			return nil, ErrInsufficientBalance
-		}
-	}
-	return &PickedCoins{
-		Coins:        pickedCoins,
-		TargetAmount: targetAmount,
-		TotalAmount:  total,
-	}, nil
 }
 
 type Coins []*Coin
@@ -189,15 +81,15 @@ func (cs Coins) ObjectIDVals() []sui_types.ObjectID {
 }
 
 const (
-	PickSmaller = iota // pick smaller coins to match amount
-	PickBigger         // pick bigger coins to match amount
-	PickByOrder        // pick coins by coins order to match amount
+	PickMethodSmaller = iota // pick smaller coins to match amount
+	PickMethodBigger         // pick bigger coins to match amount
+	PickMethodByOrder        // pick coins by coins order to match amount
 )
 
 // PickSUICoinsWithGas pick coins, which sum >= amount, and pick a gas coin >= gasAmount which not in coins
 // if not satisfied amount/gasAmount, an ErrCoinsNotMatchRequest/ErrCoinsNeedMoreObject error will return
 // if gasAmount == 0, a nil gasCoin will return
-// pickMethod, see PickSmaller|PickBigger|PickByOrder
+// pickMethod, see PickMethodSmaller|PickMethodBigger|PickMethodByOrder
 func (cs Coins) PickSUICoinsWithGas(amount *big.Int, gasAmount uint64, pickMethod int) (Coins, *Coin, error) {
 	if gasAmount == 0 {
 		res, err := cs.PickCoins(amount, pickMethod)
@@ -235,18 +127,18 @@ func (cs Coins) PickSUICoinsWithGas(amount *big.Int, gasAmount uint64, pickMetho
 }
 
 // PickCoins pick coins, which sum >= amount,
-// pickMethod, see PickSmaller|PickBigger|PickByOrder
-// if not satisfated amount, an ErrCoinsNeedMoreObject error will return
+// pickMethod, see PickMethodSmaller|PickMethodBigger|PickMethodByOrder
+// if not satisfied amount, an ErrCoinsNeedMoreObject error will return
 func (cs Coins) PickCoins(amount *big.Int, pickMethod int) (Coins, error) {
 	var sortedCoins Coins
-	if pickMethod == PickByOrder {
+	if pickMethod == PickMethodByOrder {
 		sortedCoins = cs
 	} else {
 		sortedCoins = make(Coins, len(cs))
 		copy(sortedCoins, cs)
 		sort.Slice(
 			sortedCoins, func(i, j int) bool {
-				if pickMethod == PickSmaller {
+				if pickMethod == PickMethodSmaller {
 					return sortedCoins[i].Balance.Uint64() < sortedCoins[j].Balance.Uint64()
 				} else {
 					return sortedCoins[i].Balance.Uint64() >= sortedCoins[j].Balance.Uint64()

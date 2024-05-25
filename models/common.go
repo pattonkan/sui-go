@@ -63,12 +63,6 @@ func (s *SafeSuiBigInt[T]) Decimal() decimal.Decimal {
 	return decimal.NewFromBigInt(new(big.Int).SetUint64(s.Uint64()), 0)
 }
 
-// export const ObjectID = string();
-// export type ObjectID = Infer<typeof ObjectID>;
-
-// export const SuiAddress = string();
-// export type SuiAddress = Infer<typeof SuiAddress>;
-
 type ObjectOwnerInternal struct {
 	AddressOwner *sui_types.SuiAddress `json:"AddressOwner,omitempty"`
 	ObjectOwner  *sui_types.SuiAddress `json:"ObjectOwner,omitempty"`
