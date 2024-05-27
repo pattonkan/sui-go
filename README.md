@@ -65,3 +65,9 @@ resp, err := client.GetTransactionBlock(
 fmt.Println("transaction status = ", resp.Effects.Status)
 fmt.Println("transaction timestamp = ", resp.TimestampMs)
 ```
+
+## Reference
+
+* [Programmable Transaction Blocks (official doc)](https://docs.sui.io/concepts/transactions/prog-txn-blocks)
+* [Sui Programmable Transaction Blocks Basics (TypeScript SDK)](https://sdk.mystenlabs.com/typescript/transaction-building/basics)
+* [Sui JSON RPC API Reference](https://docs.sui.io/sui-api-ref)
