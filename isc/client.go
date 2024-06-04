@@ -57,8 +57,7 @@ func (c *Client) StartNewChain(
 	)
 	pt := ptb.Finish()
 
-	// FIXME set the proper gas price
-	coins, err := c.GetCoinObjectForGasFee(ctx, signer.Address, 10000, gasBudget)
+	coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
 	}
@@ -249,8 +248,7 @@ func (c *Client) CreateRequest(
 	)
 	pt := ptb.Finish()
 
-	// FIXME set the proper gas price
-	coins, err := c.GetCoinObjectForGasFee(ctx, signer.Address, 10000, gasBudget)
+	coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
 	}

@@ -4,22 +4,33 @@ import (
 	"context"
 	"testing"
 
+	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/stretchr/testify/require"
 )
 
+func TestGetCommitteeInfo(t *testing.T) {
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	epochId := models.NewSafeSuiBigInt(uint64(400))
+	committeeInfo, err := client.GetCommitteeInfo(context.Background(), &epochId)
+	require.NoError(t, err)
+	require.Equal(t, epochId, committeeInfo.EpochId)
+	// just use a arbitrary big number to ensure there are enough validator
+	require.Greater(t, len(committeeInfo.Validators), 20)
+}
+
 func TestGetLatestSuiSystemState(t *testing.T) {
-	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	state, err := api.GetLatestSuiSystemState(context.Background())
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	state, err := client.GetLatestSuiSystemState(context.Background())
 	require.NoError(t, err)
 	require.NotNil(t, state)
 }
 
 func TestGetReferenceGasPrice(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	gasPrice, err := api.GetReferenceGasPrice(context.Background())
+	client := sui.NewSuiClient(conn.DevnetEndpointUrl)
+	gasPrice, err := client.GetReferenceGasPrice(context.Background())
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, gasPrice.Int64(), int64(1000))
 }

@@ -227,4 +227,9 @@ func (s SuiPastObject) Content() string {
 	return "details"
 }
 
+type SuiGetPastObjectRequest struct {
+	ObjectId *sui_types.ObjectID                     `json:"objectId"`
+	Version  SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
+}
+
 type SuiNamePage = Page[string, sui_types.ObjectID]

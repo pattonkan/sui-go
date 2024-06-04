@@ -77,8 +77,8 @@ type ObjectOwner struct {
 	*string
 }
 
-type Page[T SuiTransactionBlockResponse | SuiEvent | Coin | *Coin | SuiObjectResponse | DynamicFieldInfo | string,
-	C sui_types.TransactionDigest | EventId | sui_types.ObjectID] struct {
+type Page[T SuiTransactionBlockResponse | SuiEvent | Coin | *Coin | SuiObjectResponse | DynamicFieldInfo | string | *Checkpoint,
+	C sui_types.TransactionDigest | EventId | sui_types.ObjectID | SafeSuiBigInt[uint64]] struct {
 	Data []T `json:"data"`
 	// 'NextCursor' points to the last item in the page.
 	// Reading with next_cursor will start from the next item after next_cursor

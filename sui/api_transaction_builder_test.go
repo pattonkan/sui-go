@@ -299,7 +299,7 @@ func TestPublish(t *testing.T) {
 	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 
 	// If local side has installed Sui-cli then the user can use the following func to build move contracts
-	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin")
+	// modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin/")
 	// require.NoError(t, err)
 
 	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/testcoin/contract_base64.json")

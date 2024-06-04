@@ -34,13 +34,13 @@ func (p *PickedCoins) CoinRefs() []*sui_types.ObjectRef {
 	return coinRefs
 }
 
-// Select coins whose sum is greater or equal to the target amount.
-// The return coin number will be maxCoinNum <= num <= minCoinNum
+// Select coins whose sum >= (targetAmount + gasBudget)
+// The return coin number will be maxCoinNum <= coin_obj_num <= minCoinNum
 // @param inputCoins queried page coin data
 // @param targetAmount total amount of coins to be selected from inputCoins
 // @param gasBudget the transaction gas budget
 // @param maxCoinNum the max number of returned coins. Default (maxCoinNum <= 0) is `MAX_INPUT_COUNT_MERGE`
-// @param minCoinNum the min number of returned coins. Default (minCoinNum <= 0) is 10
+// @param minCoinNum the min number of returned coins. Default (minCoinNum <= 0) is 3
 // @throw ErrNoCoinsFound If the count of input coins is 0.
 // @throw ErrInsufficientBalance If the input coins are all that is left and the total amount is less than the target amount.
 // @throw ErrNeedMergeCoin If there are many coins, but the total amount of coins limited is less than the target amount.
@@ -60,7 +60,7 @@ func PickupCoins(
 		maxCoinNum = MAX_INPUT_COUNT_MERGE
 	}
 	if minCoinNum <= 0 {
-		minCoinNum = 10
+		minCoinNum = 3
 	}
 	if minCoinNum > maxCoinNum {
 		minCoinNum = maxCoinNum

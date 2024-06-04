@@ -81,6 +81,14 @@ func NewBase64Data(str string) (*Base64Data, error) {
 	return &b64, nil
 }
 
+func MustNewBase64Data(str string) *Base64Data {
+	b64, err := NewBase64Data(str)
+	if err != nil {
+		panic(err)
+	}
+	return b64
+}
+
 func (h Base64Data) Data() []byte {
 	return h
 }

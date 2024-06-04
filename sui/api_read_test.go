@@ -6,14 +6,94 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/stretchr/testify/require"
 )
+
+func TestGetChainIdentifier(t *testing.T) {
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	chainID, err := client.GetChainIdentifier(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, conn.ChainIdentifierSuiMainnet, chainID)
+}
+
+func TestGetCheckpoint(t *testing.T) {
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	checkpoint, err := client.GetCheckpoint(context.Background(), models.NewSafeSuiBigInt(uint64(1000)))
+	require.NoError(t, err)
+	targetCheckpoint := &models.Checkpoint{
+		Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
+		SequenceNumber:           models.NewSafeSuiBigInt(uint64(1000)),
+		Digest:                   *sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
+		NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1001)),
+		PreviousDigest:           sui_types.MustNewDigest("41nPNZWHvvajmBQjX3GbppsgGZDEB6DhN4UxPkjSYRRj"),
+		EpochRollingGasCostSummary: models.GasCostSummary{
+			ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
+			StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
+			StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
+			NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+		},
+		TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393657483)),
+		Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
+		CheckpointCommitments: []sui_types.CheckpointCommitment{},
+		ValidatorSignature:    *sui_types.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
+	}
+	require.Equal(t, targetCheckpoint, checkpoint)
+}
+
+func TestGetCheckpoints(t *testing.T) {
+	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	cursor := models.NewSafeSuiBigInt(uint64(999))
+	limit := uint64(2)
+	checkpointPage, err := client.GetCheckpoints(context.Background(), &cursor, &limit, false)
+	require.NoError(t, err)
+	targetCheckpoints := []*models.Checkpoint{
+		{
+			Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
+			SequenceNumber:           models.NewSafeSuiBigInt(uint64(1000)),
+			Digest:                   *sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
+			NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1001)),
+			PreviousDigest:           sui_types.MustNewDigest("41nPNZWHvvajmBQjX3GbppsgGZDEB6DhN4UxPkjSYRRj"),
+			EpochRollingGasCostSummary: models.GasCostSummary{
+				ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
+				StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
+				StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
+				NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+			},
+			TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393657483)),
+			Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
+			CheckpointCommitments: []sui_types.CheckpointCommitment{},
+			ValidatorSignature:    *sui_types.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
+		},
+		{
+			Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
+			SequenceNumber:           models.NewSafeSuiBigInt(uint64(1001)),
+			Digest:                   *sui_types.MustNewDigest("8umKe5Ae2TAH5ySw2zeEua8cTeeTFZV8F3GfFViZ5cq3"),
+			NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1002)),
+			PreviousDigest:           sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
+			EpochRollingGasCostSummary: models.GasCostSummary{
+				ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
+				StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
+				StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
+				NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+			},
+			TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393661034)),
+			Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9muLz7ZTocpBTdSo5Ak7ZxzEpfzywr6Y12Hj3AdT8dvV")},
+			CheckpointCommitments: []sui_types.CheckpointCommitment{},
+			ValidatorSignature:    *sui_types.MustNewBase64Data("jG5ViKThziBpnJnOw9dVdjIrv2IHhCrn8ZhvI1gUS2X1t90aRqhnLF6+WbS1S2WT"),
+		},
+	}
+	require.Len(t, checkpointPage.Data, 2)
+	require.Equal(t, checkpointPage.Data, targetCheckpoints)
+	require.Equal(t, true, checkpointPage.HasNextPage)
+	require.Equal(t, models.NewSafeSuiBigInt(uint64(1001)), *checkpointPage.NextCursor)
+}
 
 func TestGetEvents(t *testing.T) {
 	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
@@ -106,6 +186,14 @@ func TestGetObject(t *testing.T) {
 	}
 }
 
+func TestGetProtocolConfig(t *testing.T) {
+	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
+	version := models.NewSafeSuiBigInt(uint64(47))
+	protocolConfig, err := api.GetProtocolConfig(context.Background(), &version)
+	require.NoError(t, err)
+	require.Equal(t, uint64(47), protocolConfig.ProtocolVersion.Uint64())
+}
+
 func TestGetTotalTransactionBlocks(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
 	res, err := api.GetTotalTransactionBlocks(context.Background())
@@ -175,11 +263,61 @@ func TestMultiGetObjects(t *testing.T) {
 	require.Equal(t, resp[0], resp[1])
 }
 
+func TestMultiGetTransactionBlocks(t *testing.T) {
+	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+
+	resp, err := client.MultiGetTransactionBlocks(
+		context.Background(),
+		[]*sui_types.Digest{
+			sui_types.MustNewDigest("6A3ckipsEtBSEC5C53AipggQioWzVDbs9NE1SPvqrkJr"),
+			sui_types.MustNewDigest("8AL88Qgk7p6ny3MkjzQboTvQg9SEoWZq4rknEPeXQdH5"),
+		},
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects: true,
+		},
+	)
+	require.NoError(t, err)
+	require.Len(t, resp, 2)
+	require.Equal(t, "6A3ckipsEtBSEC5C53AipggQioWzVDbs9NE1SPvqrkJr", resp[0].Digest.String())
+	require.Equal(t, "8AL88Qgk7p6ny3MkjzQboTvQg9SEoWZq4rknEPeXQdH5", resp[1].Digest.String())
+}
+
 func TestTryGetPastObject(t *testing.T) {
-	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	objId, err := sui_types.SuiAddressFromHex("0x11462c88e74bb00079e3c043efb664482ee4551744ee691c7623b98503cb3f4d")
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	objId, err := sui_types.ObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f")
 	require.NoError(t, err)
-	data, err := api.TryGetPastObject(context.Background(), objId, 903, nil)
+	obj, err := api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
+		ShowType:  true,
+		ShowOwner: true,
+	})
 	require.NoError(t, err)
-	t.Log(data)
+	require.Equal(t, objId, obj.Data.VersionFound.ObjectID)
+	require.Equal(t, sui_types.MustNewDigest("61cY5vK1LXMo6QsdihMPKr5aXtRN31DA7pFLX2LzBQTB"), obj.Data.VersionFound.Digest)
+	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *obj.Data.VersionFound.Type)
+}
+
+func TestTryMultiGetPastObjects(t *testing.T) {
+	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
+	req := []*models.SuiGetPastObjectRequest{
+		{
+			ObjectId: sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"),
+			Version:  models.NewSafeSuiBigInt(uint64(187584506)),
+		},
+		{
+			ObjectId: sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"),
+			Version:  models.NewSafeSuiBigInt(uint64(187584500)),
+		},
+	}
+	resp, err := api.TryMultiGetPastObjects(context.Background(), req, &models.SuiObjectDataOptions{
+		ShowType:  true,
+		ShowOwner: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"), resp[0].Data.VersionFound.ObjectID)
+	require.Equal(t, sui_types.MustNewDigest("61cY5vK1LXMo6QsdihMPKr5aXtRN31DA7pFLX2LzBQTB"), resp[0].Data.VersionFound.Digest)
+	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *resp[0].Data.VersionFound.Type)
+
+	require.Equal(t, sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"), resp[1].Data.VersionFound.ObjectID)
+	require.Equal(t, sui_types.MustNewDigest("BeE8rwAHdUvgrFTiGaRXHKAPdFMucxKFaZDZNSGLQ2DW"), resp[1].Data.VersionFound.Digest)
+	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *resp[1].Data.VersionFound.Type)
 }
