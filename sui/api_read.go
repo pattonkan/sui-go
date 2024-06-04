@@ -7,11 +7,20 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-// TODO getChainIdentifier
+func (s *ImplSuiAPI) GetChainIdentifier(ctx context.Context) (string, error) {
+	var resp string
+	return resp, s.http.CallContext(ctx, &resp, getChainIdentifier)
+}
 
-// TODO getCheckpoint
+func (s *ImplSuiAPI) GetCheckpoint(ctx context.Context, checkpointId models.SafeSuiBigInt[uint64]) (*models.Checkpoint, error) {
+	var resp models.Checkpoint
+	return &resp, s.http.CallContext(ctx, &resp, getCheckpoint, checkpointId)
+}
 
-// TODO getCheckpoints
+func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, cursor *models.SafeSuiBigInt[uint64], limit *uint64, descendingOrder bool) (*models.CheckpointPage, error) {
+	var resp models.CheckpointPage
+	return &resp, s.http.CallContext(ctx, &resp, getCheckpoints, cursor, limit, descendingOrder)
+}
 
 func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest *sui_types.TransactionDigest) ([]*models.SuiEvent, error) {
 	var resp []*models.SuiEvent
@@ -34,7 +43,13 @@ func (s *ImplSuiAPI) GetObject(
 	return &resp, s.http.CallContext(ctx, &resp, getObject, objID, options)
 }
 
-// TODO getProtocolConfig
+func (s *ImplSuiAPI) GetProtocolConfig(
+	ctx context.Context,
+	version *models.SafeSuiBigInt[uint64],
+) (*models.ProtocolConfig, error) {
+	var resp models.ProtocolConfig
+	return &resp, s.http.CallContext(ctx, &resp, getProtocolConfig, version)
+}
 
 func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, error) {
 	var resp string
@@ -59,7 +74,14 @@ func (s *ImplSuiAPI) MultiGetObjects(
 	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, objIDs, options)
 }
 
-// TODO multiGetTransactionBlocks
+func (s *ImplSuiAPI) MultiGetTransactionBlocks(
+	ctx context.Context,
+	digests []*sui_types.Digest,
+	options *models.SuiTransactionBlockResponseOptions,
+) ([]*models.SuiTransactionBlockResponse, error) {
+	resp := []*models.SuiTransactionBlockResponse{}
+	return resp, s.http.CallContext(ctx, &resp, multiGetTransactionBlocks, digests, options)
+}
 
 func (s *ImplSuiAPI) TryGetPastObject(
 	ctx context.Context,
@@ -71,4 +93,11 @@ func (s *ImplSuiAPI) TryGetPastObject(
 	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, objectId, version, options)
 }
 
-// TODO tryMultiGetPastObjects
+func (s *ImplSuiAPI) TryMultiGetPastObjects(
+	ctx context.Context,
+	pastObjects []*models.SuiGetPastObjectRequest,
+	options *models.SuiObjectDataOptions,
+) ([]*models.SuiPastObjectResponse, error) {
+	var resp []*models.SuiPastObjectResponse
+	return resp, s.http.CallContext(ctx, &resp, tryMultiGetPastObjects, pastObjects, options)
+}

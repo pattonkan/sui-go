@@ -15,6 +15,7 @@ import (
 )
 
 func TestPTBMoveCall(t *testing.T) {
+	t.Skip("use other move contract for test")
 	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	coinType := models.SuiCoinType
 	limit := uint(3)

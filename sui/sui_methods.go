@@ -35,7 +35,7 @@ const (
 	queryTransactionBlocks    SuiXMethod = "suix_queryTransactionBlocks"
 	resolveNameServiceAddress SuiXMethod = "suix_resolveNameServiceAddress"
 	resolveNameServiceNames   SuiXMethod = "suix_resolveNameServiceNames"
-	subscribeEvent            SuiXMethod = "suix_subscribeEvent"       // TODO
+	subscribeEvent            SuiXMethod = "suix_subscribeEvent"
 	subscribeTransaction      SuiXMethod = "suix_subscribeTransaction" // TODO
 
 	// Governance Read API
@@ -54,9 +54,9 @@ const (
 	getNormalizedMoveStruct           SuiMethod = "sui_getNormalizedMoveStruct"           // TODO
 
 	// Read API
-	getChainIdentifier                SuiMethod = "sui_getChainIdentifier" // TODO
-	getCheckpoint                     SuiMethod = "sui_getCheckpoint"      // TODO
-	getCheckpoints                    SuiMethod = "sui_getCheckpoints"     // TODO
+	getChainIdentifier                SuiMethod = "sui_getChainIdentifier"
+	getCheckpoint                     SuiMethod = "sui_getCheckpoint"
+	getCheckpoints                    SuiMethod = "sui_getCheckpoints"
 	getEvents                         SuiMethod = "sui_getEvents"
 	getLatestCheckpointSequenceNumber SuiMethod = "sui_getLatestCheckpointSequenceNumber"
 	getLoadedChildObjects             SuiMethod = "sui_getLoadedChildObjects" // TODO
@@ -65,9 +65,9 @@ const (
 	getTotalTransactionBlocks         SuiMethod = "sui_getTotalTransactionBlocks"
 	getTransactionBlock               SuiMethod = "sui_getTransactionBlock"
 	multiGetObjects                   SuiMethod = "sui_multiGetObjects"
-	multiGetTransactionBlocks         SuiMethod = "sui_multiGetTransactionBlocks" // TODO
+	multiGetTransactionBlocks         SuiMethod = "sui_multiGetTransactionBlocks"
 	tryGetPastObject                  SuiMethod = "sui_tryGetPastObject"
-	tryMultiGetPastObjects            SuiMethod = "sui_tryMultiGetPastObjects" // TODO
+	tryMultiGetPastObjects            SuiMethod = "sui_tryMultiGetPastObjects"
 
 	// Transaction Builder API
 	batchTransaction     UnsafeMethod = "unsafe_batchTransaction"

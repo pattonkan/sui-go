@@ -7,7 +7,10 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-// TODO GetCommitteeInfo
+func (s *ImplSuiAPI) GetCommitteeInfo(ctx context.Context, epoch *models.SafeSuiBigInt[sui_types.EpochId]) (*models.CommitteeInfo, error) {
+	var resp models.CommitteeInfo
+	return &resp, s.http.CallContext(ctx, &resp, getCommitteeInfo, epoch)
+}
 
 func (s *ImplSuiAPI) GetLatestSuiSystemState(ctx context.Context) (*models.SuiSystemStateSummary, error) {
 	var resp models.SuiSystemStateSummary

@@ -13,18 +13,17 @@ import (
 	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
-func (s *ImplSuiAPI) GetCoinObjectForGasFee(
+func (s *ImplSuiAPI) GetCoinObjsForTargetAmount(
 	ctx context.Context,
 	address *sui_types.SuiAddress,
 	targetAmount uint64,
-	gasBudget uint64,
 ) (models.Coins, error) {
 	coinType := models.SuiCoinType
 	coins, err := s.GetCoins(ctx, address, &coinType, nil, 200)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call GetCoins(): %w", err)
 	}
-	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(targetAmount), gasBudget, 0, 0)
+	pickedCoins, err := models.PickupCoins(coins, new(big.Int).SetUint64(targetAmount), 0, 0, 0)
 	if err != nil {
 		return nil, err
 	}
