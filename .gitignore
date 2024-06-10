@@ -1,5 +1,9 @@
-# rust build
-build/
 .vscode/
 
+# rust build
+build/
+target/
 Move.lock
+
+node_modules/
+

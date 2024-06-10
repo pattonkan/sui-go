@@ -102,6 +102,14 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 	return Argument{Input: &i}, nil
 }
 
+func (p *ProgrammableTransactionBuilder) MustObj(objArg ObjectArg) Argument {
+	arg, err := p.Obj(objArg)
+	if err != nil {
+		panic(err)
+	}
+	return arg
+}
+
 func (p *ProgrammableTransactionBuilder) ForceSeparatePure(value any) (Argument, error) {
 	pureData, err := bcs.Marshal(value)
 	if err != nil {

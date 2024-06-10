@@ -23,7 +23,7 @@ func BuildAndDeployIscContracts(t *testing.T, client *Client, signer *sui_signer
 		modules.Modules,
 		modules.Dependencies,
 		nil,
-		models.NewSafeSuiBigInt(uint64(100000000)),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(
@@ -55,7 +55,7 @@ func BuildDeployMintTestcoin(t *testing.T, client *Client, signer *sui_signer.Si
 		modules.Modules,
 		modules.Dependencies,
 		nil,
-		models.NewSafeSuiBigInt(uint64(100000000)),
+		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(

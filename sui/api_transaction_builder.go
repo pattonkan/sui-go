@@ -143,7 +143,7 @@ func (s *ImplSuiAPI) SplitCoin(
 	signer *sui_types.SuiAddress,
 	coin *sui_types.ObjectID,
 	splitAmounts []models.SafeSuiBigInt[uint64],
-	gas *sui_types.ObjectID,
+	gas *sui_types.ObjectID, // optional
 	gasBudget models.SafeSuiBigInt[uint64],
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}

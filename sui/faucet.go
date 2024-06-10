@@ -36,7 +36,6 @@ func RequestFundFromFaucet(address *sui_types.SuiAddress, faucetUrl string) erro
 		return err
 	}
 
-	//
 	var response struct {
 		Task  string `json:"task,omitempty"`
 		Error string `json:"error,omitempty"`

@@ -12,8 +12,8 @@ func (s *ImplSuiAPI) DevInspectTransactionBlock(
 	ctx context.Context,
 	senderAddress *sui_types.SuiAddress,
 	txByte sui_types.Base64Data,
-	gasPrice *models.SafeSuiBigInt[uint64],
-	epoch *uint64,
+	gasPrice *models.SafeSuiBigInt[uint64], // optional
+	epoch *uint64, // optional
 ) (*models.DevInspectResults, error) {
 	var resp models.DevInspectResults
 	return &resp, s.http.CallContext(ctx, &resp, devInspectTransactionBlock, senderAddress, txByte, gasPrice, epoch)

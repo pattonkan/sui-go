@@ -81,9 +81,15 @@ func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method
 	}
 	defer respBody.Close()
 
+	resBody, err := io.ReadAll(respBody)
+	if err != nil {
+		return fmt.Errorf("could not read response body: %w", err)
+	}
+
 	var respmsg jsonrpcMessage
-	if err := json.NewDecoder(respBody).Decode(&respmsg); err != nil {
-		return err
+	err = json.Unmarshal(resBody, &respmsg)
+	if err != nil {
+		return fmt.Errorf("could not unmarshal response body: %w", err)
 	}
 	if respmsg.Error != nil {
 		return respmsg.Error
