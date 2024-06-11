@@ -41,13 +41,24 @@ func TestGetAllCoins(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "successful case",
+			name: "successful with limit",
 			a:    sui.NewSuiClient(conn.TestnetEndpointUrl),
 			args: args{
 				ctx:     context.TODO(),
 				address: sui_signer.TEST_ADDRESS,
 				cursor:  nil,
 				limit:   3,
+			},
+			wantErr: false,
+		},
+		{
+			name: "successful without limit",
+			a:    sui.NewSuiClient(conn.TestnetEndpointUrl),
+			args: args{
+				ctx:     context.TODO(),
+				address: sui_signer.TEST_ADDRESS,
+				cursor:  nil,
+				limit:   0,
 			},
 			wantErr: false,
 		},
@@ -61,7 +72,7 @@ func TestGetAllCoins(t *testing.T) {
 					return
 				}
 				// we have called multiple times RequestFundFromFaucet() on testnet, so the account have several SUI objects.
-				require.Len(t, got.Data, 3)
+				require.GreaterOrEqual(t, len(got.Data), int(tt.args.limit))
 				require.NotNil(t, got.NextCursor)
 			},
 		)

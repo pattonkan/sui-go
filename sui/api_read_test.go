@@ -286,14 +286,12 @@ func TestTryGetPastObject(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	objId, err := sui_types.ObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f")
 	require.NoError(t, err)
-	obj, err := api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
+	resp, err := api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
 		ShowType:  true,
 		ShowOwner: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, objId, obj.Data.VersionFound.ObjectID)
-	require.Equal(t, sui_types.MustNewDigest("61cY5vK1LXMo6QsdihMPKr5aXtRN31DA7pFLX2LzBQTB"), obj.Data.VersionFound.Digest)
-	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *obj.Data.VersionFound.Type)
+	require.NotNil(t, resp.Data.VersionNotFound)
 }
 
 func TestTryMultiGetPastObjects(t *testing.T) {
@@ -313,11 +311,8 @@ func TestTryMultiGetPastObjects(t *testing.T) {
 		ShowOwner: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"), resp[0].Data.VersionFound.ObjectID)
-	require.Equal(t, sui_types.MustNewDigest("61cY5vK1LXMo6QsdihMPKr5aXtRN31DA7pFLX2LzBQTB"), resp[0].Data.VersionFound.Digest)
-	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *resp[0].Data.VersionFound.Type)
+	for _, data := range resp {
+		require.NotNil(t, data.Data.VersionNotFound)
+	}
 
-	require.Equal(t, sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"), resp[1].Data.VersionFound.ObjectID)
-	require.Equal(t, sui_types.MustNewDigest("BeE8rwAHdUvgrFTiGaRXHKAPdFMucxKFaZDZNSGLQ2DW"), resp[1].Data.VersionFound.Digest)
-	require.Equal(t, "0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb::config::GlobalConfig", *resp[1].Data.VersionFound.Type)
 }

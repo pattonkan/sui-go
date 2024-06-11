@@ -1,6 +1,9 @@
 package models
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/serialization"
 )
@@ -210,13 +213,34 @@ type SuiPastObject struct {
 	// The object is found to be deleted with this version
 	ObjectDeleted *SuiObjectRef `json:"ObjectDeleted,omitempty"`
 	// The object exists but not found with this version
-	VersionNotFound *struct{ ObjectID sui_types.SequenceNumber } `json:"VersionNotFound,omitempty"`
+	VersionNotFound *VersionNotFoundData `json:"VersionNotFound,omitempty"`
 	// The asked object version is higher than the latest
 	VersionTooHigh *struct {
 		ObjectID      sui_types.ObjectID       `json:"object_id"`
 		AskedVersion  sui_types.SequenceNumber `json:"asked_version"`
 		LatestVersion sui_types.SequenceNumber `json:"latest_version"`
 	} `json:"VersionTooHigh,omitempty"`
+}
+
+type VersionNotFoundData struct {
+	ObjectID       *sui_types.ObjectID
+	SequenceNumber sui_types.SequenceNumber
+}
+
+func (c *VersionNotFoundData) UnmarshalJSON(data []byte) error {
+	var err error
+	input := data[1 : len(data)-2]
+	elts := strings.Split(string(input), ",")
+	c.ObjectID, err = sui_types.ObjectIDFromHex(elts[0][1 : len(elts[0])-2])
+	if err != nil {
+		return err
+	}
+	seq, err := strconv.ParseUint(elts[1], 10, 64)
+	if err != nil {
+		return err
+	}
+	c.SequenceNumber = seq
+	return nil
 }
 
 func (s SuiPastObject) Tag() string {

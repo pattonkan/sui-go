@@ -99,7 +99,6 @@ func TestMoveCall(t *testing.T) {
 		models.NewSafeSuiBigInt(uint64(sui.DefaultGasBudget)),
 	)
 	require.NoError(t, err)
-
 	txnResponse, err = client.SignAndExecuteTransaction(
 		context.Background(),
 		signer,

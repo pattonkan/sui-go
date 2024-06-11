@@ -75,6 +75,11 @@ func NewRandomSigners(flag KeySchemeFlag, genNum int) []*Signer {
 	return returnSigners
 }
 
+// generate keypair (signer) with mnemonic which is referring the Sui monorepo in the following code
+//
+// let phrase = "asset pink record dawn hundred sure various crime client enforce carbon blossom";
+// let mut keystore = Keystore::from(InMemKeystore::new_insecure_for_tests(0));
+// let generated_address = keystore.import_from_mnemonic(&phrase, SignatureScheme::ED25519, None, None).unwrap();
 func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {

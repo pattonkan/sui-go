@@ -1,6 +1,8 @@
 package sui_types
 
-import "github.com/howjmay/sui-go/sui_types/serialization"
+import (
+	"github.com/howjmay/sui-go/sui_types/serialization"
+)
 
 var (
 	SuiSystemMut = CallArg{
@@ -56,30 +58,4 @@ func NewProgrammableAllowSponsor(
 			},
 		},
 	}
-	// return newWithGasCoinsAllowSponsor(kind, sender, gasPayment, gasBudge, gasPrice, sponsor)
 }
-
-// func newWithGasCoinsAllowSponsor(
-// 	kind TransactionKind,
-// 	sender SuiAddress,
-// 	gasPayment []*ObjectRef,
-// 	gasBudget uint64,
-// 	gasPrice uint64,
-// 	gasSponsor SuiAddress,
-// ) TransactionData {
-// 	return TransactionData{
-// 		V1: &TransactionDataV1{
-// 			Kind:   kind,
-// 			Sender: sender,
-// 			GasData: GasData{
-// 				Price:   gasPrice,
-// 				Owner:   gasSponsor,
-// 				Payment: gasPayment,
-// 				Budget:  gasBudget,
-// 			},
-// 			Expiration: TransactionExpiration{
-// 				None: &serialization.EmptyEnum{},
-// 			},
-// 		},
-// 	}
-// }
