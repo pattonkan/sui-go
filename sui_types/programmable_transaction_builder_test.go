@@ -15,7 +15,7 @@ import (
 )
 
 func TestPTBMoveCall(t *testing.T) {
-	t.Skip("use other move contract for test")
+	t.Skip("rewrite the tests with another contract")
 	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
 	coinType := models.SuiCoinType
 	limit := uint(3)
@@ -63,7 +63,7 @@ func TestPTBMoveCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate1.Effects.Data.V1.Status.Error)
 	require.True(t, simulate1.Effects.Data.IsSuccess())
-	require.Equal(t, coins[0].CoinObjectID.String(), simulate1.Effects.Data.V1.GasObject.Reference.ObjectID)
+	require.Equal(t, coins[0].CoinObjectID, simulate1.Effects.Data.V1.GasObject.Reference.ObjectID)
 
 	// case 2: direct stake the specified coin
 	ptb2 := sui_types.NewProgrammableTransactionBuilder()
@@ -99,7 +99,7 @@ func TestPTBMoveCall(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate2.Effects.Data.V1.Status.Error)
 	require.True(t, simulate2.Effects.Data.IsSuccess())
-	require.Equal(t, coins[0].CoinObjectID.String(), simulate2.Effects.Data.V1.GasObject.Reference.ObjectID)
+	require.Equal(t, coins[0].CoinObjectID, simulate2.Effects.Data.V1.GasObject.Reference.ObjectID)
 }
 
 func TestPTBTransferObject(t *testing.T) {
@@ -153,7 +153,7 @@ func TestPTBTransferSui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	ptb.TransferSui(recipient.Address, &amount)
+	err = ptb.TransferSui(recipient.Address, &amount)
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(
@@ -191,7 +191,7 @@ func TestPTBPayAllSui(t *testing.T) {
 
 	// build with BCS
 	ptb := sui_types.NewProgrammableTransactionBuilder()
-	ptb.PayAllSui(recipient.Address)
+	err = ptb.PayAllSui(recipient.Address)
 	require.NoError(t, err)
 	pt := ptb.Finish()
 	tx := sui_types.NewProgrammable(

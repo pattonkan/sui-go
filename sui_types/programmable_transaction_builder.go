@@ -283,7 +283,10 @@ func (p *ProgrammableTransactionBuilder) TransferArgs(recipient *SuiAddress, arg
 }
 
 func (p *ProgrammableTransactionBuilder) TransferObject(recipient *SuiAddress, objectRef *ObjectRef) error {
-	recArg := p.MustPure(recipient)
+	recArg, err := p.Pure(recipient)
+	if err != nil {
+		return fmt.Errorf("can't add recipient as arg: %w", err)
+	}
 	objArg, err := p.Obj(ObjectArg{ImmOrOwnedObject: objectRef})
 	if err != nil {
 		return err
@@ -297,8 +300,11 @@ func (p *ProgrammableTransactionBuilder) TransferObject(recipient *SuiAddress, o
 	return nil
 }
 
-func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amount *uint64) {
-	recArg := p.MustPure(recipient)
+func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amount *uint64) error {
+	recArg, err := p.Pure(recipient)
+	if err != nil {
+		return fmt.Errorf("can't add recipient as arg: %w", err)
+	}
 	var coinArg Argument
 	if amount != nil {
 		amtArg := p.MustPure(amount)
@@ -317,17 +323,22 @@ func (p *ProgrammableTransactionBuilder) TransferSui(recipient *SuiAddress, amou
 			Address: recArg,
 		}},
 	)
+	return nil
 }
 
 // the gas coin is consumed as the coin to be paid
-func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) {
-	recArg := p.MustPure(recipient)
+func (p *ProgrammableTransactionBuilder) PayAllSui(recipient *SuiAddress) error {
+	recArg, err := p.Pure(recipient)
+	if err != nil {
+		return fmt.Errorf("can't add recipient as arg: %w", err)
+	}
 	p.Command(Command{
 		TransferObjects: &ProgrammableTransferObjects{
 			Objects: []Argument{{GasCoin: &serialization.EmptyEnum{}}},
 			Address: recArg,
 		}},
 	)
+	return nil
 }
 
 // the gas coin is consumed as the coin to be paid
