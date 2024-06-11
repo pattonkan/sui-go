@@ -204,7 +204,6 @@ type SuiObjectResponseQuery struct {
 
 type SuiPastObjectResponse = serialization.TagJson[SuiPastObject]
 
-// TODO need test VersionNotFound
 type SuiPastObject struct {
 	// The object exists and is found with this version
 	VersionFound *SuiObjectData `json:"VersionFound,omitempty"`
