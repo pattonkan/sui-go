@@ -10,9 +10,9 @@ import (
 
 type SuiObjectRef struct {
 	/** Base64 string representing the object digest */
-	Digest sui_types.TransactionDigest `json:"digest"`
+	Digest *sui_types.TransactionDigest `json:"digest"`
 	/** Hex code as string representing the object id */
-	ObjectID string `json:"objectId"` // TODO refactor datatype to ObjectID
+	ObjectID *sui_types.ObjectID `json:"objectId"` // TODO refactor datatype to ObjectID
 	/** Object version */
 	Version sui_types.SequenceNumber `json:"version"`
 }
@@ -20,7 +20,7 @@ type SuiObjectRef struct {
 type SuiGasData struct {
 	Payment []SuiObjectRef `json:"payment"`
 	/** Gas Object's owner */
-	Owner  string                `json:"owner"`
+	Owner  *sui_types.ObjectID   `json:"owner"`
 	Price  SafeSuiBigInt[uint64] `json:"price"`
 	Budget SafeSuiBigInt[uint64] `json:"budget"`
 }
