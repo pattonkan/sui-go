@@ -8,9 +8,9 @@ import (
 type AuthSignInfo interface{}
 
 type CertifiedTransaction struct {
-	TransactionDigest string        `json:"transactionDigest"`
-	TxSignature       string        `json:"txSignature"`
-	AuthSignInfo      *AuthSignInfo `json:"authSignInfo"`
+	TransactionDigest *sui_types.TransactionDigest `json:"transactionDigest"`
+	TxSignature       string                       `json:"txSignature"`
+	AuthSignInfo      *AuthSignInfo                `json:"authSignInfo"`
 
 	Data *SenderSignedData `json:"data"`
 }
@@ -18,7 +18,7 @@ type CertifiedTransaction struct {
 type ParsedTransactionResponse interface{}
 
 type ExecuteTransactionEffects struct {
-	TransactionEffectsDigest string `json:"transactionEffectsDigest"`
+	TransactionEffectsDigest *sui_types.TransactionDigest `json:"transactionEffectsDigest"`
 
 	Effects      serialization.TagJson[SuiTransactionBlockEffects] `json:"effects"`
 	AuthSignInfo *AuthSignInfo                                     `json:"authSignInfo"`
@@ -31,7 +31,7 @@ type ExecuteTransactionResponse struct {
 	ConfirmedLocalExecution bool `json:"confirmed_local_execution"`
 }
 
-func (r *ExecuteTransactionResponse) TransactionDigest() string {
+func (r *ExecuteTransactionResponse) TransactionDigest() *sui_types.TransactionDigest {
 	return r.Certificate.TransactionDigest
 }
 

@@ -10,8 +10,8 @@ import (
 
 type ResourceType struct {
 	Address    *sui_types.SuiAddress
-	ModuleName string
-	FuncName   string
+	ModuleName sui_types.Identifier
+	FuncName   sui_types.Identifier
 
 	SubType *ResourceType
 }

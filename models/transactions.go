@@ -167,8 +167,8 @@ type SuiProgrammableTransactionBlock struct {
 
 type SuiTransactionBlockDataV1 struct {
 	Transaction SuiTransactionBlockKind `json:"transaction"`
-	Sender      sui_types.SuiAddress    `json:"sender"`
-	GasData     SuiGasData              `json:"gasData"`
+	Sender      *sui_types.SuiAddress   `json:"sender"`
+	GasData     *SuiGasData             `json:"gasData"`
 }
 
 type SuiTransactionBlockData struct {

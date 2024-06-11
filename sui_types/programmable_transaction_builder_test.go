@@ -250,7 +250,7 @@ func TestPTBPaySui(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
-	require.Equal(t, coin.CoinObjectID.String(), simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
+	require.Equal(t, coin.CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
 
 	// 1 for Mutated, 2 created (the 2 transfer in pay_sui pt),
 	require.Len(t, simulate.ObjectChanges, 3)
@@ -316,7 +316,7 @@ func TestPTBPay(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
-	require.Equal(t, gasCoin.CoinObjectID.String(), simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
+	require.Equal(t, gasCoin.CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
 
 	// 2 for Mutated (1 gas coin and 1 merged coin in pay pt), 2 created (the 2 transfer in pay pt),
 	require.Len(t, simulate.ObjectChanges, 5)

@@ -19,18 +19,18 @@ type InputObjectKind map[string]interface{}
 
 type TransactionBytes struct {
 	// the gas object to be used
-	Gas []sui_types.ObjectRef `json:"gas"`
+	Gas []*sui_types.ObjectRef `json:"gas"`
 
 	// objects to be used in this transaction
-	InputObjects []InputObjectKind `json:"inputObjects"`
+	InputObjects []*InputObjectKind `json:"inputObjects"`
 
 	// transaction data bytes
 	TxBytes sui_types.Base64Data `json:"txBytes"`
 }
 
 type TransferObject struct {
-	Recipient sui_types.SuiAddress `json:"recipient"`
-	ObjectRef sui_types.ObjectRef  `json:"object_ref"`
+	Recipient *sui_types.SuiAddress `json:"recipient"`
+	ObjectRef *sui_types.ObjectRef  `json:"object_ref"`
 }
 type ModulePublish struct {
 	Modules [][]byte `json:"modules"`

@@ -286,12 +286,12 @@ func TestTryGetPastObject(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	objId, err := sui_types.ObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f")
 	require.NoError(t, err)
-	resp, err := api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
+	// there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API
+	_, err = api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
 		ShowType:  true,
 		ShowOwner: true,
 	})
 	require.NoError(t, err)
-	require.NotNil(t, resp.Data.VersionNotFound)
 }
 
 func TestTryMultiGetPastObjects(t *testing.T) {
@@ -306,13 +306,10 @@ func TestTryMultiGetPastObjects(t *testing.T) {
 			Version:  models.NewSafeSuiBigInt(uint64(187584500)),
 		},
 	}
-	resp, err := api.TryMultiGetPastObjects(context.Background(), req, &models.SuiObjectDataOptions{
+	// there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API
+	_, err := api.TryMultiGetPastObjects(context.Background(), req, &models.SuiObjectDataOptions{
 		ShowType:  true,
 		ShowOwner: true,
 	})
 	require.NoError(t, err)
-	for _, data := range resp {
-		require.NotNil(t, data.Data.VersionNotFound)
-	}
-
 }
