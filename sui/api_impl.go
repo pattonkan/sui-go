@@ -17,22 +17,17 @@ func NewSuiClient(url string) *ImplSuiAPI {
 }
 
 // test only. If localnet is used then iota network will be connect
-func NewTestSuiClientWithSignerAndFund(url string, mnemonic string) (*ImplSuiAPI, *sui_signer.Signer) {
-	client := &ImplSuiAPI{
-		http: conn.NewHttpClient(url),
-	}
-
+func (i *ImplSuiAPI) WithSignerAndFund(seed []byte, index int) (*ImplSuiAPI, *sui_signer.Signer) {
 	keySchemeFlag := sui_signer.KeySchemeFlagEd25519
 	// special case if localnet is used, then
-	if client.http.Url() == conn.LocalnetEndpointUrl {
+	if i.http.Url() == conn.LocalnetEndpointUrl {
 		keySchemeFlag = sui_signer.KeySchemeFlagIotaEd25519
 	}
-	signer, err := sui_signer.NewSignerWithMnemonic(mnemonic, keySchemeFlag)
-	if err != nil {
-		panic(err)
-	}
+	// there are only 256 different signers can be generated
+	seed[0] = seed[0] + byte(index)
+	signer := sui_signer.NewSigner(seed, keySchemeFlag)
 	var faucetUrl string
-	switch client.http.Url() {
+	switch i.http.Url() {
 	case conn.TestnetEndpointUrl:
 		faucetUrl = conn.TestnetFaucetUrl
 	case conn.DevnetEndpointUrl:
@@ -42,11 +37,11 @@ func NewTestSuiClientWithSignerAndFund(url string, mnemonic string) (*ImplSuiAPI
 	default:
 		panic("not supported network")
 	}
-	err = RequestFundFromFaucet(signer.Address, faucetUrl)
+	err := RequestFundFromFaucet(signer.Address, faucetUrl)
 	if err != nil {
 		panic(err)
 	}
-	return client, signer
+	return i, signer
 }
 
 func (i *ImplSuiAPI) WithWebsocket(url string) {

@@ -16,7 +16,7 @@ import (
 
 func TestPTBMoveCall(t *testing.T) {
 	t.Skip("rewrite the tests with another contract")
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -103,8 +103,8 @@ func TestPTBMoveCall(t *testing.T) {
 }
 
 func TestPTBTransferObject(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	coinType := models.SuiCoinType
 	limit := uint(2)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -142,8 +142,8 @@ func TestPTBTransferObject(t *testing.T) {
 }
 
 func TestPTBTransferSui(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	coinType := models.SuiCoinType
 	limit := uint(1)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -181,8 +181,8 @@ func TestPTBTransferSui(t *testing.T) {
 }
 
 func TestPTBPayAllSui(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipient := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 1)[0]
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -218,8 +218,9 @@ func TestPTBPayAllSui(t *testing.T) {
 }
 
 func TestPTBPaySui(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipients := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 2)
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
+	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
 	coinType := models.SuiCoinType
 	limit := uint(1)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -228,7 +229,7 @@ func TestPTBPaySui(t *testing.T) {
 
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 	err = ptb.PaySui(
-		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
+		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
 		[]uint64{123, 456},
 	)
 	require.NoError(t, err)
@@ -258,7 +259,7 @@ func TestPTBPaySui(t *testing.T) {
 		if change.Data.Mutated != nil {
 			require.Equal(t, coin.CoinObjectID, &change.Data.Mutated.ObjectID)
 		} else if change.Data.Created != nil {
-			require.Contains(t, []*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address}, change.Data.Created.Owner.AddressOwner)
+			require.Contains(t, []*sui_types.SuiAddress{recipient1.Address, recipient2.Address}, change.Data.Created.Owner.AddressOwner)
 		}
 	}
 
@@ -267,7 +268,7 @@ func TestPTBPaySui(t *testing.T) {
 		context.Background(),
 		sender.Address,
 		[]*sui_types.ObjectID{coin.CoinObjectID},
-		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
+		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
 		[]models.SafeSuiBigInt[uint64]{
 			models.NewSafeSuiBigInt(uint64(123)),
 			models.NewSafeSuiBigInt(uint64(456)),
@@ -280,8 +281,9 @@ func TestPTBPaySui(t *testing.T) {
 }
 
 func TestPTBPay(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
-	recipients := sui_signer.NewRandomSigners(sui_signer.KeySchemeFlagDefault, 2)
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
+	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
@@ -295,7 +297,7 @@ func TestPTBPay(t *testing.T) {
 	ptb := sui_types.NewProgrammableTransactionBuilder()
 	err = ptb.Pay(
 		transferCoins.CoinRefs(),
-		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
+		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
 		[]uint64{amounts[0], amounts[1]},
 	)
 	require.NoError(t, err)
@@ -335,9 +337,9 @@ func TestPTBPay(t *testing.T) {
 	for _, balChange := range simulate.BalanceChanges {
 		if balChange.Owner.AddressOwner == sender.Address {
 			require.Equal(t, totalBal-(amounts[0]+amounts[1]), balChange.Amount)
-		} else if balChange.Owner.AddressOwner == recipients[0].Address {
+		} else if balChange.Owner.AddressOwner == recipient1.Address {
 			require.Equal(t, amounts[0], balChange.Amount)
-		} else if balChange.Owner.AddressOwner == recipients[1].Address {
+		} else if balChange.Owner.AddressOwner == recipient2.Address {
 			require.Equal(t, amounts[1], balChange.Amount)
 		}
 	}
@@ -347,7 +349,7 @@ func TestPTBPay(t *testing.T) {
 		context.Background(),
 		sender.Address,
 		transferCoins.ObjectIDs(),
-		[]*sui_types.SuiAddress{recipients[0].Address, recipients[1].Address},
+		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
 		[]models.SafeSuiBigInt[uint64]{
 			models.NewSafeSuiBigInt(amounts[0]),
 			models.NewSafeSuiBigInt(amounts[1]),
