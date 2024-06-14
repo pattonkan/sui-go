@@ -16,7 +16,7 @@ import (
 )
 
 func TestDevInspectTransactionBlock(t *testing.T) {
-	client, sender := sui.NewTestSuiClientWithSignerAndFund(conn.DevnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)

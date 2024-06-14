@@ -21,7 +21,7 @@ type Client struct {
 
 func TestStartNewChain(t *testing.T) {
 	t.Skip("only for localnet")
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/isc/contracts/isc/")
@@ -57,7 +57,7 @@ func TestStartNewChain(t *testing.T) {
 
 func TestSendCoin(t *testing.T) {
 	t.Skip("only for localnet")
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -106,7 +106,7 @@ func TestSendCoin(t *testing.T) {
 func TestReceiveCoin(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -181,7 +181,7 @@ func TestReceiveCoin(t *testing.T) {
 func TestCreateRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -224,7 +224,7 @@ func TestCreateRequest(t *testing.T) {
 func TestSendRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)
@@ -289,7 +289,7 @@ func TestSendRequest(t *testing.T) {
 func TestReceiveRequest(t *testing.T) {
 	t.Skip("only for localnet")
 	var err error
-	suiClient, signer := sui.NewTestSuiClientWithSignerAndFund(conn.LocalnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	suiClient, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	client := isc.NewIscClient(suiClient)
 
 	iscPackageID := isc.BuildAndDeployIscContracts(t, client, signer)

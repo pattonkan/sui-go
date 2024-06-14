@@ -18,7 +18,7 @@ const (
 )
 
 func TestRequestAddDelegation(t *testing.T) {
-	client, signer := sui.NewTestSuiClientWithSignerAndFund(conn.TestnetEndpointUrl, sui_signer.TEST_MNEMONIC)
+	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	coins, err := client.GetCoins(context.Background(), signer.Address, nil, nil, 10)
 	require.NoError(t, err)
 
