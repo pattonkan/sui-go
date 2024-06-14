@@ -29,6 +29,8 @@ func (c *Client) StartNewChain(
 	ctx context.Context,
 	signer *sui_signer.Signer,
 	packageID *sui_types.PackageID,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
@@ -57,15 +59,18 @@ func (c *Client) StartNewChain(
 	)
 	pt := ptb.Finish()
 
-	coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
+	if len(gasPayments) == 0 {
+		coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
+		}
+		gasPayments = coins.CoinRefs()
 	}
 
 	tx := sui_types.NewProgrammable(
 		signer.Address,
 		pt,
-		coins.CoinRefs(),
+		gasPayments,
 		gasBudget,
 		1000, // TODO we may need to pass gas price
 	)
@@ -89,6 +94,8 @@ func (c *Client) SendCoin(
 	anchorAddress *sui_types.ObjectID,
 	coinType string,
 	coinObject *sui_types.ObjectID,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
@@ -122,6 +129,8 @@ func (c *Client) ReceiveCoin(
 	anchorAddress *sui_types.ObjectID,
 	coinType string,
 	coinObject *sui_types.ObjectID,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
@@ -220,6 +229,8 @@ func (c *Client) CreateRequest(
 	iscContractName string,
 	iscFunctionName string,
 	args [][]byte,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
@@ -248,15 +259,18 @@ func (c *Client) CreateRequest(
 	)
 	pt := ptb.Finish()
 
-	coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
+	if len(gasPayments) == 0 {
+		coins, err := c.GetCoinObjsForTargetAmount(ctx, signer.Address, gasBudget)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch GasPayment object: %w", err)
+		}
+		gasPayments = coins.CoinRefs()
 	}
 
 	tx := sui_types.NewProgrammable(
 		signer.Address,
 		pt,
-		coins.CoinRefs(),
+		gasPayments,
 		gasBudget,
 		1000, // TODO we may need to pass gas price
 	)
@@ -279,6 +293,8 @@ func (c *Client) SendRequest(
 	packageID *sui_types.PackageID,
 	anchorAddress *sui_types.ObjectID,
 	reqObjID *sui_types.ObjectID,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {
@@ -311,6 +327,8 @@ func (c *Client) ReceiveRequest(
 	packageID *sui_types.PackageID,
 	anchorAddress *sui_types.ObjectID,
 	reqObjID *sui_types.ObjectID,
+	gasPayments []*sui_types.ObjectRef, // optional
+	gasPrice uint64,
 	gasBudget uint64,
 	execOptions *models.SuiTransactionBlockResponseOptions,
 ) (*models.SuiTransactionBlockResponse, error) {

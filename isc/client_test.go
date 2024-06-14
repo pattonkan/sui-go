@@ -29,10 +29,11 @@ func TestStartNewChain(t *testing.T) {
 
 	txnBytes, err := client.Publish(context.Background(), signer.Address, modules.Modules, modules.Dependencies, nil, models.NewSafeSuiBigInt(uint64(100000000)))
 	require.NoError(t, err)
-	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
-		ShowEffects:       true,
-		ShowObjectChanges: true,
-	})
+	txnResponse, err := client.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes,
+		&models.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		})
 	require.NoError(t, err)
 	require.True(t, txnResponse.Effects.Data.IsSuccess())
 
@@ -44,6 +45,8 @@ func TestStartNewChain(t *testing.T) {
 		context.Background(),
 		signer,
 		packageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -68,6 +71,8 @@ func TestSendCoin(t *testing.T) {
 		context.Background(),
 		signer,
 		iscPackageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -91,7 +96,10 @@ func TestSendCoin(t *testing.T) {
 		anchorObjID,
 		coinType,
 		coins.Data[0].CoinObjectID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		})
@@ -117,6 +125,8 @@ func TestReceiveCoin(t *testing.T) {
 		context.Background(),
 		signer,
 		iscPackageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -149,7 +159,10 @@ func TestReceiveCoin(t *testing.T) {
 		anchorObjID,
 		coinType,
 		coins.Data[0].CoinObjectID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		})
@@ -167,7 +180,10 @@ func TestReceiveCoin(t *testing.T) {
 		anchorObjID,
 		coinType,
 		coins.Data[0].CoinObjectID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		})
@@ -191,6 +207,8 @@ func TestCreateRequest(t *testing.T) {
 		context.Background(),
 		signer,
 		iscPackageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -210,7 +228,10 @@ func TestCreateRequest(t *testing.T) {
 		"isc_test_contract_name",
 		"isc_test_func_name",
 		[][]byte{}, // func input
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		})
@@ -234,6 +255,8 @@ func TestSendRequest(t *testing.T) {
 		context.Background(),
 		signer,
 		iscPackageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -253,7 +276,10 @@ func TestSendRequest(t *testing.T) {
 		"isc_test_contract_name",
 		"isc_test_func_name",
 		[][]byte{}, // func input
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -273,7 +299,10 @@ func TestSendRequest(t *testing.T) {
 		iscPackageID,
 		anchorObjID,
 		reqObjID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -299,6 +328,8 @@ func TestReceiveRequest(t *testing.T) {
 		context.Background(),
 		signer,
 		iscPackageID,
+		nil,
+		sui.DefaultGasPrice,
 		sui.DefaultGasBudget,
 		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
@@ -318,7 +349,10 @@ func TestReceiveRequest(t *testing.T) {
 		"isc_test_contract_name", // FIXME set up the proper ISC target contract name
 		"isc_test_func_name",     // FIXME set up the proper ISC target func name
 		[][]byte{},               // func input
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -338,7 +372,10 @@ func TestReceiveRequest(t *testing.T) {
 		iscPackageID,
 		anchorObjID,
 		reqObjID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -356,7 +393,10 @@ func TestReceiveRequest(t *testing.T) {
 		iscPackageID,
 		anchorObjID,
 		reqObjID,
-		sui.DefaultGasBudget, &models.SuiTransactionBlockResponseOptions{
+		nil,
+		sui.DefaultGasPrice,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
