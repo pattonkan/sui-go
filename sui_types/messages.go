@@ -49,20 +49,6 @@ type ProgrammableTransaction struct {
 	Commands []Command
 }
 
-type SingleTransactionKind struct {
-	TransferObject *TransferObject
-	Publish        *MoveModulePublish
-	Call           *MoveCall
-	TransferSui    *TransferSui
-	Pay            *Pay
-	PaySui         *PaySui
-	PayAllSui      *PayAllSui
-	ChangeEpoch    *ChangeEpoch
-	Genesis        *GenesisTransaction
-}
-
-func (s SingleTransactionKind) IsBcsEnum() {}
-
 type TransferObject struct {
 	Recipient SuiAddress
 	ObjectRef ObjectRef

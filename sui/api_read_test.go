@@ -107,19 +107,42 @@ func TestGetEvents(t *testing.T) {
 		require.Equal(
 			t,
 			sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
-			&event.PackageId,
+			event.PackageId,
 		)
 		require.Equal(t, "clob_v2", event.TransactionModule)
 		require.Equal(
 			t,
 			sui_types.MustSuiAddressFromHex("0xf0f13f7ef773c6246e87a8f059a684d60773f85e992e128b8272245c38c94076"),
-			&event.Sender,
+			event.Sender,
 		)
-		require.Equal(
-			t,
-			"0xdee9::clob_v2::OrderPlaced<0x2::sui::SUI, 0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>",
-			event.Type,
-		)
+		targetStructTag := sui_types.StructTag{
+			Address: sui_types.MustSuiAddressFromHex("0xdee9"),
+			Module:  sui_types.Identifier("clob_v2"),
+			Name:    sui_types.Identifier("OrderPlaced"),
+			TypeParams: []sui_types.TypeTag{
+				{Struct: &sui_types.StructTag{
+					Address: sui_types.MustSuiAddressFromHex("0x2"),
+					Module:  sui_types.Identifier("sui"),
+					Name:    sui_types.Identifier("SUI"),
+				}},
+				{Struct: &sui_types.StructTag{
+					Address: sui_types.MustSuiAddressFromHex("0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf"),
+					Module:  sui_types.Identifier("coin"),
+					Name:    sui_types.Identifier("COIN"),
+				}},
+			},
+		}
+		require.Equal(t, targetStructTag.Address, event.Type.Address)
+		require.Equal(t, targetStructTag.Module, event.Type.Module)
+		require.Equal(t, targetStructTag.Name, event.Type.Name)
+		require.Equal(t, targetStructTag.TypeParams[0].Struct.Address, event.Type.TypeParams[0].Struct.Address)
+		require.Equal(t, targetStructTag.TypeParams[0].Struct.Module, event.Type.TypeParams[0].Struct.Module)
+		require.Equal(t, targetStructTag.TypeParams[0].Struct.Name, event.Type.TypeParams[0].Struct.Name)
+		require.Equal(t, targetStructTag.TypeParams[0].Struct.TypeParams, event.Type.TypeParams[0].Struct.TypeParams)
+		require.Equal(t, targetStructTag.TypeParams[1].Struct.Address, event.Type.TypeParams[1].Struct.Address)
+		require.Equal(t, targetStructTag.TypeParams[1].Struct.Module, event.Type.TypeParams[1].Struct.Module)
+		require.Equal(t, targetStructTag.TypeParams[1].Struct.Name, event.Type.TypeParams[1].Struct.Name)
+		require.Equal(t, targetStructTag.TypeParams[1].Struct.TypeParams, event.Type.TypeParams[1].Struct.TypeParams)
 		targetBcsBase85 := base58.Decode("yNS5iDS3Gvdo3DhXdtFpuTS12RrSiNkrvjcm2rejntCuqWjF1DdwnHgjowdczAkR18LQHcBqbX2tWL76rys9rTCzG6vm7Tg34yqUkpFSMqNkcS6cfWbN8SdVsxn5g4ZEQotdBgEFn8yN7hVZ7P1MKvMwWf")
 		require.Equal(t, targetBcsBase85, event.Bcs.Data())
 		// TODO check ParsedJson map

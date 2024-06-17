@@ -12,7 +12,7 @@ type SuiObjectRef struct {
 	/** Base64 string representing the object digest */
 	Digest *sui_types.TransactionDigest `json:"digest"`
 	/** Hex code as string representing the object id */
-	ObjectID *sui_types.ObjectID `json:"objectId"` // TODO refactor datatype to ObjectID
+	ObjectID *sui_types.ObjectID `json:"objectId"`
 	/** Object version */
 	Version sui_types.SequenceNumber `json:"version"`
 }
@@ -63,18 +63,18 @@ func (r SuiRawData) Content() string {
 }
 
 type SuiRawMoveObject struct {
-	Type              string                   `json:"type"`
+	Type              sui_types.StructTag      `json:"type"`
 	HasPublicTransfer bool                     `json:"hasPublicTransfer"`
 	Version           sui_types.SequenceNumber `json:"version"`
 	BcsBytes          sui_types.Base64Data     `json:"bcsBytes"`
 }
 
 type SuiRawMovePackage struct {
-	Id              sui_types.ObjectID              `json:"id"`
+	Id              *sui_types.ObjectID             `json:"id"`
 	Version         sui_types.SequenceNumber        `json:"version"`
 	ModuleMap       map[string]sui_types.Base64Data `json:"moduleMap"`
 	TypeOriginTable []TypeOrigin                    `json:"typeOriginTable"`
-	LinkageTable    map[string]UpgradeInfo
+	LinkageTable    map[sui_types.ObjectID]UpgradeInfo
 }
 
 type UpgradeInfo struct {
