@@ -2,104 +2,84 @@ package sui_types_test
 
 import (
 	"context"
+	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/fardream/go-bcs/bcs"
+	"github.com/stretchr/testify/require"
+
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
-	"github.com/howjmay/sui-go/sui_types/serialization"
-	"github.com/stretchr/testify/require"
+	"github.com/howjmay/sui-go/utils"
 )
 
 func TestPTBMoveCall(t *testing.T) {
-	t.Skip("rewrite the tests with another contract")
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+
+	var modules utils.CompiledMoveModules
+	data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
+	require.NoError(t, err)
+	err = json.Unmarshal(data, &modules)
+	require.NoError(t, err)
+	_, packageID, err := client.PublishContract(
+		context.Background(),
+		sender,
+		modules.Modules,
+		modules.Dependencies,
+		sui.DefaultGasBudget,
+		&models.SuiTransactionBlockResponseOptions{ShowObjectChanges: true, ShowEffects: true},
+	)
+	require.NoError(t, err)
 	coinType := models.SuiCoinType
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 
-	// a random validator on devnet
-	validatorAddress, err := sui_types.SuiAddressFromHex("0x1571d9d389181f509c3fd2bb0f0eb06dc8ba73152188567878a5dc85097a0eab")
+	ptb := sui_types.NewProgrammableTransactionBuilder()
 	require.NoError(t, err)
 
-	// case 1: split target amount
-	ptb1 := sui_types.NewProgrammableTransactionBuilder()
-	arg0, err := ptb1.Obj(sui_types.SuiSystemMutObj)
-	require.NoError(t, err)
-	// if sui is not enough, the transaction will fail
-	splitAmountArg := ptb1.MustPure(uint64(1e9))
-	arg1 := ptb1.Command(sui_types.Command{
-		SplitCoins: &sui_types.ProgrammableSplitCoins{
-			Coin:    sui_types.Argument{GasCoin: &serialization.EmptyEnum{}},
-			Amounts: []sui_types.Argument{splitAmountArg},
-		}},
-	)
-	arg2 := ptb1.MustPure(validatorAddress)
-	ptb1.Command(sui_types.Command{
+	ptb.Command(sui_types.Command{
 		MoveCall: &sui_types.ProgrammableMoveCall{
-			Package:       sui_types.SuiPackageIdSuiSystem,
-			Module:        sui_types.SuiSystemModuleName,
-			Function:      sui_types.AddStakeFunName,
+			Package:       packageID,
+			Module:        "sdk_verify",
+			Function:      "ret_two_1",
 			TypeArguments: []sui_types.TypeTag{},
-			Arguments:     []sui_types.Argument{arg0, arg1, arg2},
+			Arguments:     []sui_types.Argument{},
 		}},
 	)
-	pt1 := ptb1.Finish()
-	tx1 := sui_types.NewProgrammable(
+	ptb.Command(sui_types.Command{
+		MoveCall: &sui_types.ProgrammableMoveCall{
+			Package:       packageID,
+			Module:        "sdk_verify",
+			Function:      "ret_two_2",
+			TypeArguments: []sui_types.TypeTag{},
+			Arguments: []sui_types.Argument{
+				{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 1}},
+				{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 0}},
+			},
+		}},
+	)
+	pt := ptb.Finish()
+	tx := sui_types.NewProgrammable(
 		sender.Address,
-		pt1,
+		pt,
 		[]*sui_types.ObjectRef{coins[0].Ref()},
 		sui.DefaultGasBudget,
 		sui.DefaultGasPrice,
 	)
-	txBytes1, err := bcs.Marshal(tx1)
+	txBytes, err := bcs.Marshal(tx)
 	require.NoError(t, err)
-	simulate1, err := client.DryRunTransaction(context.Background(), txBytes1)
+	simulate, err := client.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
-	require.Empty(t, simulate1.Effects.Data.V1.Status.Error)
-	require.True(t, simulate1.Effects.Data.IsSuccess())
-	require.Equal(t, coins[0].CoinObjectID, simulate1.Effects.Data.V1.GasObject.Reference.ObjectID)
+	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+	require.True(t, simulate.Effects.Data.IsSuccess())
+	require.Equal(t, coins[0].CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
 
-	// case 2: direct stake the specified coin
-	ptb2 := sui_types.NewProgrammableTransactionBuilder()
-	coinArg := sui_types.CallArg{
-		Object: &sui_types.ObjectArg{
-			ImmOrOwnedObject: coins[1].Ref(),
-		},
-	}
-	addrBytes := validatorAddress.Data()
-	addrArg := sui_types.CallArg{
-		Pure: &addrBytes,
-	}
-	err = ptb2.MoveCall(
-		sui_types.SuiPackageIdSuiSystem,
-		sui_types.SuiSystemModuleName,
-		sui_types.AddStakeFunName,
-		[]sui_types.TypeTag{},
-		[]sui_types.CallArg{sui_types.SuiSystemMut, coinArg, addrArg},
-	)
-	require.NoError(t, err)
-	pt2 := ptb2.Finish()
-	tx2 := sui_types.NewProgrammable(
-		sender.Address,
-		pt2,
-		[]*sui_types.ObjectRef{coins[0].Ref()},
-		sui.DefaultGasBudget,
-		sui.DefaultGasPrice,
-	)
-
-	txBytes2, err := bcs.Marshal(tx2)
-	require.NoError(t, err)
-	simulate2, err := client.DryRunTransaction(context.Background(), txBytes2)
-	require.NoError(t, err)
-	require.Empty(t, simulate2.Effects.Data.V1.Status.Error)
-	require.True(t, simulate2.Effects.Data.IsSuccess())
-	require.Equal(t, coins[0].CoinObjectID, simulate2.Effects.Data.V1.GasObject.Reference.ObjectID)
 }
 
 func TestPTBTransferObject(t *testing.T) {

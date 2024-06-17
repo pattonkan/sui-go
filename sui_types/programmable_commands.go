@@ -21,6 +21,8 @@ type Command struct {
 func (c Command) IsBcsEnum() {}
 
 type Argument struct {
+	// The gas coin. The gas coin can only be used by-ref, except for with
+	// `TransferObjects`, which can use it by-value.
 	GasCoin *serialization.EmptyEnum
 	// One of the input objects or primitive values (from `ProgrammableTransaction` inputs)
 	Input *uint16
@@ -28,10 +30,11 @@ type Argument struct {
 	Result *uint16
 	// Like a `Result` but it accesses a nested result. Currently, the only usage of this is to access a
 	// value from a Move call with multiple return values.
-	NestedResult *struct {
-		Result1 uint16
-		Result2 uint16
-	}
+	NestedResult *NestedResult
+}
+type NestedResult struct {
+	Cmd    uint16 // command index
+	Result uint16 // result index
 }
 
 func (a Argument) IsBcsEnum() {}
