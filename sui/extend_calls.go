@@ -58,7 +58,7 @@ func (s *ImplSuiAPI) SignAndExecuteTransaction(
 	return resp, nil
 }
 
-func (s *ImplSuiAPI) BuildAndPublish(
+func (s *ImplSuiAPI) BuildAndPublishContract(
 	ctx context.Context,
 	signer *sui_signer.Signer,
 	contractPath string,
@@ -75,6 +75,37 @@ func (s *ImplSuiAPI) BuildAndPublish(
 		signer.Address,
 		modules.Modules,
 		modules.Dependencies,
+		nil,
+		models.NewSafeSuiBigInt(gasBudget),
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to publish move contract: %w", err)
+	}
+	txnResponse, err := s.SignAndExecuteTransaction(context.Background(), signer, txnBytes.TxBytes, options)
+	if err != nil || !txnResponse.Effects.Data.IsSuccess() {
+		return nil, nil, fmt.Errorf("failed to sign move contract tx: %w", err)
+	}
+
+	packageID, err := txnResponse.GetPublishedPackageID()
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get move contract package ID: %w", err)
+	}
+	return txnResponse, packageID, nil
+}
+
+func (s *ImplSuiAPI) PublishContract(
+	ctx context.Context,
+	signer *sui_signer.Signer,
+	modules []*sui_types.Base64Data,
+	dependencies []*sui_types.SuiAddress,
+	gasBudget uint64,
+	options *models.SuiTransactionBlockResponseOptions,
+) (*models.SuiTransactionBlockResponse, *sui_types.PackageID, error) {
+	txnBytes, err := s.Publish(
+		context.Background(),
+		signer.Address,
+		modules,
+		dependencies,
 		nil,
 		models.NewSafeSuiBigInt(gasBudget),
 	)
