@@ -165,10 +165,10 @@ func TestQueryEvents(t *testing.T) {
 					require.Equal(
 						t,
 						sui_types.MustPackageIDFromHex("0x000000000000000000000000000000000000000000000000000000000000dee9"),
-						&event.PackageId,
+						event.PackageId,
 					)
 					require.Equal(t, "clob_v2", event.TransactionModule)
-					require.Equal(t, tt.args.query.Sender, &event.Sender)
+					require.Equal(t, tt.args.query.Sender, event.Sender)
 				}
 			},
 		)

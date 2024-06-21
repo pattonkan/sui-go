@@ -104,14 +104,18 @@ type StructTag struct {
 }
 
 func (s *StructTag) UnmarshalJSON(data []byte) error {
-	parsedStructTag, err := StructTagFromString(string(data))
+	str := string(data)
+	str, _ = strings.CutPrefix(str, "\"")
+	str, _ = strings.CutSuffix(str, "\"")
+	parsedStructTag, err := StructTagFromString(str)
 	if err != nil {
-		s.Address = parsedStructTag.Address
-		s.Module = parsedStructTag.Module
-		s.Name = parsedStructTag.Name
-		s.TypeParams = parsedStructTag.TypeParams
+		return fmt.Errorf("can't unmarshal to %s StructTag: %w", str, err)
 	}
-	return err
+	s.Address = parsedStructTag.Address
+	s.Module = parsedStructTag.Module
+	s.Name = parsedStructTag.Name
+	s.TypeParams = parsedStructTag.TypeParams
+	return nil
 }
 
 func StructTagFromString(data string) (*StructTag, error) {
@@ -123,8 +127,8 @@ func StructTagFromString(data string) (*StructTag, error) {
 	if strings.Contains(rest, "<") {
 		name = rest[:strings.Index(rest, "<")]
 	}
-	typeParams := []TypeTag{}
 
+	typeParams := []TypeTag{}
 	if strings.Contains(rest, "<") {
 		typeParamsRawStr := rest[strings.Index(rest, "<")+1 : strings.LastIndex(rest, ">")]
 		typeParamsTokens := splitGenericParameters(typeParamsRawStr, []string{"<", ">"})
@@ -147,6 +151,10 @@ func StructTagFromString(data string) (*StructTag, error) {
 
 			typeParams[i] = param
 		}
+	}
+
+	if len(typeParams) == 0 {
+		typeParams = nil
 	}
 
 	return &StructTag{
