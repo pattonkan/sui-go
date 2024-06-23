@@ -1,0 +1,19 @@
+{
+  "name": "swap-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx ts-node src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit": "^0.14.5",
+    "@mysten/sui": "^1.0.5",
+    "@tanstack/react-query": "^5.40.1"
+  }
+}
