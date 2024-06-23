@@ -119,11 +119,13 @@ func (c CallArg) IsBcsEnum() {}
 
 type ObjectArg struct {
 	ImmOrOwnedObject *ObjectRef
-	SharedObject     *struct {
-		Id                   *ObjectID
-		InitialSharedVersion SequenceNumber
-		Mutable              bool
-	}
+	SharedObject     *SharedObjectRef
+}
+
+type SharedObjectRef struct {
+	Id                   *ObjectID
+	InitialSharedVersion SequenceNumber
+	Mutable              bool
 }
 
 func (o ObjectArg) IsBcsEnum() {}

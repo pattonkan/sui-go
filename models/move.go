@@ -48,6 +48,28 @@ func NewResourceType(str string) (*ResourceType, error) {
 	}, nil
 }
 
+func (r ResourceType) Contains(address *sui_types.SuiAddress, moduleName string, funcName string) bool {
+	if r.ModuleName == moduleName && r.FuncName == funcName {
+		if address == nil {
+			return true
+		}
+		if r.Address.String() == address.String() {
+			return true
+		}
+	}
+	for r = *r.SubType; r.SubType != nil; r = *r.SubType {
+		if r.ModuleName == moduleName && r.FuncName == funcName {
+			if address == nil {
+				return true
+			}
+			if r.Address.String() == address.String() {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (t *ResourceType) String() string {
 	if t.SubType != nil {
 		return fmt.Sprintf("%v::%v::%v<%v>", t.Address.String(), t.ModuleName, t.FuncName, t.SubType.String())

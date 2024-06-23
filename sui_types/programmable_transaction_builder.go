@@ -73,11 +73,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 				return Argument{}, errors.New("invariant violation! object has id does not match call arg")
 			}
 			oj = ObjectArg{
-				SharedObject: &struct {
-					Id                   *ObjectID
-					InitialSharedVersion SequenceNumber
-					Mutable              bool
-				}{
+				SharedObject: &SharedObjectRef{
 					Id:                   id,
 					InitialSharedVersion: objArg.SharedObject.InitialSharedVersion,
 					Mutable:              oldObjArg.SharedObject.Mutable || objArg.SharedObject.Mutable,

@@ -69,7 +69,38 @@ func TestNewResourceType(t *testing.T) {
 	}
 }
 
-func TestResourceType_String(t *testing.T) {
+func TestContains(t *testing.T) {
+	tests := []struct {
+		name   string
+		str    string
+		target *models.ResourceType
+		want   bool
+	}{
+		{
+			name:   "successful, two levels",
+			str:    "0xe87e::swap::Pool<0x2f63::testcoin::TESTCOIN>",
+			target: &models.ResourceType{ModuleName: "swap", FuncName: "Pool"},
+			want:   true,
+		},
+		{
+			name:   "failed, two levels",
+			str:    "0xe87e::swap::Pool<0x2f63::testcoin::TESTCOIN>",
+			target: &models.ResourceType{ModuleName: "name", FuncName: "Pool"},
+			want:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(
+			tt.name, func(t *testing.T) {
+				src, err := models.NewResourceType(tt.str)
+				require.NoError(t, err)
+				require.Equal(t, tt.want, src.Contains(tt.target.Address, tt.target.ModuleName, tt.target.FuncName))
+			},
+		)
+	}
+}
+
+func TestResourceTypeString(t *testing.T) {
 	typeString := "0x1::mmm1::fff1<0x123abcdef::mm2::ff3>"
 
 	resourceType, err := models.NewResourceType(typeString)
@@ -78,7 +109,7 @@ func TestResourceType_String(t *testing.T) {
 	require.Equal(t, resourceType.String(), res)
 }
 
-func TestResourceType_ShortString(t *testing.T) {
+func TestResourceTypeShortString(t *testing.T) {
 	tests := []struct {
 		name string
 		arg  *models.ResourceType
