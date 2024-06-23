@@ -16,15 +16,19 @@ func (s *ImplSuiAPI) GetAllBalances(ctx context.Context, owner *sui_types.SuiAdd
 func (s *ImplSuiAPI) GetAllCoins(
 	ctx context.Context,
 	owner *sui_types.SuiAddress,
-	cursor *sui_types.ObjectID,
-	limit uint,
+	cursor *sui_types.ObjectID, // optional
+	limit uint, // optional
 ) (*models.CoinPage, error) {
 	var resp models.CoinPage
 	return &resp, s.http.CallContext(ctx, &resp, getAllCoins, owner, cursor, limit)
 }
 
 // GetBalance to use default sui coin(0x2::sui::SUI) when coinType is empty
-func (s *ImplSuiAPI) GetBalance(ctx context.Context, owner *sui_types.SuiAddress, coinType string) (
+func (s *ImplSuiAPI) GetBalance(
+	ctx context.Context,
+	owner *sui_types.SuiAddress,
+	coinType string, // optional
+) (
 	*models.Balance,
 	error,
 ) {
@@ -46,9 +50,9 @@ func (s *ImplSuiAPI) GetCoinMetadata(ctx context.Context, coinType string) (*mod
 func (s *ImplSuiAPI) GetCoins(
 	ctx context.Context,
 	owner *sui_types.SuiAddress,
-	coinType *string,
-	cursor *sui_types.ObjectID,
-	limit uint,
+	coinType *string, // optional
+	cursor *sui_types.ObjectID, // optional
+	limit uint, // optional
 ) (*models.CoinPage, error) {
 	var resp models.CoinPage
 	return &resp, s.http.CallContext(ctx, &resp, getCoins, owner, coinType, cursor, limit)
