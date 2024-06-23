@@ -23,21 +23,17 @@ import "github.com/howjmay/sui-go/sui_signer"
 
 // Create a sui_signer.Signer with mnemonic
 mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-signer1, _ := sui_signer.NewSignerWithMnemonic(mnemonic)
+signer1, err := sui_signer.NewSignerWithMnemonic(mnemonic, sui_signer.KeySchemeFlagEd25519)
 fmt.Printf("address   : %v\n", signer1.Address)
 
-// create sui_signer.Signer with private key
-privKey, _ := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-signer2 := sui_signer.NewSigner(privKey)
+// create sui_signer.Signer with seed
+seed, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
+signer2 := sui_signer.NewSigner(seed, sui_signer.KeySchemeFlagDefault)
 
 // Get private key, public key, address
 fmt.Printf("privateKey: %x\n", signer2.PrivateKey()[:32])
 fmt.Printf("publicKey : %x\n", signer2.PublicKey())
 fmt.Printf("address   : %v\n", signer2.Address)
-
-// Sign data
-data := []byte("bubble tea is the best")
-signedData := signer1.Sign(data)
 ```
 
 ### JSON RPC Client
