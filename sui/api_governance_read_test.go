@@ -13,8 +13,8 @@ import (
 
 func TestGetCommitteeInfo(t *testing.T) {
 	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	epochId := models.NewSafeSuiBigInt(uint64(400))
-	committeeInfo, err := client.GetCommitteeInfo(context.Background(), &epochId)
+	epochId := models.NewBigInt(400)
+	committeeInfo, err := client.GetCommitteeInfo(context.Background(), epochId)
 	require.NoError(t, err)
 	require.Equal(t, epochId, committeeInfo.EpochId)
 	// just use a arbitrary big number to ensure there are enough validator

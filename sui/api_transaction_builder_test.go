@@ -67,7 +67,7 @@ func TestMoveCall(t *testing.T) {
 		modules.Modules,
 		modules.Dependencies,
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(
@@ -96,7 +96,7 @@ func TestMoveCall(t *testing.T) {
 		[]string{},
 		[]any{input},
 		nil,
-		models.NewSafeSuiBigInt(uint64(sui.DefaultGasBudget)),
+		models.NewBigInt((sui.DefaultGasBudget)),
 	)
 	require.NoError(t, err)
 	txnResponse, err = client.SignAndExecuteTransaction(
@@ -150,11 +150,11 @@ func TestPay(t *testing.T) {
 		signer.Address,
 		pickedCoins.CoinIds(),
 		[]*sui_types.SuiAddress{recipient.Address},
-		[]models.SafeSuiBigInt[uint64]{
-			models.NewSafeSuiBigInt(amount),
+		[]*models.BigInt{
+			models.NewBigInt(amount),
 		},
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -190,7 +190,7 @@ func TestPayAllSui(t *testing.T) {
 		signer.Address,
 		recipient.Address,
 		coins.ObjectIDs(),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -245,12 +245,12 @@ func TestPaySui(t *testing.T) {
 			recipient2.Address,
 			recipient2.Address,
 		},
-		[]models.SafeSuiBigInt[uint64]{
-			models.NewSafeSuiBigInt(sentAmounts[0]), // to recipient1
-			models.NewSafeSuiBigInt(sentAmounts[1]), // to recipient2
-			models.NewSafeSuiBigInt(sentAmounts[2]), // to recipient2
+		[]*models.BigInt{
+			models.NewBigInt(sentAmounts[0]), // to recipient1
+			models.NewBigInt(sentAmounts[1]), // to recipient2
+			models.NewBigInt(sentAmounts[2]), // to recipient2
 		},
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -315,7 +315,7 @@ func TestPublish(t *testing.T) {
 		modules.Modules,
 		modules.Dependencies,
 		nil, // 'unsafe_publish' API can automatically assign gas object
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget*5),
+		models.NewBigInt(sui.DefaultGasBudget*5),
 	)
 	require.NoError(t, err)
 
@@ -343,13 +343,13 @@ func TestSplitCoin(t *testing.T) {
 		context.Background(),
 		signer.Address,
 		coins[1].CoinObjectID,
-		[]models.SafeSuiBigInt[uint64]{
+		[]*models.BigInt{
 			// assume coins[0] has more than the sum of the following splitAmounts
-			models.NewSafeSuiBigInt(uint64(2222)),
-			models.NewSafeSuiBigInt(uint64(1111)),
+			models.NewBigInt(2222),
+			models.NewBigInt(1111),
 		},
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -379,9 +379,9 @@ func TestSplitCoinEqual(t *testing.T) {
 		context.Background(),
 		signer.Address,
 		coins[0].CoinObjectID,
-		models.NewSafeSuiBigInt(splitShares),
+		models.NewBigInt(splitShares),
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -413,7 +413,7 @@ func TestTransferObject(t *testing.T) {
 		recipient.Address,
 		transferCoin.CoinObjectID,
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 
@@ -442,8 +442,8 @@ func TestTransferSui(t *testing.T) {
 		signer.Address,
 		recipient.Address,
 		transferCoin.CoinObjectID,
-		models.NewSafeSuiBigInt(uint64(3)),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(3),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 

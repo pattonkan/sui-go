@@ -63,7 +63,7 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 		modules.Modules,
 		modules.Dependencies,
 		nil,
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget*10),
+		models.NewBigInt(sui.DefaultGasBudget*10),
 	)
 	require.NoError(t, err)
 	txnResponse, err := client.SignAndExecuteTransaction(

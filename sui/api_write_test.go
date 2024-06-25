@@ -59,7 +59,7 @@ func TestDryRunTransaction(t *testing.T) {
 		signer,
 		signer,
 		pickedCoins.CoinIds(),
-		models.NewSafeSuiBigInt(sui.DefaultGasBudget),
+		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 

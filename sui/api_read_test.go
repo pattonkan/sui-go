@@ -25,21 +25,21 @@ func TestGetChainIdentifier(t *testing.T) {
 
 func TestGetCheckpoint(t *testing.T) {
 	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	checkpoint, err := client.GetCheckpoint(context.Background(), models.NewSafeSuiBigInt(uint64(1000)))
+	checkpoint, err := client.GetCheckpoint(context.Background(), models.NewBigInt(1000))
 	require.NoError(t, err)
 	targetCheckpoint := &models.Checkpoint{
-		Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
-		SequenceNumber:           models.NewSafeSuiBigInt(uint64(1000)),
+		Epoch:                    models.NewBigInt(0),
+		SequenceNumber:           models.NewBigInt(1000),
 		Digest:                   *sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
-		NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1001)),
+		NetworkTotalTransactions: models.NewBigInt(1001),
 		PreviousDigest:           sui_types.MustNewDigest("41nPNZWHvvajmBQjX3GbppsgGZDEB6DhN4UxPkjSYRRj"),
 		EpochRollingGasCostSummary: models.GasCostSummary{
-			ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
-			StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
-			StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
-			NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+			ComputationCost:         models.NewBigInt(0),
+			StorageCost:             models.NewBigInt(0),
+			StorageRebate:           models.NewBigInt(0),
+			NonRefundableStorageFee: models.NewBigInt(0),
 		},
-		TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393657483)),
+		TimestampMs:           models.NewBigInt(1681393657483),
 		Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
 		CheckpointCommitments: []sui_types.CheckpointCommitment{},
 		ValidatorSignature:    *sui_types.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
@@ -49,41 +49,41 @@ func TestGetCheckpoint(t *testing.T) {
 
 func TestGetCheckpoints(t *testing.T) {
 	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	cursor := models.NewSafeSuiBigInt(uint64(999))
+	cursor := models.NewBigInt(999)
 	limit := uint64(2)
-	checkpointPage, err := client.GetCheckpoints(context.Background(), &cursor, &limit, false)
+	checkpointPage, err := client.GetCheckpoints(context.Background(), cursor, &limit, false)
 	require.NoError(t, err)
 	targetCheckpoints := []*models.Checkpoint{
 		{
-			Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
-			SequenceNumber:           models.NewSafeSuiBigInt(uint64(1000)),
+			Epoch:                    models.NewBigInt(0),
+			SequenceNumber:           models.NewBigInt(1000),
 			Digest:                   *sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
-			NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1001)),
+			NetworkTotalTransactions: models.NewBigInt(1001),
 			PreviousDigest:           sui_types.MustNewDigest("41nPNZWHvvajmBQjX3GbppsgGZDEB6DhN4UxPkjSYRRj"),
 			EpochRollingGasCostSummary: models.GasCostSummary{
-				ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
-				StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
-				StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
-				NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+				ComputationCost:         models.NewBigInt(0),
+				StorageCost:             models.NewBigInt(0),
+				StorageRebate:           models.NewBigInt(0),
+				NonRefundableStorageFee: models.NewBigInt(0),
 			},
-			TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393657483)),
+			TimestampMs:           models.NewBigInt(1681393657483),
 			Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
 			CheckpointCommitments: []sui_types.CheckpointCommitment{},
 			ValidatorSignature:    *sui_types.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
 		},
 		{
-			Epoch:                    models.NewSafeSuiBigInt(uint64(0)),
-			SequenceNumber:           models.NewSafeSuiBigInt(uint64(1001)),
+			Epoch:                    models.NewBigInt(0),
+			SequenceNumber:           models.NewBigInt(1001),
 			Digest:                   *sui_types.MustNewDigest("8umKe5Ae2TAH5ySw2zeEua8cTeeTFZV8F3GfFViZ5cq3"),
-			NetworkTotalTransactions: models.NewSafeSuiBigInt(uint64(1002)),
+			NetworkTotalTransactions: models.NewBigInt(1002),
 			PreviousDigest:           sui_types.MustNewDigest("BE4JixC94sDtCgHJZruyk7QffZnWDFvM2oFjC8XtChET"),
 			EpochRollingGasCostSummary: models.GasCostSummary{
-				ComputationCost:         models.NewSafeSuiBigInt(uint64(0)),
-				StorageCost:             models.NewSafeSuiBigInt(uint64(0)),
-				StorageRebate:           models.NewSafeSuiBigInt(uint64(0)),
-				NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(0)),
+				ComputationCost:         models.NewBigInt(0),
+				StorageCost:             models.NewBigInt(0),
+				StorageRebate:           models.NewBigInt(0),
+				NonRefundableStorageFee: models.NewBigInt(0),
 			},
-			TimestampMs:           models.NewSafeSuiBigInt(uint64(1681393661034)),
+			TimestampMs:           models.NewBigInt(1681393661034),
 			Transactions:          []*sui_types.Digest{sui_types.MustNewDigest("9muLz7ZTocpBTdSo5Ak7ZxzEpfzywr6Y12Hj3AdT8dvV")},
 			CheckpointCommitments: []sui_types.CheckpointCommitment{},
 			ValidatorSignature:    *sui_types.MustNewBase64Data("jG5ViKThziBpnJnOw9dVdjIrv2IHhCrn8ZhvI1gUS2X1t90aRqhnLF6+WbS1S2WT"),
@@ -92,7 +92,7 @@ func TestGetCheckpoints(t *testing.T) {
 	require.Len(t, checkpointPage.Data, 2)
 	require.Equal(t, checkpointPage.Data, targetCheckpoints)
 	require.Equal(t, true, checkpointPage.HasNextPage)
-	require.Equal(t, models.NewSafeSuiBigInt(uint64(1001)), *checkpointPage.NextCursor)
+	require.Equal(t, models.NewBigInt(1001), checkpointPage.NextCursor)
 }
 
 func TestGetEvents(t *testing.T) {
@@ -211,8 +211,8 @@ func TestGetObject(t *testing.T) {
 
 func TestGetProtocolConfig(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	version := models.NewSafeSuiBigInt(uint64(47))
-	protocolConfig, err := api.GetProtocolConfig(context.Background(), &version)
+	version := models.NewBigInt(47)
+	protocolConfig, err := api.GetProtocolConfig(context.Background(), version)
 	require.NoError(t, err)
 	require.Equal(t, uint64(47), protocolConfig.ProtocolVersion.Uint64())
 }
@@ -243,10 +243,10 @@ func TestGetTransactionBlock(t *testing.T) {
 
 	require.NoError(t, err)
 	targetGasCostSummary := models.GasCostSummary{
-		ComputationCost:         models.NewSafeSuiBigInt(uint64(750000)),
-		StorageCost:             models.NewSafeSuiBigInt(uint64(32383600)),
-		StorageRebate:           models.NewSafeSuiBigInt(uint64(21955032)),
-		NonRefundableStorageFee: models.NewSafeSuiBigInt(uint64(221768)),
+		ComputationCost:         models.NewBigInt(750000),
+		StorageCost:             models.NewBigInt(32383600),
+		StorageRebate:           models.NewBigInt(21955032),
+		NonRefundableStorageFee: models.NewBigInt(221768),
 	}
 	require.Equal(t, digest, &resp.Digest)
 	targetRawTxBase64, err := base64.StdEncoding.DecodeString("AQAAAAAACgEBpqVCwrKBCI6PELxQWossTD9mgGbIy8W++ipS7CWatqOAVmEAAAAAAAEBAG85p+0UjVUsc5qkxhWSZ/qr2vghuqeSNiZr1gQzhCIAV3XJAQAAAAAgKEbgAIwWMBRZ1grRBFQ6qrSWLHa/AfKG8ubjmkxM/zoAIEnHBYEE/EtGK3r1lzrUU9QPAiTHLBd2+R8GS7k042UqAQF/3Yg8C3Qn8YzbSYxMh6SnnWvsR4PLPyGqOBa7xkzo7wDr5AEAAAAAAQEBbg3e/ArZiInAS6uWOeUSwhdmxeY2b4nmlpVtm+aVKHENAAAAAAAAAAEAERAyMjIyMjIyMjIyMjIuc3VpAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgEAAAAAAAAAAAAgVxiHQ5g2KLNHRkjYqkqe6Kvr6PaBYkN3PX6O1P2DOigAERAyMjIyMjIyMjIyMjIuc3VpACBXGIdDmDYos0dGSNiqSp7oq+vo9oFiQ3c9fo7U/YM6KAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIFa2lvc2sKYm9ycm93X3ZhbAEH7klqDMBNBqNFmCumaXyQxhkCDenidECMeBn3h/9m4aEIc3VpZnJlbnMHU3VpRnJlbgEHiJT6AvxvNsvEha6RRdBfJHp44iCBT7hBmrJhvYHwjzIJYnVsbHNoYXJrCUJ1bGxzaGFyawADAQAAAQEAAQIAAGpuoUDgld3YL3x0WQUFSzIDEp3QSgnQN1QWwxFhky0tC2ZyZWVfY2xhaW1zCmZyZWVfY2xhaW0BB+5JagzATQajRZgrpml8kMYZAg3p4nRAjHgZ94f/ZuGhCHN1aWZyZW5zB1N1aUZyZW4BB4iU+gL8bzbLxIWukUXQXyR6eOIggU+4QZqyYb2B8I8yCWJ1bGxzaGFyawlCdWxsc2hhcmsABQEDAAEEAAMAAAAAAQUAAQYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACBWtpb3NrCnJldHVybl92YWwBB+5JagzATQajRZgrpml8kMYZAg3p4nRAjHgZ94f/ZuGhCHN1aWZyZW5zB1N1aUZyZW4BB4iU+gL8bzbLxIWukUXQXyR6eOIggU+4QZqyYb2B8I8yCWJ1bGxzaGFyawlCdWxsc2hhcmsAAwEAAAMAAAAAAwAAAQAA2sImUutAC+sfXiEmRZyuju3BFrc7itYLcePo1/2zF+IMZGlyZWN0X3NldHVwEnNldF90YXJnZXRfYWRkcmVzcwAEAQQAAgEAAQcAAQYAANrCJlLrQAvrH14hJkWcro7twRa3O4rWC3Hj6Nf9sxfiDGRpcmVjdF9zZXR1cBJzZXRfcmV2ZXJzZV9sb29rdXAAAgEEAAEIAAEBAgEAAQkAVxiHQ5g2KLNHRkjYqkqe6Kvr6PaBYkN3PX6O1P2DOigBAIV+3vABgFUzNcciYyljcM6zXwvwuD9FeVw6JU3rDUD/YO8BAAAAACBmxGapu4poDXYNHxLCokFFdgFBwBhoQW8vcK8+XuklpFcYh0OYNiizR0ZI2KpKnuir6+j2gWJDdz1+jtT9gzoo7gIAAAAAAADA8MQAAAAAAAABYQBao7U4xuiDfVJM+YnHs7cBOs9VJJVriNBdHr7neIyT+M9tzPcRbANj2P9q2s21wtgIiNtayH6IAAhgFEhKsEANMFE7Y3jZzVZy0dJdgxaL8YB9JBE0745Io7/8t/XlJ3w=")
@@ -322,11 +322,11 @@ func TestTryMultiGetPastObjects(t *testing.T) {
 	req := []*models.SuiGetPastObjectRequest{
 		{
 			ObjectId: sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"),
-			Version:  models.NewSafeSuiBigInt(uint64(187584506)),
+			Version:  models.NewBigInt(187584506),
 		},
 		{
 			ObjectId: sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"),
-			Version:  models.NewSafeSuiBigInt(uint64(187584500)),
+			Version:  models.NewBigInt(187584500),
 		},
 	}
 	// there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API

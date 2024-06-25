@@ -27,7 +27,7 @@ func TestAccountSignAndSend(t *testing.T) {
 	for i, c := range coins {
 		coinIDs[i] = c.CoinObjectID
 	}
-	gasBudget := models.NewSafeSuiBigInt(sui.DefaultGasBudget)
+	gasBudget := models.NewBigInt(sui.DefaultGasBudget)
 	txn, err := api.PayAllSui(context.Background(), signer.Address, signer.Address, coinIDs, gasBudget)
 	require.NoError(t, err)
 

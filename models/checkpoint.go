@@ -5,16 +5,16 @@ import (
 )
 
 type Checkpoint struct {
-	Epoch                      SafeSuiBigInt[EpochId]                  `json:"epoch"`
-	SequenceNumber             SafeSuiBigInt[sui_types.SequenceNumber] `json:"sequenceNumber"`
-	Digest                     sui_types.Digest                        `json:"digest"`
-	NetworkTotalTransactions   SafeSuiBigInt[uint64]                   `json:"networkTotalTransactions"`
-	PreviousDigest             *sui_types.Digest                       `json:"previousDigest,omitempty"`
-	EpochRollingGasCostSummary GasCostSummary                          `json:"epochRollingGasCostSummary"`
-	TimestampMs                SafeSuiBigInt[uint64]                   `json:"timestampMs"`
-	Transactions               []*sui_types.Digest                     `json:"transactions"`
-	CheckpointCommitments      []sui_types.CheckpointCommitment        `json:"checkpointCommitments"`
-	ValidatorSignature         sui_types.Base64Data                    `json:"validatorSignature"`
+	Epoch                      *BigInt                          `json:"epoch"`
+	SequenceNumber             *BigInt                          `json:"sequenceNumber"`
+	Digest                     sui_types.Digest                 `json:"digest"`
+	NetworkTotalTransactions   *BigInt                          `json:"networkTotalTransactions"`
+	PreviousDigest             *sui_types.Digest                `json:"previousDigest,omitempty"`
+	EpochRollingGasCostSummary GasCostSummary                   `json:"epochRollingGasCostSummary"`
+	TimestampMs                *BigInt                          `json:"timestampMs"`
+	Transactions               []*sui_types.Digest              `json:"transactions"`
+	CheckpointCommitments      []sui_types.CheckpointCommitment `json:"checkpointCommitments"`
+	ValidatorSignature         sui_types.Base64Data             `json:"validatorSignature"`
 }
 
-type CheckpointPage = Page[*Checkpoint, SafeSuiBigInt[uint64]]
+type CheckpointPage = Page[*Checkpoint, BigInt]
