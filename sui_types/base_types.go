@@ -6,6 +6,7 @@ type PackageID = SuiAddress
 type ObjectID = SuiAddress
 type SequenceNumber = uint64
 type Identifier = string
+type ObjectType = string
 
 func PackageIDFromHex(str string) (*PackageID, error) {
 	return SuiAddressFromHex(str)
@@ -29,6 +30,10 @@ func MustObjectIDFromHex(str string) *ObjectID {
 		panic(err)
 	}
 	return objectID
+}
+
+func ObjectTypeFromString(str string) ObjectType {
+	return str
 }
 
 // ObjectRef for BCS, need to keep this order

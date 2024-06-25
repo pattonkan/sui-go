@@ -9,7 +9,7 @@ type DynamicFieldInfo struct {
 	Name       sui_types.DynamicFieldName                        `json:"name"`
 	BcsName    sui_types.Base58                                  `json:"bcsName"`
 	Type       serialization.TagJson[sui_types.DynamicFieldType] `json:"type"`
-	ObjectType string                                            `json:"objectType"`
+	ObjectType sui_types.ObjectType                              `json:"objectType"`
 	ObjectID   sui_types.ObjectID                                `json:"objectId"`
 	Version    sui_types.SequenceNumber                          `json:"version"`
 	Digest     sui_types.ObjectDigest                            `json:"digest"`

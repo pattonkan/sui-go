@@ -199,7 +199,7 @@ type ObjectChange struct {
 	Transferred *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Recipient  ObjectOwner                             `json:"recipient"`
-		ObjectType string                                  `json:"objectType"`
+		ObjectType sui_types.ObjectType                    `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		Digest     sui_types.ObjectDigest                  `json:"digest"`
@@ -208,7 +208,7 @@ type ObjectChange struct {
 	Mutated *struct {
 		Sender          sui_types.SuiAddress                    `json:"sender"`
 		Owner           ObjectOwner                             `json:"owner"`
-		ObjectType      string                                  `json:"objectType"`
+		ObjectType      sui_types.ObjectType                    `json:"objectType"`
 		ObjectID        sui_types.ObjectID                      `json:"objectId"`
 		Version         SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		PreviousVersion SafeSuiBigInt[sui_types.SequenceNumber] `json:"previousVersion"`
@@ -217,14 +217,14 @@ type ObjectChange struct {
 	// Delete object j
 	Deleted *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
-		ObjectType string                                  `json:"objectType"`
+		ObjectType sui_types.ObjectType                    `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"deleted,omitempty"`
 	// Wrapped object
 	Wrapped *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
-		ObjectType string                                  `json:"objectType"`
+		ObjectType sui_types.ObjectType                    `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 	} `json:"wrapped,omitempty"`
@@ -232,7 +232,7 @@ type ObjectChange struct {
 	Created *struct {
 		Sender     sui_types.SuiAddress                    `json:"sender"`
 		Owner      ObjectOwner                             `json:"owner"`
-		ObjectType string                                  `json:"objectType"`
+		ObjectType sui_types.ObjectType                    `json:"objectType"`
 		ObjectID   sui_types.ObjectID                      `json:"objectId"`
 		Version    SafeSuiBigInt[sui_types.SequenceNumber] `json:"version"`
 		Digest     sui_types.ObjectDigest                  `json:"digest"`
@@ -248,8 +248,8 @@ func (o ObjectChange) Content() string {
 }
 
 type BalanceChange struct {
-	Owner    ObjectOwner `json:"owner"`
-	CoinType string      `json:"coinType"`
+	Owner    ObjectOwner          `json:"owner"`
+	CoinType sui_types.ObjectType `json:"coinType"`
 	/* Coin balance change(positive means receive, negative means send) */
 	Amount string `json:"amount"`
 }
@@ -283,6 +283,32 @@ func (r *SuiTransactionBlockResponse) GetPublishedPackageID() (*sui_types.Packag
 		}
 	}
 	return nil, fmt.Errorf("not found")
+}
+
+func (r *SuiTransactionBlockResponse) GetCreatedObjectInfo(module string, objName string) (*sui_types.ObjectID, sui_types.ObjectType, error) {
+	if r.ObjectChanges == nil {
+		return nil, "", fmt.Errorf("no ObjectChanges")
+	}
+	for _, change := range r.ObjectChanges {
+		if change.Data.Created != nil {
+			// some possible examples
+			// * 0x2::coin::TreasuryCap<0x14c12b454ac6996024342312769e00bb98c70ad2f3546a40f62516c83aa0f0d4::testcoin::TESTCOIN>
+			// * 0x14c12b454ac6996024342312769e00bb98c70ad2f3546a40f62516c83aa0f0d4::anchor::Anchor
+			resource, err := NewResourceType(change.Data.Created.ObjectType)
+			if err != nil {
+				return nil, "", fmt.Errorf("invalid resource target string")
+			}
+			if resource.Module == module && resource.ObjectName == objName {
+				return &change.Data.Created.ObjectID, change.Data.Created.ObjectType, nil
+			}
+			for ; resource != nil; resource = resource.SubType {
+				if resource.Module == module && resource.ObjectName == objName {
+					return &change.Data.Created.ObjectID, change.Data.Created.ObjectType, nil
+				}
+			}
+		}
+	}
+	return nil, "", fmt.Errorf("not found")
 }
 
 type ReturnValueType interface{}

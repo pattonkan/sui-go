@@ -83,7 +83,7 @@ type UpgradeInfo struct {
 }
 
 type TypeOrigin struct {
-	ModuleName string             `json:"moduleName"`
+	Module     string             `json:"moduleName"`
 	StructName string             `json:"structName"`
 	Package    sui_types.ObjectID `json:"package"`
 }
@@ -95,7 +95,7 @@ type SuiObjectData struct {
 	/**
 	 * Type of the object, default to be undefined unless SuiObjectDataOptions.showType is set to true
 	 */
-	Type *string `json:"type,omitempty"`
+	Type *sui_types.ObjectType `json:"type,omitempty"`
 	/**
 	 * Move object content or package content, default to be undefined unless SuiObjectDataOptions.showContent is set to true
 	 */

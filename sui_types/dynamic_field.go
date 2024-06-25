@@ -16,6 +16,6 @@ func (d DynamicFieldType) Content() string {
 }
 
 type DynamicFieldName struct {
-	Type  string `json:"type"`
+	Type  string `json:"type"` // TODO Maybe sui_types.ObjectType type
 	Value any    `json:"value"`
 }

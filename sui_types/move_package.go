@@ -9,7 +9,7 @@ type MovePackage struct {
 }
 
 type TypeOrigin struct {
-	ModuleName string
+	Module     string
 	StructName string
 	Package    ObjectID
 }
