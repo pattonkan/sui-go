@@ -27,7 +27,7 @@ func (s *ImplSuiAPI) GetAllCoins(
 func (s *ImplSuiAPI) GetBalance(
 	ctx context.Context,
 	owner *sui_types.SuiAddress,
-	coinType string, // optional
+	coinType sui_types.ObjectType, // optional
 ) (
 	*models.Balance,
 	error,
@@ -50,7 +50,7 @@ func (s *ImplSuiAPI) GetCoinMetadata(ctx context.Context, coinType string) (*mod
 func (s *ImplSuiAPI) GetCoins(
 	ctx context.Context,
 	owner *sui_types.SuiAddress,
-	coinType *string, // optional
+	coinType *sui_types.ObjectType, // optional
 	cursor *sui_types.ObjectID, // optional
 	limit uint, // optional
 ) (*models.CoinPage, error) {
@@ -58,7 +58,7 @@ func (s *ImplSuiAPI) GetCoins(
 	return &resp, s.http.CallContext(ctx, &resp, getCoins, owner, coinType, cursor, limit)
 }
 
-func (s *ImplSuiAPI) GetTotalSupply(ctx context.Context, coinType string) (*models.Supply, error) {
+func (s *ImplSuiAPI) GetTotalSupply(ctx context.Context, coinType sui_types.ObjectType) (*models.Supply, error) {
 	var resp models.Supply
 	return &resp, s.http.CallContext(ctx, &resp, getTotalSupply, coinType)
 }

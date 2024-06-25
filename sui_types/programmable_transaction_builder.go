@@ -241,7 +241,7 @@ func (p *ProgrammableTransactionBuilder) PublishImmutable(
 	return p.Command(Command{
 		MoveCall: &ProgrammableMoveCall{
 			Package:       SuiPackageIdSuiFramework,
-			Module:        SuiSystemModuleName,
+			Module:        SuiSystemModule,
 			Function:      "make_immutable",
 			TypeArguments: nil,
 			Arguments:     []Argument{p.PublishUpgradeable(modules, dependencies)},

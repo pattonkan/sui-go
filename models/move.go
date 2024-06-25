@@ -10,8 +10,8 @@ import (
 
 type ResourceType struct {
 	Address    *sui_types.SuiAddress
-	ModuleName sui_types.Identifier
-	FuncName   sui_types.Identifier
+	Module     sui_types.Identifier
+	ObjectName sui_types.Identifier // it can be function name or struct name, etc.
 
 	SubType *ResourceType
 }
@@ -42,14 +42,14 @@ func NewResourceType(str string) (*ResourceType, error) {
 	}
 	return &ResourceType{
 		Address:    addr,
-		ModuleName: parts[1],
-		FuncName:   parts[2],
+		Module:     parts[1],
+		ObjectName: parts[2],
 		SubType:    subType,
 	}, nil
 }
 
 func (r ResourceType) Contains(address *sui_types.SuiAddress, moduleName string, funcName string) bool {
-	if r.ModuleName == moduleName && r.FuncName == funcName {
+	if r.Module == moduleName && r.ObjectName == funcName {
 		if address == nil {
 			return true
 		}
@@ -58,7 +58,7 @@ func (r ResourceType) Contains(address *sui_types.SuiAddress, moduleName string,
 		}
 	}
 	for r = *r.SubType; r.SubType != nil; r = *r.SubType {
-		if r.ModuleName == moduleName && r.FuncName == funcName {
+		if r.Module == moduleName && r.ObjectName == funcName {
 			if address == nil {
 				return true
 			}
@@ -72,16 +72,16 @@ func (r ResourceType) Contains(address *sui_types.SuiAddress, moduleName string,
 
 func (t *ResourceType) String() string {
 	if t.SubType != nil {
-		return fmt.Sprintf("%v::%v::%v<%v>", t.Address.String(), t.ModuleName, t.FuncName, t.SubType.String())
+		return fmt.Sprintf("%v::%v::%v<%v>", t.Address.String(), t.Module, t.ObjectName, t.SubType.String())
 	} else {
-		return fmt.Sprintf("%v::%v::%v", t.Address.String(), t.ModuleName, t.FuncName)
+		return fmt.Sprintf("%v::%v::%v", t.Address.String(), t.Module, t.ObjectName)
 	}
 }
 
 func (t *ResourceType) ShortString() string {
 	if t.SubType != nil {
-		return fmt.Sprintf("%v::%v::%v<%v>", t.Address.ShortString(), t.ModuleName, t.FuncName, t.SubType.ShortString())
+		return fmt.Sprintf("%v::%v::%v<%v>", t.Address.ShortString(), t.Module, t.ObjectName, t.SubType.ShortString())
 	} else {
-		return fmt.Sprintf("%v::%v::%v", t.Address.ShortString(), t.ModuleName, t.FuncName)
+		return fmt.Sprintf("%v::%v::%v", t.Address.ShortString(), t.Module, t.ObjectName)
 	}
 }

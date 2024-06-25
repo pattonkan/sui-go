@@ -79,13 +79,13 @@ func TestContains(t *testing.T) {
 		{
 			name:   "successful, two levels",
 			str:    "0xe87e::swap::Pool<0x2f63::testcoin::TESTCOIN>",
-			target: &models.ResourceType{ModuleName: "swap", FuncName: "Pool"},
+			target: &models.ResourceType{Module: "swap", ObjectName: "Pool"},
 			want:   true,
 		},
 		{
 			name:   "failed, two levels",
 			str:    "0xe87e::swap::Pool<0x2f63::testcoin::TESTCOIN>",
-			target: &models.ResourceType{ModuleName: "name", FuncName: "Pool"},
+			target: &models.ResourceType{Module: "name", ObjectName: "Pool"},
 			want:   false,
 		},
 	}
@@ -94,7 +94,7 @@ func TestContains(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				src, err := models.NewResourceType(tt.str)
 				require.NoError(t, err)
-				require.Equal(t, tt.want, src.Contains(tt.target.Address, tt.target.ModuleName, tt.target.FuncName))
+				require.Equal(t, tt.want, src.Contains(tt.target.Address, tt.target.Module, tt.target.ObjectName))
 			},
 		)
 	}

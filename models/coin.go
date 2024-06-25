@@ -9,7 +9,7 @@ import (
 )
 
 type Coin struct {
-	CoinType     string                  `json:"coinType"`
+	CoinType     sui_types.ObjectType    `json:"coinType"`
 	CoinObjectID *sui_types.ObjectID     `json:"coinObjectID"`
 	Version      SafeSuiBigInt[uint64]   `json:"version"`
 	Digest       *sui_types.ObjectDigest `json:"digest"`

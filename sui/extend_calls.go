@@ -252,7 +252,7 @@ func BCS_RequestAddStake(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
 				Package:  sui_types.SuiPackageIdSuiSystem,
-				Module:   sui_types.SuiSystemModuleName,
+				Module:   sui_types.SuiSystemModule,
 				Function: sui_types.AddStakeFunName,
 				Arguments: []sui_types.Argument{
 					arg0, arg1, arg2,
@@ -291,7 +291,7 @@ func BCS_RequestWithdrawStake(
 		sui_types.Command{
 			MoveCall: &sui_types.ProgrammableMoveCall{
 				Package:  sui_types.SuiPackageIdSuiSystem,
-				Module:   sui_types.SuiSystemModuleName,
+				Module:   sui_types.SuiSystemModule,
 				Function: sui_types.WithdrawStakeFunName,
 				Arguments: []sui_types.Argument{
 					arg0, arg1,
