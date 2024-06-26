@@ -7,7 +7,7 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-func (s *ImplSuiAPI) GetCommitteeInfo(ctx context.Context, epoch *models.SafeSuiBigInt[sui_types.EpochId]) (*models.CommitteeInfo, error) {
+func (s *ImplSuiAPI) GetCommitteeInfo(ctx context.Context, epoch *models.BigInt) (*models.CommitteeInfo, error) {
 	var resp models.CommitteeInfo
 	return &resp, s.http.CallContext(ctx, &resp, getCommitteeInfo, epoch)
 }
@@ -17,8 +17,8 @@ func (s *ImplSuiAPI) GetLatestSuiSystemState(ctx context.Context) (*models.SuiSy
 	return &resp, s.http.CallContext(ctx, &resp, getLatestSuiSystemState)
 }
 
-func (s *ImplSuiAPI) GetReferenceGasPrice(ctx context.Context) (*models.SafeSuiBigInt[uint64], error) {
-	var resp models.SafeSuiBigInt[uint64]
+func (s *ImplSuiAPI) GetReferenceGasPrice(ctx context.Context) (*models.BigInt, error) {
+	var resp models.BigInt
 	return &resp, s.http.CallContext(ctx, &resp, getReferenceGasPrice)
 }
 

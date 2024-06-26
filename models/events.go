@@ -1,10 +1,12 @@
 package models
 
-import "github.com/howjmay/sui-go/sui_types"
+import (
+	"github.com/howjmay/sui-go/sui_types"
+)
 
 type EventId struct {
 	TxDigest sui_types.TransactionDigest `json:"txDigest"`
-	EventSeq SafeSuiBigInt[uint64]       `json:"eventSeq"`
+	EventSeq *BigInt                     `json:"eventSeq"`
 }
 
 // refer struct `SuiEvent` in `crates/sui-json-rpc-types/src/sui_event.rs`
@@ -21,8 +23,8 @@ type SuiEvent struct {
 	// Parsed json value of the event
 	ParsedJson interface{} `json:"parsedJson,omitempty"`
 	// Base 58 encoded bcs bytes of the move event
-	Bcs         sui_types.Base58       `json:"bcs"`
-	TimestampMs *SafeSuiBigInt[uint64] `json:"timestampMs,omitempty"`
+	Bcs         sui_types.Base58 `json:"bcs"`
+	TimestampMs *BigInt          `json:"timestampMs,omitempty"`
 }
 
 type EventPage = Page[SuiEvent, EventId]
@@ -69,9 +71,9 @@ type EventFilterMoveEventField struct {
 
 type EventFilterTimeRange struct {
 	// left endpoint of time interval, milliseconds since epoch, inclusive
-	StartTime SafeSuiBigInt[uint64] `json:"startTime"`
+	StartTime *BigInt `json:"startTime"`
 	// right endpoint of time interval, milliseconds since epoch, exclusive
-	EndTime SafeSuiBigInt[uint64] `json:"endTime"`
+	EndTime *BigInt `json:"endTime"`
 }
 
 type AndOrEventFilter struct {

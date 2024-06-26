@@ -149,7 +149,7 @@ func TestGetTotalSupply(t *testing.T) {
 					t.Errorf("GetTotalSupply() error: %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				targetSupply := &models.Supply{Value: models.NewSafeSuiBigInt(uint64(10000000000000000000))}
+				targetSupply := &models.Supply{Value: models.NewBigInt(10000000000000000000)}
 				require.Equal(t, targetSupply, got)
 			},
 		)

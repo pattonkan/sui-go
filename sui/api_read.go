@@ -12,12 +12,12 @@ func (s *ImplSuiAPI) GetChainIdentifier(ctx context.Context) (string, error) {
 	return resp, s.http.CallContext(ctx, &resp, getChainIdentifier)
 }
 
-func (s *ImplSuiAPI) GetCheckpoint(ctx context.Context, checkpointId models.SafeSuiBigInt[uint64]) (*models.Checkpoint, error) {
+func (s *ImplSuiAPI) GetCheckpoint(ctx context.Context, checkpointId *models.BigInt) (*models.Checkpoint, error) {
 	var resp models.Checkpoint
 	return &resp, s.http.CallContext(ctx, &resp, getCheckpoint, checkpointId)
 }
 
-func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, cursor *models.SafeSuiBigInt[uint64], limit *uint64, descendingOrder bool) (*models.CheckpointPage, error) {
+func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, cursor *models.BigInt, limit *uint64, descendingOrder bool) (*models.CheckpointPage, error) {
 	var resp models.CheckpointPage
 	return &resp, s.http.CallContext(ctx, &resp, getCheckpoints, cursor, limit, descendingOrder)
 }
@@ -45,7 +45,7 @@ func (s *ImplSuiAPI) GetObject(
 
 func (s *ImplSuiAPI) GetProtocolConfig(
 	ctx context.Context,
-	version *models.SafeSuiBigInt[uint64],
+	version *models.BigInt,
 ) (*models.ProtocolConfig, error) {
 	var resp models.ProtocolConfig
 	return &resp, s.http.CallContext(ctx, &resp, getProtocolConfig, version)

@@ -7,9 +7,9 @@ import (
 )
 
 type ProtocolConfig struct {
-	MaxSupportedProtocolVersion SafeSuiBigInt[uint64]          `json:"maxSupportedProtocolVersion,omitempty"`
-	MinSupportedProtocolVersion SafeSuiBigInt[uint64]          `json:"minSupportedProtocolVersion,omitempty"`
-	ProtocolVersion             SafeSuiBigInt[uint64]          `json:"protocolVersion,omitempty"`
+	MaxSupportedProtocolVersion *BigInt                        `json:"maxSupportedProtocolVersion,omitempty"`
+	MinSupportedProtocolVersion *BigInt                        `json:"minSupportedProtocolVersion,omitempty"`
+	ProtocolVersion             *BigInt                        `json:"protocolVersion,omitempty"`
 	Attributes                  map[string]ProtocolConfigValue `json:"attributes,omitempty"`
 	FeatureFlags                map[string]bool                `json:"featureFlags,omitempty"`
 }

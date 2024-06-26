@@ -11,11 +11,11 @@ import (
 type Coin struct {
 	CoinType     sui_types.ObjectType    `json:"coinType"`
 	CoinObjectID *sui_types.ObjectID     `json:"coinObjectID"`
-	Version      SafeSuiBigInt[uint64]   `json:"version"`
+	Version      *BigInt                 `json:"version"`
 	Digest       *sui_types.ObjectDigest `json:"digest"`
-	Balance      SafeSuiBigInt[uint64]   `json:"balance"`
+	Balance      *BigInt                 `json:"balance"`
 
-	LockedUntilEpoch    *SafeSuiBigInt[uint64]      `json:"lockedUntilEpoch,omitempty"`
+	LockedUntilEpoch    *BigInt                     `json:"lockedUntilEpoch,omitempty"`
 	PreviousTransaction sui_types.TransactionDigest `json:"previousTransaction"`
 }
 
@@ -24,7 +24,7 @@ type CoinPage = Page[*Coin, sui_types.ObjectID]
 func (c *Coin) Ref() *sui_types.ObjectRef {
 	return &sui_types.ObjectRef{
 		Digest:   c.Digest,
-		Version:  c.Version.data,
+		Version:  c.Version.Uint64(),
 		ObjectID: c.CoinObjectID,
 	}
 }
