@@ -33,6 +33,13 @@ func (c *Coin) IsSUI() bool {
 	return c.CoinType == SuiCoinType
 }
 
+type CoinFields struct {
+	Balance *BigInt
+	ID      struct {
+		ID *sui_types.ObjectID
+	}
+}
+
 type Coins []*Coin
 
 func (cs Coins) TotalBalance() *big.Int {

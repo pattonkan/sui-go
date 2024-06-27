@@ -1,8 +1,8 @@
 package sui_types
 
 const (
-	StakingPoolModule   = "staking_pool"
-	StakedSuiStructName = "StakedSui"
+	StakingPoolModuleName = "staking_pool"
+	StakedSuiStructName   = "StakedSui"
 
 	AddStakeMulCoinFunName = "request_add_stake_mul_coin"
 	AddStakeFunName        = "request_add_stake"

@@ -24,8 +24,7 @@ func (i *ImplSuiAPI) WithSignerAndFund(seed []byte, index int) (*ImplSuiAPI, *su
 		keySchemeFlag = sui_signer.KeySchemeFlagIotaEd25519
 	}
 	// there are only 256 different signers can be generated
-	seed[0] = seed[0] + byte(index)
-	signer := sui_signer.NewSigner(seed, keySchemeFlag)
+	signer := sui_signer.NewSignerByIndex(seed, keySchemeFlag, index)
 	var faucetUrl string
 	switch i.http.Url() {
 	case conn.TestnetEndpointUrl:

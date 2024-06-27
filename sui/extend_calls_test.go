@@ -47,7 +47,6 @@ func TestMintToken(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, mintAmount, coins.Data[0].Balance.Uint64())
-
 }
 
 func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Signer) (

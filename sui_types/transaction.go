@@ -10,7 +10,7 @@ var (
 	}
 
 	SuiSystemMutObj = ObjectArg{
-		SharedObject: &SharedObjectRef{
+		SharedObject: &SharedObjectArg{
 			Id:                   SuiObjectIdSystemState,
 			InitialSharedVersion: SuiSystemStateObjectSharedVersion,
 			Mutable:              true,
@@ -22,19 +22,19 @@ func NewProgrammable(
 	sender *SuiAddress,
 	pt ProgrammableTransaction,
 	gasPayment []*ObjectRef,
-	gasBudget uint64, // TODO set this to bigint
-	gasPrice uint64, // TODO set this to bigint
+	gasBudget uint64,
+	gasPrice uint64,
 ) TransactionData {
-	return NewProgrammableAllowSponsor(*sender, pt, gasPayment, gasBudget, gasPrice, *sender)
+	return NewProgrammableAllowSponsor(*sender, pt, gasPayment, gasBudget, gasPrice, sender)
 }
 
 func NewProgrammableAllowSponsor(
 	sender SuiAddress,
 	pt ProgrammableTransaction,
 	gasPayment []*ObjectRef,
-	gasBudget uint64, // TODO set this to bigint
-	gasPrice uint64, // TODO set this to bigint
-	sponsor SuiAddress,
+	gasBudget uint64,
+	gasPrice uint64,
+	sponsor *SuiAddress,
 ) TransactionData {
 	kind := TransactionKind{
 		ProgrammableTransaction: &pt,

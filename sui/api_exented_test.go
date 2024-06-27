@@ -2,6 +2,7 @@ package sui_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -107,26 +108,30 @@ func TestGetDynamicFields(t *testing.T) {
 
 func TestGetOwnedObjects(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	obj, err := sui_types.SuiAddressFromHex("0x2")
-	require.NoError(t, err)
+	signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagEd25519, 0)
 	query := models.SuiObjectResponseQuery{
 		Filter: &models.SuiObjectDataFilter{
-			Package: obj,
-			// StructType: "0x2::coin::Coin<0x2::sui::SUI>",
+			StructType: "0x2::coin::Coin<0x2::sui::SUI>",
 		},
 		Options: &models.SuiObjectDataOptions{
-			ShowType: true,
+			ShowType:    true,
+			ShowContent: true,
 		},
 	}
-	limit := uint(1)
+	limit := uint(2)
 	objs, err := api.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
-		Address: sui_signer.TEST_ADDRESS,
+		Address: signer.Address,
 		Query:   &query,
 		Cursor:  nil,
 		Limit:   &limit,
 	})
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(objs.Data), int(limit))
+	require.NoError(t, err)
+	var fields models.CoinFields
+	err = json.Unmarshal(objs.Data[1].Data.Content.Data.MoveObject.Fields, &fields)
+	require.NoError(t, err)
+	require.Equal(t, "1000000000", fields.Balance.String())
 }
 
 func TestQueryEvents(t *testing.T) {

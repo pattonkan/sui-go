@@ -60,6 +60,12 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 	}
 }
 
+// there are only 256 different signers can be generated
+func NewSignerByIndex(seed []byte, flag KeySchemeFlag, index int) *Signer {
+	seed[0] = seed[0] + byte(index)
+	return NewSigner(seed, flag)
+}
+
 // generate keypair (signer) with mnemonic which is referring the Sui monorepo in the following code
 //
 // let phrase = "asset pink record dawn hundred sure various crime client enforce carbon blossom";

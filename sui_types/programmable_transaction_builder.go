@@ -73,7 +73,7 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 				return Argument{}, errors.New("invariant violation! object has id does not match call arg")
 			}
 			oj = ObjectArg{
-				SharedObject: &SharedObjectRef{
+				SharedObject: &SharedObjectArg{
 					Id:                   id,
 					InitialSharedVersion: objArg.SharedObject.InitialSharedVersion,
 					Mutable:              oldObjArg.SharedObject.Mutable || objArg.SharedObject.Mutable,
@@ -241,7 +241,7 @@ func (p *ProgrammableTransactionBuilder) PublishImmutable(
 	return p.Command(Command{
 		MoveCall: &ProgrammableMoveCall{
 			Package:       SuiPackageIdSuiFramework,
-			Module:        SuiSystemModule,
+			Module:        SuiSystemModuleName,
 			Function:      "make_immutable",
 			TypeArguments: nil,
 			Arguments:     []Argument{p.PublishUpgradeable(modules, dependencies)},

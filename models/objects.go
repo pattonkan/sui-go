@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -43,10 +44,9 @@ type SuiMovePackage struct {
 }
 
 type SuiParsedMoveObject struct {
-	Type              string `json:"type"`
-	HasPublicTransfer bool   `json:"hasPublicTransfer"`
-	// maybe use reflect to solve this
-	Fields any `json:"fields"`
+	Type              string          `json:"type"`
+	HasPublicTransfer bool            `json:"hasPublicTransfer"`
+	Fields            json.RawMessage `json:"fields"`
 }
 
 type SuiRawData struct {
