@@ -18,7 +18,7 @@ var (
 )
 
 var (
-	SuiSystemModule Identifier = "sui_system"
+	SuiSystemModuleName Identifier = "sui_system"
 )
 
 var (

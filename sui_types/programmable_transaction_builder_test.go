@@ -6,91 +6,97 @@ import (
 	"os"
 	"testing"
 
-	"github.com/fardream/go-bcs/bcs"
-	"github.com/stretchr/testify/require"
-
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/utils"
+
+	"github.com/fardream/go-bcs/bcs"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPTBMoveCall(t *testing.T) {
-	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+	t.Run(
+		"access_multiple_return_values_from_move_func", func(t *testing.T) {
+			client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+			var modules utils.CompiledMoveModules
+			data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
+			require.NoError(t, err)
+			err = json.Unmarshal(data, &modules)
+			require.NoError(t, err)
+			_, packageID, err := client.PublishContract(
+				context.Background(),
+				sender,
+				modules.Modules,
+				modules.Dependencies,
+				sui.DefaultGasBudget,
+				&models.SuiTransactionBlockResponseOptions{ShowObjectChanges: true, ShowEffects: true},
+			)
+			require.NoError(t, err)
 
-	var modules utils.CompiledMoveModules
-	data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
-	require.NoError(t, err)
-	err = json.Unmarshal(data, &modules)
-	require.NoError(t, err)
-	_, packageID, err := client.PublishContract(
-		context.Background(),
-		sender,
-		modules.Modules,
-		modules.Dependencies,
-		sui.DefaultGasBudget,
-		&models.SuiTransactionBlockResponseOptions{ShowObjectChanges: true, ShowEffects: true},
-	)
-	require.NoError(t, err)
-	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
-		Owner: sender.Address,
-		Limit: limit,
-	})
-	require.NoError(t, err)
-	coins := models.Coins(coinPages.Data)
+			coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+				Owner: sender.Address,
+				Limit: 3,
+			})
+			require.NoError(t, err)
+			coins := models.Coins(coinPages.Data)
 
-	ptb := sui_types.NewProgrammableTransactionBuilder()
-	require.NoError(t, err)
+			ptb := sui_types.NewProgrammableTransactionBuilder()
+			require.NoError(t, err)
 
-	ptb.Command(sui_types.Command{
-		MoveCall: &sui_types.ProgrammableMoveCall{
-			Package:       packageID,
-			Module:        "sdk_verify",
-			Function:      "ret_two_1",
-			TypeArguments: []sui_types.TypeTag{},
-			Arguments:     []sui_types.Argument{},
-		}},
-	)
-	ptb.Command(sui_types.Command{
-		MoveCall: &sui_types.ProgrammableMoveCall{
-			Package:       packageID,
-			Module:        "sdk_verify",
-			Function:      "ret_two_2",
-			TypeArguments: []sui_types.TypeTag{},
-			Arguments: []sui_types.Argument{
-				{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 1}},
-				{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 0}},
-			},
-		}},
-	)
-	pt := ptb.Finish()
-	tx := sui_types.NewProgrammable(
-		sender.Address,
-		pt,
-		[]*sui_types.ObjectRef{coins[0].Ref()},
-		sui.DefaultGasBudget,
-		sui.DefaultGasPrice,
-	)
-	txBytes, err := bcs.Marshal(tx)
-	require.NoError(t, err)
-	simulate, err := client.DryRunTransaction(context.Background(), txBytes)
-	require.NoError(t, err)
-	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
-	require.True(t, simulate.Effects.Data.IsSuccess())
-	require.Equal(t, coins[0].CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
+			ptb.Command(
+				sui_types.Command{
+					MoveCall: &sui_types.ProgrammableMoveCall{
+						Package:       packageID,
+						Module:        "sdk_verify",
+						Function:      "ret_two_1",
+						TypeArguments: []sui_types.TypeTag{},
+						Arguments:     []sui_types.Argument{},
+					},
+				},
+			)
+			ptb.Command(
+				sui_types.Command{
+					MoveCall: &sui_types.ProgrammableMoveCall{
+						Package:       packageID,
+						Module:        "sdk_verify",
+						Function:      "ret_two_2",
+						TypeArguments: []sui_types.TypeTag{},
+						Arguments: []sui_types.Argument{
+							{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 1}},
+							{NestedResult: &sui_types.NestedResult{Cmd: 0, Result: 0}},
+						},
+					},
+				},
+			)
+			pt := ptb.Finish()
+			txData := sui_types.NewProgrammable(
+				sender.Address,
+				pt,
+				[]*sui_types.ObjectRef{coins[0].Ref()},
+				sui.DefaultGasBudget,
+				sui.DefaultGasPrice,
+			)
+			txBytes, err := bcs.Marshal(txData)
+			require.NoError(t, err)
+			simulate, err := client.DryRunTransaction(context.Background(), txBytes)
+			require.NoError(t, err)
 
+			require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+			require.True(t, simulate.Effects.Data.IsSuccess())
+			require.Equal(t, coins[0].CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
+		},
+	)
 }
 
 func TestPTBTransferObject(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	limit := uint(2)
 	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
 		Owner: sender.Address,
-		Limit: limit,
+		Limit: 2,
 	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
@@ -130,10 +136,9 @@ func TestPTBTransferObject(t *testing.T) {
 func TestPTBTransferSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	limit := uint(1)
 	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
 		Owner: sender.Address,
-		Limit: limit,
+		Limit: 1,
 	})
 	require.NoError(t, err)
 	coin := models.Coins(coinPages.Data)[0]
@@ -173,10 +178,9 @@ func TestPTBTransferSui(t *testing.T) {
 func TestPTBPayAllSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
 		Owner: sender.Address,
-		Limit: limit,
+		Limit: 3,
 	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
@@ -215,10 +219,9 @@ func TestPTBPaySui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	limit := uint(1)
 	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
 		Owner: sender.Address,
-		Limit: limit,
+		Limit: 1,
 	})
 	require.NoError(t, err)
 	coin := coinPages.Data[0]
@@ -266,11 +269,8 @@ func TestPTBPaySui(t *testing.T) {
 			Signer:     sender.Address,
 			InputCoins: []*sui_types.ObjectID{coin.CoinObjectID},
 			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
-			Amount: []*models.BigInt{
-				models.NewBigInt(123),
-				models.NewBigInt(456),
-			},
-			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
+			Amount:     []*models.BigInt{models.NewBigInt(123), models.NewBigInt(456)},
+			GasBudget:  models.NewBigInt(sui.DefaultGasBudget),
 		},
 	)
 	require.NoError(t, err)
@@ -282,10 +282,9 @@ func TestPTBPay(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
 		Owner: sender.Address,
-		Limit: limit,
+		Limit: 3,
 	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
@@ -351,12 +350,9 @@ func TestPTBPay(t *testing.T) {
 			Signer:     sender.Address,
 			InputCoins: transferCoins.ObjectIDs(),
 			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
-			Amount: []*models.BigInt{
-				models.NewBigInt(amounts[0]),
-				models.NewBigInt(amounts[1]),
-			},
-			Gas:       gasCoin.CoinObjectID,
-			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
+			Amount:     []*models.BigInt{models.NewBigInt(amounts[0]), models.NewBigInt(amounts[1])},
+			Gas:        gasCoin.CoinObjectID,
+			GasBudget:  models.NewBigInt(sui.DefaultGasBudget),
 		},
 	)
 	require.NoError(t, err)

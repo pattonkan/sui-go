@@ -14,6 +14,7 @@ import (
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/utils"
+
 	"github.com/stretchr/testify/require"
 )
 

@@ -24,7 +24,7 @@ func (t TransactionExpiration) IsBcsEnum() {}
 
 type GasData struct {
 	Payment []*ObjectRef
-	Owner   SuiAddress
+	Owner   *SuiAddress
 	Price   uint64
 	Budget  uint64
 }
@@ -119,10 +119,10 @@ func (c CallArg) IsBcsEnum() {}
 
 type ObjectArg struct {
 	ImmOrOwnedObject *ObjectRef
-	SharedObject     *SharedObjectRef
+	SharedObject     *SharedObjectArg
 }
 
-type SharedObjectRef struct {
+type SharedObjectArg struct {
 	Id                   *ObjectID
 	InitialSharedVersion SequenceNumber
 	Mutable              bool
