@@ -7,7 +7,10 @@ import (
 	"github.com/howjmay/sui-go/sui_types"
 )
 
-func (s *ImplSuiAPI) GetCommitteeInfo(ctx context.Context, epoch *models.BigInt) (*models.CommitteeInfo, error) {
+func (s *ImplSuiAPI) GetCommitteeInfo(
+	ctx context.Context,
+	epoch *models.BigInt, //optional
+) (*models.CommitteeInfo, error) {
 	var resp models.CommitteeInfo
 	return &resp, s.http.CallContext(ctx, &resp, getCommitteeInfo, epoch)
 }
@@ -27,10 +30,7 @@ func (s *ImplSuiAPI) GetStakes(ctx context.Context, owner *sui_types.SuiAddress)
 	return resp, s.http.CallContext(ctx, &resp, getStakes, owner)
 }
 
-func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) (
-	[]*models.DelegatedStake,
-	error,
-) {
+func (s *ImplSuiAPI) GetStakesByIds(ctx context.Context, stakedSuiIds []sui_types.ObjectID) ([]*models.DelegatedStake, error) {
 	var resp []*models.DelegatedStake
 	return resp, s.http.CallContext(ctx, &resp, getStakesByIds, stakedSuiIds)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/howjmay/sui-go/models"
-	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
 )
 
@@ -13,13 +12,10 @@ import (
 // `DryRunTransaction` and `ExecuteTransactionBlock` takes `TransactionData` in base64
 func (s *ImplSuiAPI) DevInspectTransactionBlock(
 	ctx context.Context,
-	senderAddress *sui_types.SuiAddress,
-	txKindBytes sui_types.Base64Data,
-	gasPrice *models.BigInt, // optional
-	epoch *uint64, // optional
+	req *models.DevInspectTransactionBlockRequest,
 ) (*models.DevInspectResults, error) {
 	var resp models.DevInspectResults
-	return &resp, s.http.CallContext(ctx, &resp, devInspectTransactionBlock, senderAddress, txKindBytes, gasPrice, epoch)
+	return &resp, s.http.CallContext(ctx, &resp, devInspectTransactionBlock, req.SenderAddress, req.TxKindBytes, req.GasPrice, req.Epoch)
 }
 
 func (s *ImplSuiAPI) DryRunTransaction(
@@ -32,11 +28,8 @@ func (s *ImplSuiAPI) DryRunTransaction(
 
 func (s *ImplSuiAPI) ExecuteTransactionBlock(
 	ctx context.Context,
-	txDataBytes sui_types.Base64Data,
-	signatures []*sui_signer.Signature,
-	options *models.SuiTransactionBlockResponseOptions,
-	requestType models.ExecuteTransactionRequestType,
+	req *models.ExecuteTransactionBlockRequest,
 ) (*models.SuiTransactionBlockResponse, error) {
 	resp := models.SuiTransactionBlockResponse{}
-	return &resp, s.http.CallContext(ctx, &resp, executeTransactionBlock, txDataBytes, signatures, options, requestType)
+	return &resp, s.http.CallContext(ctx, &resp, executeTransactionBlock, req.TxDataBytes, req.Signatures, req.Options, req.RequestType)
 }

@@ -25,14 +25,15 @@ func NewPublisher(client *sui.ImplSuiAPI, signer *sui_signer.Signer) *Publisher 
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		p.signer.Address,
-		packageID,
-		"eventpub",
-		"emit_clock",
-		[]string{},
-		[]any{},
-		nil,
-		models.NewBigInt(100000),
+		&models.MoveCallRequest{
+			Signer:    p.signer.Address,
+			PackageID: packageID,
+			Module:    "eventpub",
+			Function:  "emit_clock",
+			TypeArgs:  []string{},
+			Arguments: []any{},
+			GasBudget: models.NewBigInt(100000),
+		},
 	)
 	if err != nil {
 		log.Panic(err)
@@ -43,13 +44,18 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		log.Panic(err)
 	}
 
-	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, txnBytes.TxBytes.Data(), []*sui_signer.Signature{&signature}, &models.SuiTransactionBlockResponseOptions{
-		ShowInput:          true,
-		ShowEffects:        true,
-		ShowEvents:         true,
-		ShowObjectChanges:  true,
-		ShowBalanceChanges: true,
-	}, models.TxnRequestTypeWaitForLocalExecution)
+	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, &models.ExecuteTransactionBlockRequest{
+		TxDataBytes: txnBytes.TxBytes.Data(),
+		Signatures:  []*sui_signer.Signature{&signature},
+		Options: &models.SuiTransactionBlockResponseOptions{
+			ShowInput:          true,
+			ShowEffects:        true,
+			ShowEvents:         true,
+			ShowObjectChanges:  true,
+			ShowBalanceChanges: true,
+		},
+		RequestType: models.TxnRequestTypeWaitForLocalExecution,
+	})
 	if err != nil {
 		log.Panic(err)
 	}

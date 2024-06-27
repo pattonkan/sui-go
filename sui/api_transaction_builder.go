@@ -4,31 +4,24 @@ import (
 	"context"
 
 	"github.com/howjmay/sui-go/models"
-	"github.com/howjmay/sui-go/sui_types"
 )
 
 // TODO: execution_mode : <SuiTransactionBlockBuilderMode>
 func (s *ImplSuiAPI) BatchTransaction(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	txnParams []map[string]interface{},
-	gas *sui_types.ObjectID,
-	gasBudget uint64,
+	req *models.BatchTransactionRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, batchTransaction, signer, txnParams, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, batchTransaction, req.Signer, req.TxnParams, req.Gas, req.GasBudget)
 }
 
 // MergeCoins Create an unsigned transaction to merge multiple coins into one coin.
 func (s *ImplSuiAPI) MergeCoins(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	primaryCoin, coinToMerge *sui_types.ObjectID,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.MergeCoinsRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, mergeCoins, signer, primaryCoin, coinToMerge, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, mergeCoins, req.Signer, req.PrimaryCoin, req.CoinToMerge, req.Gas, req.GasBudget)
 }
 
 // MoveCall Create an unsigned transaction to execute a Move call on the network, by calling the specified function in the module of a given package.
@@ -37,155 +30,108 @@ func (s *ImplSuiAPI) MergeCoins(
 // [][]byte can't be passed. User should encode array of hex string.
 func (s *ImplSuiAPI) MoveCall(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	packageId *sui_types.ObjectID,
-	module string,
-	function string,
-	typeArgs []string,
-	arguments []any,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.MoveCallRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
 	return &resp, s.http.CallContext(
 		ctx,
 		&resp,
 		moveCall,
-		signer,
-		packageId,
-		module,
-		function,
-		typeArgs,
-		arguments,
-		gas,
-		gasBudget,
+		req.Signer,
+		req.PackageID,
+		req.Module,
+		req.Function,
+		req.TypeArgs,
+		req.Arguments,
+		req.Gas,
+		req.GasBudget,
 	)
 }
 
 func (s *ImplSuiAPI) Pay(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	inputCoins []*sui_types.ObjectID,
-	recipients []*sui_types.SuiAddress,
-	amount []*models.BigInt,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.PayRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, pay, signer, inputCoins, recipients, amount, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, pay, req.Signer, req.InputCoins, req.Recipients, req.Amount, req.Gas, req.GasBudget)
 }
 
 // PayAllSui Create an unsigned transaction to send all SUI coins to one recipient.
 func (s *ImplSuiAPI) PayAllSui(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	recipient *sui_types.SuiAddress,
-	inputCoins []*sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.PayAllSuiRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, payAllSui, signer, inputCoins, recipient, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, payAllSui, req.Signer, req.InputCoins, req.Recipient, req.GasBudget)
 }
 
 // see explanation in https://forums.sui.io/t/how-to-use-the-sui-paysui-method/2282
 func (s *ImplSuiAPI) PaySui(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	inputCoins []*sui_types.ObjectID,
-	recipients []*sui_types.SuiAddress,
-	amount []*models.BigInt,
-	gasBudget *models.BigInt,
+	req *models.PaySuiRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, paySui, signer, inputCoins, recipients, amount, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, paySui, req.Signer, req.InputCoins, req.Recipients, req.Amount, req.GasBudget)
 }
 
 func (s *ImplSuiAPI) Publish(
 	ctx context.Context,
-	sender *sui_types.SuiAddress,
-	compiledModules []*sui_types.Base64Data,
-	dependencies []*sui_types.ObjectID,
-	gas *sui_types.ObjectID, // optional
-	gasBudget *models.BigInt,
+	req *models.PublishRequest,
 ) (*models.TransactionBytes, error) {
 	var resp models.TransactionBytes
-	return &resp, s.http.CallContext(ctx, &resp, publish, sender, compiledModules, dependencies, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, publish, req.Sender, req.CompiledModules, req.Dependencies, req.Gas, req.GasBudget)
 }
 
 func (s *ImplSuiAPI) RequestAddStake(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	coins []*sui_types.ObjectID,
-	amount *models.BigInt,
-	validator *sui_types.SuiAddress,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.RequestAddStakeRequest,
 ) (*models.TransactionBytes, error) {
 	var resp models.TransactionBytes
-	return &resp, s.http.CallContext(ctx, &resp, requestAddStake, signer, coins, amount, validator, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, requestAddStake, req.Signer, req.Coins, req.Amount, req.Validator, req.Gas, req.GasBudget)
 }
 
 func (s *ImplSuiAPI) RequestWithdrawStake(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	stakedSuiId *sui_types.ObjectID,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.RequestWithdrawStakeRequest,
 ) (*models.TransactionBytes, error) {
 	var resp models.TransactionBytes
-	return &resp, s.http.CallContext(ctx, &resp, requestWithdrawStake, signer, stakedSuiId, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, requestWithdrawStake, req.Signer, req.StakedSuiId, req.Gas, req.GasBudget)
 }
 
 // SplitCoin Creates an unsigned transaction to split a coin object into multiple coins.
 // better to replace with unsafe_pay API which consumes less gas
 func (s *ImplSuiAPI) SplitCoin(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	coin *sui_types.ObjectID,
-	splitAmounts []*models.BigInt,
-	gas *sui_types.ObjectID, // optional
-	gasBudget *models.BigInt,
+	req *models.SplitCoinRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, splitCoin, signer, coin, splitAmounts, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, splitCoin, req.Signer, req.Coin, req.SplitAmounts, req.Gas, req.GasBudget)
 }
 
 // SplitCoinEqual Creates an unsigned transaction to split a coin object into multiple equal-size coins.
 // better to replace with unsafe_pay API which consumes less gas
 func (s *ImplSuiAPI) SplitCoinEqual(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	coin *sui_types.ObjectID,
-	splitCount *models.BigInt,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.SplitCoinEqualRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, splitCoinEqual, signer, coin, splitCount, gas, gasBudget)
+	return &resp, s.http.CallContext(ctx, &resp, splitCoinEqual, req.Signer, req.Coin, req.SplitCount, req.Gas, req.GasBudget)
 }
 
 // TransferObject Create an unsigned transaction to transfer an object from one address to another. The object's type must allow public transfers
 func (s *ImplSuiAPI) TransferObject(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	recipient *sui_types.SuiAddress,
-	objID *sui_types.ObjectID,
-	gas *sui_types.ObjectID,
-	gasBudget *models.BigInt,
+	req *models.TransferObjectRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, transferObject, signer, objID, gas, gasBudget, recipient)
+	return &resp, s.http.CallContext(ctx, &resp, transferObject, req.Signer, req.ObjectID, req.Gas, req.GasBudget, req.Recipient)
 }
 
 // TransferSui Create an unsigned transaction to send SUI coin object to a Sui address. The SUI object is also used as the gas object.
 func (s *ImplSuiAPI) TransferSui(
 	ctx context.Context,
-	signer *sui_types.SuiAddress,
-	recipient *sui_types.SuiAddress,
-	objID *sui_types.ObjectID,
-	amount *models.BigInt,
-	gasBudget *models.BigInt,
+	req *models.TransferSuiRequest,
 ) (*models.TransactionBytes, error) {
 	resp := models.TransactionBytes{}
-	return &resp, s.http.CallContext(ctx, &resp, transferSui, signer, objID, gasBudget, recipient, amount)
+	return &resp, s.http.CallContext(ctx, &resp, transferSui, req.Signer, req.ObjectID, req.GasBudget, req.Recipient, req.Amount)
 }

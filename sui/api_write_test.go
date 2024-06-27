@@ -17,9 +17,11 @@ import (
 
 func TestDevInspectTransactionBlock(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
-	coinType := models.SuiCoinType
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 
@@ -38,10 +40,10 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 
 	resp, err := client.DevInspectTransactionBlock(
 		context.Background(),
-		sender.Address,
-		txBytes,
-		nil,
-		nil,
+		&models.DevInspectTransactionBlockRequest{
+			SenderAddress: sender.Address,
+			TxKindBytes:   txBytes,
+		},
 	)
 	require.NoError(t, err)
 	require.True(t, resp.Effects.Data.IsSuccess())
@@ -50,16 +52,21 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 func TestDryRunTransaction(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_signer.TEST_ADDRESS
-	coins, err := api.GetCoins(context.Background(), signer, nil, nil, 10)
+	coins, err := api.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: signer,
+		Limit: 10,
+	})
 	require.NoError(t, err)
 	pickedCoins, err := models.PickupCoins(coins, big.NewInt(100), sui.DefaultGasBudget, 0, 0)
 	require.NoError(t, err)
 	tx, err := api.PayAllSui(
 		context.Background(),
-		signer,
-		signer,
-		pickedCoins.CoinIds(),
-		models.NewBigInt(sui.DefaultGasBudget),
+		&models.PayAllSuiRequest{
+			Signer:     signer,
+			Recipient:  signer,
+			InputCoins: pickedCoins.CoinIds(),
+			GasBudget:  models.NewBigInt(sui.DefaultGasBudget),
+		},
 	)
 	require.NoError(t, err)
 
