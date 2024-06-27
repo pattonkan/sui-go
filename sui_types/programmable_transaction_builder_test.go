@@ -34,9 +34,11 @@ func TestPTBMoveCall(t *testing.T) {
 		&models.SuiTransactionBlockResponseOptions{ShowObjectChanges: true, ShowEffects: true},
 	)
 	require.NoError(t, err)
-	coinType := models.SuiCoinType
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 
@@ -85,9 +87,11 @@ func TestPTBMoveCall(t *testing.T) {
 func TestPTBTransferObject(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinType := models.SuiCoinType
 	limit := uint(2)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 	gasCoin := coins[0]
@@ -110,11 +114,13 @@ func TestPTBTransferObject(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.TransferObject(
 		context.Background(),
-		sender.Address,
-		recipient.Address,
-		transferCoin.CoinObjectID,
-		gasCoin.CoinObjectID,
-		models.NewBigInt(sui.DefaultGasBudget),
+		&models.TransferObjectRequest{
+			Signer:    sender.Address,
+			Recipient: recipient.Address,
+			ObjectID:  transferCoin.CoinObjectID,
+			Gas:       gasCoin.CoinObjectID,
+			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
+		},
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -124,9 +130,11 @@ func TestPTBTransferObject(t *testing.T) {
 func TestPTBTransferSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinType := models.SuiCoinType
 	limit := uint(1)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coin := models.Coins(coinPages.Data)[0]
 	amount := uint64(123)
@@ -149,11 +157,13 @@ func TestPTBTransferSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.TransferSui(
 		context.Background(),
-		sender.Address,
-		recipient.Address,
-		coin.CoinObjectID,
-		models.NewBigInt(amount),
-		models.NewBigInt(sui.DefaultGasBudget),
+		&models.TransferSuiRequest{
+			Signer:    sender.Address,
+			Recipient: recipient.Address,
+			ObjectID:  coin.CoinObjectID,
+			Amount:    models.NewBigInt(amount),
+			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
+		},
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -163,9 +173,11 @@ func TestPTBTransferSui(t *testing.T) {
 func TestPTBPayAllSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinType := models.SuiCoinType
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 
@@ -187,10 +199,12 @@ func TestPTBPayAllSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.PayAllSui(
 		context.Background(),
-		sender.Address,
-		recipient.Address,
-		coins.ObjectIDs(),
-		models.NewBigInt(sui.DefaultGasBudget),
+		&models.PayAllSuiRequest{
+			Signer:     sender.Address,
+			Recipient:  recipient.Address,
+			InputCoins: coins.ObjectIDs(),
+			GasBudget:  models.NewBigInt(sui.DefaultGasBudget),
+		},
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -201,9 +215,11 @@ func TestPTBPaySui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	coinType := models.SuiCoinType
 	limit := uint(1)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coin := coinPages.Data[0]
 
@@ -246,14 +262,16 @@ func TestPTBPaySui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.PaySui(
 		context.Background(),
-		sender.Address,
-		[]*sui_types.ObjectID{coin.CoinObjectID},
-		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
-		[]*models.BigInt{
-			models.NewBigInt(123),
-			models.NewBigInt(456),
+		&models.PaySuiRequest{
+			Signer:     sender.Address,
+			InputCoins: []*sui_types.ObjectID{coin.CoinObjectID},
+			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
+			Amount: []*models.BigInt{
+				models.NewBigInt(123),
+				models.NewBigInt(456),
+			},
+			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
 		},
-		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
@@ -264,9 +282,11 @@ func TestPTBPay(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	coinType := models.SuiCoinType
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), sender.Address, &coinType, nil, limit)
+	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: sender.Address,
+		Limit: limit,
+	})
 	require.NoError(t, err)
 	coins := models.Coins(coinPages.Data)
 	gasCoin := coins[0] // save the 1st element for gas fee
@@ -327,15 +347,17 @@ func TestPTBPay(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.Pay(
 		context.Background(),
-		sender.Address,
-		transferCoins.ObjectIDs(),
-		[]*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
-		[]*models.BigInt{
-			models.NewBigInt(amounts[0]),
-			models.NewBigInt(amounts[1]),
+		&models.PayRequest{
+			Signer:     sender.Address,
+			InputCoins: transferCoins.ObjectIDs(),
+			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
+			Amount: []*models.BigInt{
+				models.NewBigInt(amounts[0]),
+				models.NewBigInt(amounts[1]),
+			},
+			Gas:       gasCoin.CoinObjectID,
+			GasBudget: models.NewBigInt(sui.DefaultGasBudget),
 		},
-		gasCoin.CoinObjectID,
-		models.NewBigInt(sui.DefaultGasBudget),
 	)
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()

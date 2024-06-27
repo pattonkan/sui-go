@@ -17,9 +17,9 @@ func (s *ImplSuiAPI) GetCheckpoint(ctx context.Context, checkpointId *models.Big
 	return &resp, s.http.CallContext(ctx, &resp, getCheckpoint, checkpointId)
 }
 
-func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, cursor *models.BigInt, limit *uint64, descendingOrder bool) (*models.CheckpointPage, error) {
+func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, req *models.GetCheckpointsRequest) (*models.CheckpointPage, error) {
 	var resp models.CheckpointPage
-	return &resp, s.http.CallContext(ctx, &resp, getCheckpoints, cursor, limit, descendingOrder)
+	return &resp, s.http.CallContext(ctx, &resp, getCheckpoints, req.Cursor, req.Limit, req.DescendingOrder)
 }
 
 func (s *ImplSuiAPI) GetEvents(ctx context.Context, digest *sui_types.TransactionDigest) ([]*models.SuiEvent, error) {
@@ -34,18 +34,14 @@ func (s *ImplSuiAPI) GetLatestCheckpointSequenceNumber(ctx context.Context) (str
 
 // TODO getLoadedChildObjects
 
-func (s *ImplSuiAPI) GetObject(
-	ctx context.Context,
-	objID *sui_types.ObjectID,
-	options *models.SuiObjectDataOptions,
-) (*models.SuiObjectResponse, error) {
+func (s *ImplSuiAPI) GetObject(ctx context.Context, req *models.GetObjectRequest) (*models.SuiObjectResponse, error) {
 	var resp models.SuiObjectResponse
-	return &resp, s.http.CallContext(ctx, &resp, getObject, objID, options)
+	return &resp, s.http.CallContext(ctx, &resp, getObject, req.ObjectID, req.Options)
 }
 
 func (s *ImplSuiAPI) GetProtocolConfig(
 	ctx context.Context,
-	version *models.BigInt,
+	version *models.BigInt, // optional
 ) (*models.ProtocolConfig, error) {
 	var resp models.ProtocolConfig
 	return &resp, s.http.CallContext(ctx, &resp, getProtocolConfig, version)
@@ -56,48 +52,36 @@ func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, err
 	return resp, s.http.CallContext(ctx, &resp, getTotalTransactionBlocks)
 }
 
-func (s *ImplSuiAPI) GetTransactionBlock(
-	ctx context.Context,
-	digest *sui_types.TransactionDigest,
-	options *models.SuiTransactionBlockResponseOptions,
-) (*models.SuiTransactionBlockResponse, error) {
+func (s *ImplSuiAPI) GetTransactionBlock(ctx context.Context, req *models.GetTransactionBlockRequest) (*models.SuiTransactionBlockResponse, error) {
 	resp := models.SuiTransactionBlockResponse{}
-	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, digest, options)
+	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, req.Digest, req.Options)
 }
 
-func (s *ImplSuiAPI) MultiGetObjects(
-	ctx context.Context,
-	objIDs []*sui_types.ObjectID,
-	options *models.SuiObjectDataOptions,
-) ([]models.SuiObjectResponse, error) {
+func (s *ImplSuiAPI) MultiGetObjects(ctx context.Context, req *models.MultiGetObjectsRequest) ([]models.SuiObjectResponse, error) {
 	var resp []models.SuiObjectResponse
-	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, objIDs, options)
+	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, req.ObjectIDs, req.Options)
 }
 
 func (s *ImplSuiAPI) MultiGetTransactionBlocks(
 	ctx context.Context,
-	digests []*sui_types.Digest,
-	options *models.SuiTransactionBlockResponseOptions,
+	req *models.MultiGetTransactionBlocksRequest,
 ) ([]*models.SuiTransactionBlockResponse, error) {
 	resp := []*models.SuiTransactionBlockResponse{}
-	return resp, s.http.CallContext(ctx, &resp, multiGetTransactionBlocks, digests, options)
+	return resp, s.http.CallContext(ctx, &resp, multiGetTransactionBlocks, req.Digests, req.Options)
 }
 
 func (s *ImplSuiAPI) TryGetPastObject(
 	ctx context.Context,
-	objectId *sui_types.ObjectID,
-	version uint64,
-	options *models.SuiObjectDataOptions,
+	req *models.TryGetPastObjectRequest,
 ) (*models.SuiPastObjectResponse, error) {
 	var resp models.SuiPastObjectResponse
-	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, objectId, version, options)
+	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, req.ObjectID, req.Version, req.Options)
 }
 
 func (s *ImplSuiAPI) TryMultiGetPastObjects(
 	ctx context.Context,
-	pastObjects []*models.SuiGetPastObjectRequest,
-	options *models.SuiObjectDataOptions,
+	req *models.TryMultiGetPastObjectsRequest,
 ) ([]*models.SuiPastObjectResponse, error) {
 	var resp []*models.SuiPastObjectResponse
-	return resp, s.http.CallContext(ctx, &resp, tryMultiGetPastObjects, pastObjects, options)
+	return resp, s.http.CallContext(ctx, &resp, tryMultiGetPastObjects, req.PastObjects, req.Options)
 }

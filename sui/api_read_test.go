@@ -51,7 +51,10 @@ func TestGetCheckpoints(t *testing.T) {
 	client := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	cursor := models.NewBigInt(999)
 	limit := uint64(2)
-	checkpointPage, err := client.GetCheckpoints(context.Background(), cursor, &limit, false)
+	checkpointPage, err := client.GetCheckpoints(context.Background(), &models.GetCheckpointsRequest{
+		Cursor: cursor,
+		Limit:  &limit,
+	})
 	require.NoError(t, err)
 	targetCheckpoints := []*models.Checkpoint{
 		{
@@ -164,7 +167,10 @@ func TestGetObject(t *testing.T) {
 		objID *sui_types.ObjectID
 	}
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	coins, err := api.GetCoins(context.TODO(), sui_signer.TEST_ADDRESS, nil, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), &models.GetCoinsRequest{
+		Owner: sui_signer.TEST_ADDRESS,
+		Limit: 1,
+	})
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -189,14 +195,17 @@ func TestGetObject(t *testing.T) {
 		t.Run(
 			tt.name, func(t *testing.T) {
 				got, err := tt.api.GetObject(
-					tt.args.ctx, tt.args.objID, &models.SuiObjectDataOptions{
-						ShowType:                true,
-						ShowOwner:               true,
-						ShowContent:             true,
-						ShowDisplay:             true,
-						ShowBcs:                 true,
-						ShowPreviousTransaction: true,
-						ShowStorageRebate:       true,
+					tt.args.ctx, &models.GetObjectRequest{
+						ObjectID: tt.args.objID,
+						Options: &models.SuiObjectDataOptions{
+							ShowType:                true,
+							ShowOwner:               true,
+							ShowContent:             true,
+							ShowDisplay:             true,
+							ShowBcs:                 true,
+							ShowPreviousTransaction: true,
+							ShowStorageRebate:       true,
+						},
 					},
 				)
 				if (err != nil) != tt.wantErr {
@@ -229,14 +238,17 @@ func TestGetTransactionBlock(t *testing.T) {
 	digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 	require.NoError(t, err)
 	resp, err := client.GetTransactionBlock(
-		context.Background(), digest, &models.SuiTransactionBlockResponseOptions{
-			ShowInput:          true,
-			ShowRawInput:       true,
-			ShowEffects:        true,
-			ShowRawEffects:     true,
-			ShowObjectChanges:  true,
-			ShowBalanceChanges: true,
-			ShowEvents:         true,
+		context.Background(), &models.GetTransactionBlockRequest{
+			Digest: digest,
+			Options: &models.SuiTransactionBlockResponseOptions{
+				ShowInput:          true,
+				ShowRawInput:       true,
+				ShowEffects:        true,
+				ShowRawEffects:     true,
+				ShowObjectChanges:  true,
+				ShowBalanceChanges: true,
+				ShowEvents:         true,
+			},
 		},
 	)
 	require.NoError(t, err)
@@ -261,7 +273,10 @@ func TestGetTransactionBlock(t *testing.T) {
 
 func TestMultiGetObjects(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	coins, err := api.GetCoins(context.TODO(), sui_signer.TEST_ADDRESS, nil, nil, 1)
+	coins, err := api.GetCoins(context.TODO(), &models.GetCoinsRequest{
+		Owner: sui_signer.TEST_ADDRESS,
+		Limit: 1,
+	})
 	require.NoError(t, err)
 	if len(coins.Data) == 0 {
 		t.Log("Warning: No Object Id for test.")
@@ -271,14 +286,17 @@ func TestMultiGetObjects(t *testing.T) {
 	obj := coins.Data[0].CoinObjectID
 	objs := []*sui_types.ObjectID{obj, obj}
 	resp, err := api.MultiGetObjects(
-		context.Background(), objs, &models.SuiObjectDataOptions{
-			ShowType:                true,
-			ShowOwner:               true,
-			ShowContent:             true,
-			ShowDisplay:             true,
-			ShowBcs:                 true,
-			ShowPreviousTransaction: true,
-			ShowStorageRebate:       true,
+		context.Background(), &models.MultiGetObjectsRequest{
+			ObjectIDs: objs,
+			Options: &models.SuiObjectDataOptions{
+				ShowType:                true,
+				ShowOwner:               true,
+				ShowContent:             true,
+				ShowDisplay:             true,
+				ShowBcs:                 true,
+				ShowPreviousTransaction: true,
+				ShowStorageRebate:       true,
+			},
 		},
 	)
 	require.NoError(t, err)
@@ -291,12 +309,14 @@ func TestMultiGetTransactionBlocks(t *testing.T) {
 
 	resp, err := client.MultiGetTransactionBlocks(
 		context.Background(),
-		[]*sui_types.Digest{
-			sui_types.MustNewDigest("6A3ckipsEtBSEC5C53AipggQioWzVDbs9NE1SPvqrkJr"),
-			sui_types.MustNewDigest("8AL88Qgk7p6ny3MkjzQboTvQg9SEoWZq4rknEPeXQdH5"),
-		},
-		&models.SuiTransactionBlockResponseOptions{
-			ShowEffects: true,
+		&models.MultiGetTransactionBlocksRequest{
+			Digests: []*sui_types.Digest{
+				sui_types.MustNewDigest("6A3ckipsEtBSEC5C53AipggQioWzVDbs9NE1SPvqrkJr"),
+				sui_types.MustNewDigest("8AL88Qgk7p6ny3MkjzQboTvQg9SEoWZq4rknEPeXQdH5"),
+			},
+			Options: &models.SuiTransactionBlockResponseOptions{
+				ShowEffects: true,
+			},
 		},
 	)
 	require.NoError(t, err)
@@ -307,12 +327,14 @@ func TestMultiGetTransactionBlocks(t *testing.T) {
 
 func TestTryGetPastObject(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
-	objId, err := sui_types.ObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f")
-	require.NoError(t, err)
 	// there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API
-	_, err = api.TryGetPastObject(context.Background(), objId, 187584506, &models.SuiObjectDataOptions{
-		ShowType:  true,
-		ShowOwner: true,
+	_, err := api.TryGetPastObject(context.Background(), &models.TryGetPastObjectRequest{
+		ObjectID: sui_types.MustObjectIDFromHex("0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f"),
+		Version:  187584506,
+		Options: &models.SuiObjectDataOptions{
+			ShowType:  true,
+			ShowOwner: true,
+		},
 	})
 	require.NoError(t, err)
 }
@@ -330,9 +352,12 @@ func TestTryMultiGetPastObjects(t *testing.T) {
 		},
 	}
 	// there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API
-	_, err := api.TryMultiGetPastObjects(context.Background(), req, &models.SuiObjectDataOptions{
-		ShowType:  true,
-		ShowOwner: true,
+	_, err := api.TryMultiGetPastObjects(context.Background(), &models.TryMultiGetPastObjectsRequest{
+		PastObjects: req,
+		Options: &models.SuiObjectDataOptions{
+			ShowType:  true,
+			ShowOwner: true,
+		},
 	})
 	require.NoError(t, err)
 }

@@ -13,30 +13,18 @@ func (s *ImplSuiAPI) GetAllBalances(ctx context.Context, owner *sui_types.SuiAdd
 }
 
 // start with the first object when cursor is nil
-func (s *ImplSuiAPI) GetAllCoins(
-	ctx context.Context,
-	owner *sui_types.SuiAddress,
-	cursor *sui_types.ObjectID, // optional
-	limit uint, // optional
-) (*models.CoinPage, error) {
+func (s *ImplSuiAPI) GetAllCoins(ctx context.Context, req *models.GetAllCoinsRequest) (*models.CoinPage, error) {
 	var resp models.CoinPage
-	return &resp, s.http.CallContext(ctx, &resp, getAllCoins, owner, cursor, limit)
+	return &resp, s.http.CallContext(ctx, &resp, getAllCoins, req.Owner, req.Cursor, req.Limit)
 }
 
 // GetBalance to use default sui coin(0x2::sui::SUI) when coinType is empty
-func (s *ImplSuiAPI) GetBalance(
-	ctx context.Context,
-	owner *sui_types.SuiAddress,
-	coinType sui_types.ObjectType, // optional
-) (
-	*models.Balance,
-	error,
-) {
+func (s *ImplSuiAPI) GetBalance(ctx context.Context, req *models.GetBalanceRequest) (*models.Balance, error) {
 	resp := models.Balance{}
-	if coinType == "" {
-		return &resp, s.http.CallContext(ctx, &resp, getBalance, owner)
+	if req.CoinType == "" {
+		return &resp, s.http.CallContext(ctx, &resp, getBalance, req.Owner)
 	} else {
-		return &resp, s.http.CallContext(ctx, &resp, getBalance, owner, coinType)
+		return &resp, s.http.CallContext(ctx, &resp, getBalance, req.Owner, req.CoinType)
 	}
 }
 
@@ -47,15 +35,9 @@ func (s *ImplSuiAPI) GetCoinMetadata(ctx context.Context, coinType string) (*mod
 
 // GetCoins to use default sui coin(0x2::sui::SUI) when coinType is nil
 // start with the first object when cursor is nil
-func (s *ImplSuiAPI) GetCoins(
-	ctx context.Context,
-	owner *sui_types.SuiAddress,
-	coinType *sui_types.ObjectType, // optional
-	cursor *sui_types.ObjectID, // optional
-	limit uint, // optional
-) (*models.CoinPage, error) {
+func (s *ImplSuiAPI) GetCoins(ctx context.Context, req *models.GetCoinsRequest) (*models.CoinPage, error) {
 	var resp models.CoinPage
-	return &resp, s.http.CallContext(ctx, &resp, getCoins, owner, coinType, cursor, limit)
+	return &resp, s.http.CallContext(ctx, &resp, getCoins, req.Owner, req.CoinType, req.Cursor, req.Limit)
 }
 
 func (s *ImplSuiAPI) GetTotalSupply(ctx context.Context, coinType sui_types.ObjectType) (*models.Supply, error) {
