@@ -1,0 +1,21 @@
+[package]
+name = "swap-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sui = { git = "https://github.com/mystenlabs/sui", package = "sui"}
+sui-sdk = { git = "https://github.com/mystenlabs/sui", package = "sui-sdk"}
+sui-types = { git = "https://github.com/mystenlabs/sui", package = "sui-types"}
+sui-keys = { git = "https://github.com/mystenlabs/sui", package = "sui-keys"}
+sui-config = { git = "https://github.com/mystenlabs/sui", package = "sui-config"}
+shared-crypto = { git = "https://github.com/mystenlabs/sui", package = "shared-crypto"}
+sui-json-rpc-types = { git = "https://github.com/mystenlabs/sui", package = "sui-json-rpc-types" }
+fastcrypto = { git = "https://github.com/MystenLabs/fastcrypto", rev = "c101a5176799db3eb9c801b844e7add92153d291" }
+tokio = { version = "1.2", features = ["full"] }
+reqwest = { version = "0.12.4", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+bcs = "0.1.6"
+hex = "0.4.3"
