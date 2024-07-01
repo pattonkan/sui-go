@@ -47,11 +47,11 @@ const (
 	getValidatorsApy        SuiXMethod = "suix_getValidatorsApy"
 
 	// Move Utils
-	getMoveFunctionArgTypes           SuiMethod = "sui_getMoveFunctionArgTypes"           // TODO
-	getNormalizedMoveFunction         SuiMethod = "sui_getNormalizedMoveFunction"         // TODO
-	getNormalizedMoveModule           SuiMethod = "sui_getNormalizedMoveModule"           // TODO
-	getNormalizedMoveModulesByPackage SuiMethod = "sui_getNormalizedMoveModulesByPackage" // TODO
-	getNormalizedMoveStruct           SuiMethod = "sui_getNormalizedMoveStruct"           // TODO
+	getMoveFunctionArgTypes           SuiMethod = "sui_getMoveFunctionArgTypes"
+	getNormalizedMoveFunction         SuiMethod = "sui_getNormalizedMoveFunction"
+	getNormalizedMoveModule           SuiMethod = "sui_getNormalizedMoveModule"
+	getNormalizedMoveModulesByPackage SuiMethod = "sui_getNormalizedMoveModulesByPackage"
+	getNormalizedMoveStruct           SuiMethod = "sui_getNormalizedMoveStruct"
 
 	// Read API
 	getChainIdentifier                SuiMethod = "sui_getChainIdentifier"
