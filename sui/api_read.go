@@ -32,8 +32,6 @@ func (s *ImplSuiAPI) GetLatestCheckpointSequenceNumber(ctx context.Context) (str
 	return resp, s.http.CallContext(ctx, &resp, getLatestCheckpointSequenceNumber)
 }
 
-// TODO getLoadedChildObjects
-
 func (s *ImplSuiAPI) GetObject(ctx context.Context, req *models.GetObjectRequest) (*models.SuiObjectResponse, error) {
 	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getObject, req.ObjectID, req.Options)

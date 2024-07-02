@@ -11,6 +11,7 @@ import (
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 	"github.com/stretchr/testify/require"
 )
 
@@ -320,6 +321,59 @@ func TestSubscribeEvent(t *testing.T) {
 				cnt := 0
 				for results := range tt.args.resultCh {
 					fmt.Println("results: ", results)
+					// FIXME we need to check finite number request in details
+					cnt++
+					if cnt > 3 {
+						break
+					}
+				}
+			},
+		)
+	}
+}
+
+func TestSubscribeTransaction(t *testing.T) {
+	api := sui.NewSuiWebsocketClient(conn.MainnetWebsocketEndpointUrl)
+
+	type args struct {
+		ctx      context.Context
+		filter   *models.TransactionFilter
+		resultCh chan serialization.TagJson[models.SuiTransactionBlockEffects]
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *models.SuiTransactionBlockEffects
+		wantErr bool
+	}{
+		{
+			name: "test for filter transaction",
+			args: args{
+				ctx: context.TODO(),
+				filter: &models.TransactionFilter{
+					MoveFunction: &models.TransactionFilterMoveFunction{
+						Package: sui_types.MustPackageIDFromHex("0x2c68443db9e8c813b194010c11040a3ce59f47e4eb97a2ec805371505dad7459"),
+					},
+				},
+				resultCh: make(chan serialization.TagJson[models.SuiTransactionBlockEffects]),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(
+			tt.name, func(t *testing.T) {
+				err := api.SubscribeTransaction(
+					tt.args.ctx,
+					tt.args.filter,
+					tt.args.resultCh,
+				)
+				if (err != nil) != tt.wantErr {
+					t.Errorf("SubscribeTransaction() error: %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+				cnt := 0
+				for results := range tt.args.resultCh {
+					fmt.Println("results: ", results.Data.V1)
 					// FIXME we need to check finite number request in details
 					cnt++
 					if cnt > 3 {

@@ -326,21 +326,26 @@ type DevInspectResults struct {
 }
 
 type TransactionFilter struct {
-	Checkpoint   *sui_types.SequenceNumber `json:"Checkpoint,omitempty"`
-	MoveFunction *struct {
-		Package  sui_types.ObjectID `json:"package"`
-		Module   string             `json:"module,omitempty"`
-		Function string             `json:"function,omitempty"`
-	} `json:"MoveFunction,omitempty"`
-	InputObject      *sui_types.ObjectID   `json:"InputObject,omitempty"`
-	ChangedObject    *sui_types.ObjectID   `json:"ChangedObject,omitempty"`
-	FromAddress      *sui_types.SuiAddress `json:"FromAddress,omitempty"`
-	ToAddress        *sui_types.SuiAddress `json:"ToAddress,omitempty"`
-	FromAndToAddress *struct {
-		From *sui_types.SuiAddress `json:"from"`
-		To   *sui_types.SuiAddress `json:"to"`
-	} `json:"FromAndToAddress,omitempty"`
-	TransactionKind *string `json:"TransactionKind,omitempty"`
+	Checkpoint       *BigInt                            `json:"Checkpoint,omitempty"`
+	MoveFunction     *TransactionFilterMoveFunction     `json:"MoveFunction,omitempty"`
+	InputObject      *sui_types.ObjectID                `json:"InputObject,omitempty"`
+	ChangedObject    *sui_types.ObjectID                `json:"ChangedObject,omitempty"`
+	FromAddress      *sui_types.SuiAddress              `json:"FromAddress,omitempty"`
+	ToAddress        *sui_types.SuiAddress              `json:"ToAddress,omitempty"`
+	FromAndToAddress *TransactionFilterFromAndToAddress `json:"FromAndToAddress,omitempty"`
+	FromOrToAddress  *sui_types.SuiAddress              `json:"FromOrToAddress,omitempty"`
+	TransactionKind  *string                            `json:"TransactionKind,omitempty"`
+}
+
+type TransactionFilterMoveFunction struct {
+	Package  *sui_types.ObjectID   `json:"package"`
+	Module   *sui_types.Identifier `json:"module,omitempty"`
+	Function *sui_types.Identifier `json:"function,omitempty"`
+}
+
+type TransactionFilterFromAndToAddress struct {
+	From *sui_types.SuiAddress `json:"from"`
+	To   *sui_types.SuiAddress `json:"to"`
 }
 
 type SuiTransactionBlockResponseOptions struct {
