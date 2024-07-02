@@ -8,6 +8,7 @@ import (
 
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui_types/serialization"
 	"github.com/tidwall/gjson"
 )
 
@@ -101,4 +102,31 @@ func (s *ImplSuiAPI) SubscribeEvent(
 	return nil
 }
 
-// TODO SubscribeTransaction
+func (s *ImplSuiAPI) SubscribeTransaction(
+	ctx context.Context,
+	filter *models.TransactionFilter,
+	resultCh chan serialization.TagJson[models.SuiTransactionBlockEffects],
+) error {
+	resp := make(chan []byte, 10)
+	err := s.websocket.CallContext(ctx, resp, subscribeTransaction, filter)
+	if err != nil {
+		return err
+	}
+	go func() {
+		for messageData := range resp {
+			var result serialization.TagJson[models.SuiTransactionBlockEffects]
+			if gjson.ParseBytes(messageData).Get("error").Exists() {
+				log.Fatal(gjson.ParseBytes(messageData).Get("error").String())
+			}
+
+			err := json.Unmarshal([]byte(gjson.ParseBytes(messageData).Get("params.result").String()), &result)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			resultCh <- result
+		}
+
+	}()
+	return nil
+}

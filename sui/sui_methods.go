@@ -36,10 +36,10 @@ const (
 	resolveNameServiceAddress SuiXMethod = "suix_resolveNameServiceAddress"
 	resolveNameServiceNames   SuiXMethod = "suix_resolveNameServiceNames"
 	subscribeEvent            SuiXMethod = "suix_subscribeEvent"
-	subscribeTransaction      SuiXMethod = "suix_subscribeTransaction" // TODO
+	subscribeTransaction      SuiXMethod = "suix_subscribeTransaction"
 
 	// Governance Read API
-	getCommitteeInfo        SuiXMethod = "suix_getCommitteeInfo" // TODO
+	getCommitteeInfo        SuiXMethod = "suix_getCommitteeInfo"
 	getLatestSuiSystemState SuiXMethod = "suix_getLatestSuiSystemState"
 	getReferenceGasPrice    SuiXMethod = "suix_getReferenceGasPrice"
 	getStakes               SuiXMethod = "suix_getStakes"
@@ -59,9 +59,8 @@ const (
 	getCheckpoints                    SuiMethod = "sui_getCheckpoints"
 	getEvents                         SuiMethod = "sui_getEvents"
 	getLatestCheckpointSequenceNumber SuiMethod = "sui_getLatestCheckpointSequenceNumber"
-	getLoadedChildObjects             SuiMethod = "sui_getLoadedChildObjects" // TODO
 	getObject                         SuiMethod = "sui_getObject"
-	getProtocolConfig                 SuiMethod = "sui_getProtocolConfig" // TODO
+	getProtocolConfig                 SuiMethod = "sui_getProtocolConfig"
 	getTotalTransactionBlocks         SuiMethod = "sui_getTotalTransactionBlocks"
 	getTransactionBlock               SuiMethod = "sui_getTransactionBlock"
 	multiGetObjects                   SuiMethod = "sui_multiGetObjects"
