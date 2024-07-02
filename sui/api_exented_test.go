@@ -118,7 +118,7 @@ func TestGetOwnedObjects(t *testing.T) {
 			ShowContent: true,
 		},
 	}
-	limit := uint(2)
+	limit := uint(10)
 	objs, err := api.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
 		Address: signer.Address,
 		Query:   &query,
@@ -126,10 +126,10 @@ func TestGetOwnedObjects(t *testing.T) {
 		Limit:   &limit,
 	})
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(objs.Data), int(limit))
+	require.Equal(t, len(objs.Data), int(limit))
 	require.NoError(t, err)
 	var fields models.CoinFields
-	err = json.Unmarshal(objs.Data[1].Data.Content.Data.MoveObject.Fields, &fields)
+	err = json.Unmarshal(objs.Data[9].Data.Content.Data.MoveObject.Fields, &fields)
 	require.NoError(t, err)
 	require.Equal(t, "1000000000", fields.Balance.String())
 }
