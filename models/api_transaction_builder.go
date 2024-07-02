@@ -4,18 +4,40 @@ import "github.com/howjmay/sui-go/sui_types"
 
 type BatchTransactionRequest struct {
 	Signer    *sui_types.SuiAddress
-	TxnParams []map[string]interface{}
+	TxnParams []RPCTransactionRequestParams
 	Gas       *sui_types.ObjectID // optional
-	GasBudget uint64
+	GasBudget *BigInt
 	// txnBuilderMode // optional // FIXME SuiTransactionBlockBuilderMode
 }
 
+type RPCTransactionRequestParams struct {
+	TransferObjectRequestParams *TransferObjectParams `json:"transferObjectRequestParams,omitempty"`
+	MoveCallRequestParams       *MoveCallParams       `json:"moveCallRequestParams,omitempty"`
+}
+
+type TransferObjectParams struct {
+	Recipient *sui_types.SuiAddress `json:"recipient,omitempty"`
+	ObjectId  *sui_types.ObjectID   `json:"objectId,omitempty"`
+}
+
+type SuiTypeTag string
+type SuiJsonValue string
+
+type MoveCallParams struct {
+	PackageObjectId *sui_types.ObjectID  `json:"packageObjectId,omitempty"`
+	Module          sui_types.Identifier `json:"module,omitempty"`
+	Function        sui_types.Identifier `json:"function,omitempty"`
+	TypeArguments   []SuiTypeTag         `json:"typeArguments,omitempty"`
+	// MoveCall arguments in JSON format
+	Arguments []SuiJsonValue `json:"arguments,omitempty"`
+}
+
 type MergeCoinsRequest struct {
-	Signer      *sui_types.SuiAddress
-	PrimaryCoin *sui_types.ObjectID
-	CoinToMerge *sui_types.ObjectID
-	Gas         *sui_types.ObjectID // optional
-	GasBudget   *BigInt
+	Signer      *sui_types.SuiAddress `json:"signer,omitempty"`
+	PrimaryCoin *sui_types.ObjectID   `json:"primaryCoin,omitempty"`
+	CoinToMerge *sui_types.ObjectID   `json:"coinToMerge,omitempty"`
+	Gas         *sui_types.ObjectID   `json:"gas,omitempty"` // optional
+	GasBudget   *BigInt               `json:"gasBudget,omitempty"`
 }
 
 type MoveCallRequest struct {

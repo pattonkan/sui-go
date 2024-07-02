@@ -3,6 +3,7 @@ package sui_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"os"
 	"strconv"
@@ -19,42 +20,73 @@ import (
 )
 
 func TestBatchTransaction(t *testing.T) {
-	t.Log("TestBatchTransaction TODO")
-	// api := sui.NewSuiClient(conn.DevnetEndpointUrl)
+	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+	signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagDefault, 0)
 
-	// txnBytes, err := api.BatchTransaction(context.Background(), signer, *coin1, *coin2, nil, 10000)
-	// require.NoError(t, err)
-	// dryRunTxn(t, api, txnBytes, M1Account(t))
+	getSuiCoins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{Owner: signer.Address})
+	require.NoError(t, err)
+
+	amount := 10
+	txnBytes, err := client.BatchTransaction(context.Background(), &models.BatchTransactionRequest{
+		Signer: signer.Address,
+		TxnParams: []models.RPCTransactionRequestParams{
+			{
+				MoveCallRequestParams: &models.MoveCallParams{
+					PackageObjectId: sui_types.SuiPackageIdSuiFramework,
+					Module:          sui_types.Identifier("pay"),
+					Function:        sui_types.Identifier("split"),
+					TypeArguments:   []models.SuiTypeTag{"0x2::sui::SUI"},
+					Arguments: []models.SuiJsonValue{
+						models.SuiJsonValue(getSuiCoins.Data[2].CoinObjectID.String()),
+						models.SuiJsonValue(fmt.Sprintf("%d", amount)),
+					},
+				},
+			},
+			{
+				TransferObjectRequestParams: &models.TransferObjectParams{
+					Recipient: signer.Address,
+					ObjectId:  getSuiCoins.Data[3].CoinObjectID,
+				},
+			},
+		},
+		GasBudget: models.NewBigInt(sui.DefaultGasBudget),
+	})
+	require.NoError(t, err)
+
+	res, err := client.DryRunTransaction(context.Background(), txnBytes.TxBytes)
+	require.NoError(t, err)
+	require.True(t, res.Effects.Data.IsSuccess())
 }
 
 func TestMergeCoins(t *testing.T) {
-	t.Skip("FIXME create an account has at least two coin objects on chain")
-	// api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	// signer := sui_signer.TEST_ADDRESS
-	// coins, err := api.GetCoins(context.Background(), &models.GetCoinsRequest{
-	// 	Owner: signer,
-	// 	Limit: 10,
-	// })
-	// require.NoError(t, err)
-	// require.True(t, len(coins.Data) >= 3)
+	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+	signer := sui_signer.TEST_ADDRESS
+	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+		Owner: signer,
+		Limit: 10,
+	})
+	require.NoError(t, err)
+	require.True(t, len(coins.Data) >= 3)
 
-	// coin1 := coins.Data[0]
-	// coin2 := coins.Data[1]
-	// coin3 := coins.Data[2] // gas coin
+	coin1 := coins.Data[0]
+	coin2 := coins.Data[1]
+	coin3 := coins.Data[2] // gas coin
 
-	// txn, err := api.MergeCoins(
-	// 	context.Background(),
-	// 	&models.MergeCoinsRequest{
-	// 		Signer:      signer,
-	// 		PrimaryCoin: coin1.CoinObjectID,
-	// 		CoinToMerge: coin2.CoinObjectID,
-	// 		Gas:         coin3.CoinObjectID,
-	// 		GasBudget:   coin3.Balance,
-	// 	},
-	// )
-	// require.NoError(t, err)
+	txn, err := client.MergeCoins(
+		context.Background(),
+		&models.MergeCoinsRequest{
+			Signer:      signer,
+			PrimaryCoin: coin1.CoinObjectID,
+			CoinToMerge: coin2.CoinObjectID,
+			Gas:         coin3.CoinObjectID,
+			GasBudget:   coin3.Balance,
+		},
+	)
+	require.NoError(t, err)
 
-	// dryRunTxn(t, api, txn.TxBytes, true)
+	res, err := client.DryRunTransaction(context.Background(), txn.TxBytes)
+	require.NoError(t, err)
+	require.True(t, res.Effects.Data.IsSuccess())
 }
 
 func TestMoveCall(t *testing.T) {
