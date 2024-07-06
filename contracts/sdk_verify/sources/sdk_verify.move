@@ -17,6 +17,8 @@ module sdk_verify::sdk_verify {
         assert!(option::is_none(&none_val), 2);
     }
 
+    // TODO add Receiving test
+
     public fun ret_two_1(): (u64, u32) {
         (1, 2)
     }
