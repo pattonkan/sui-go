@@ -12,6 +12,10 @@ module sdk_verify::sdk_verify {
         assert!(b"gogo" == vector::borrow(&vec, 1), 1);
         event::emit(ReadInputBytesArrayEvent { data: vec });
     }
+    public fun option_args(some_val: Option<vector<u8>>, none_val: Option<u32>) {
+        assert!(option::is_some(&some_val), 1);
+        assert!(option::is_none(&none_val), 2);
+    }
 
     public fun ret_two_1(): (u64, u32) {
         (1, 2)
