@@ -89,6 +89,67 @@ func TestPTBMoveCall(t *testing.T) {
 			require.Equal(t, coins[0].CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
 		},
 	)
+
+	t.Run(
+		"option<T> arguments", func(t *testing.T) {
+			client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
+			var modules utils.CompiledMoveModules
+			data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
+			require.NoError(t, err)
+			err = json.Unmarshal(data, &modules)
+			require.NoError(t, err)
+			_, packageID, err := client.PublishContract(
+				context.Background(),
+				sender,
+				modules.Modules,
+				modules.Dependencies,
+				sui.DefaultGasBudget,
+				&models.SuiTransactionBlockResponseOptions{ShowObjectChanges: true, ShowEffects: true},
+			)
+			require.NoError(t, err)
+
+			coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+				Owner: sender.Address,
+				Limit: 3,
+			})
+			require.NoError(t, err)
+			coins := models.Coins(coinPages.Data)
+
+			ptb := sui_types.NewProgrammableTransactionBuilder()
+			require.NoError(t, err)
+
+			ptb.Command(
+				sui_types.Command{
+					MoveCall: &sui_types.ProgrammableMoveCall{
+						Package:       packageID,
+						Module:        "sdk_verify",
+						Function:      "option_args",
+						TypeArguments: []sui_types.TypeTag{},
+						Arguments: []sui_types.Argument{
+							ptb.MustPure(&bcs.Option[[]byte]{Some: []byte{1, 2}}),
+							ptb.MustPure(&bcs.Option[uint32]{None: true}),
+						},
+					},
+				},
+			)
+			pt := ptb.Finish()
+			txData := sui_types.NewProgrammable(
+				sender.Address,
+				pt,
+				[]*sui_types.ObjectRef{coins[0].Ref()},
+				sui.DefaultGasBudget,
+				sui.DefaultGasPrice,
+			)
+			txBytes, err := bcs.Marshal(txData)
+			require.NoError(t, err)
+			simulate, err := client.DryRunTransaction(context.Background(), txBytes)
+			require.NoError(t, err)
+
+			require.Empty(t, simulate.Effects.Data.V1.Status.Error)
+			require.True(t, simulate.Effects.Data.IsSuccess())
+			require.Equal(t, coins[0].CoinObjectID, simulate.Effects.Data.V1.GasObject.Reference.ObjectID)
+		},
+	)
 }
 
 func TestPTBTransferObject(t *testing.T) {
