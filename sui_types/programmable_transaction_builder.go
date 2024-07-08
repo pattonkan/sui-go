@@ -114,6 +114,14 @@ func (p *ProgrammableTransactionBuilder) ForceSeparatePure(value any) (Argument,
 	return p.pureBytes(pureData, true), nil
 }
 
+func (p *ProgrammableTransactionBuilder) MustForceSeparatePure(value any) Argument {
+	arg, err := p.ForceSeparatePure(value)
+	if err != nil {
+		panic(err)
+	}
+	return arg
+}
+
 func (p *ProgrammableTransactionBuilder) pureBytes(bytes []byte, forceSeparate bool) Argument {
 	var arg BuilderArg
 	if forceSeparate {

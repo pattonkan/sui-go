@@ -71,7 +71,7 @@ func TypeTagFromString(data string) (*TypeTag, error) {
 			Module:  Identifier(structMatches[2]),
 			Name:    Identifier(structMatches[3]),
 		}
-		if len(structMatches) > 4 {
+		if len(structMatches) > 5 && structMatches[4] != "" {
 			typeTag, err := parseStructTypeArgs(structMatches[5])
 			if err != nil {
 				return nil, fmt.Errorf("can't parse TypeParams of a Struct in TypeParams: %w", err)

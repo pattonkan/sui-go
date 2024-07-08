@@ -120,6 +120,7 @@ func (c CallArg) IsBcsEnum() {}
 type ObjectArg struct {
 	ImmOrOwnedObject *ObjectRef
 	SharedObject     *SharedObjectArg
+	Receiving        *ObjectRef
 }
 
 type SharedObjectArg struct {
