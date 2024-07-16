@@ -108,31 +108,59 @@ func TestGetDynamicFields(t *testing.T) {
 }
 
 func TestGetOwnedObjects(t *testing.T) {
-	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
-	signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagEd25519, 0)
-	query := models.SuiObjectResponseQuery{
-		Filter: &models.SuiObjectDataFilter{
-			StructType: "0x2::coin::Coin<0x2::sui::SUI>",
-		},
-		Options: &models.SuiObjectDataOptions{
-			ShowType:    true,
-			ShowContent: true,
-		},
-	}
-	limit := uint(10)
-	objs, err := api.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
-		Address: signer.Address,
-		Query:   &query,
-		Cursor:  nil,
-		Limit:   &limit,
+	t.Run("struct tag", func(t *testing.T) {
+		client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+		signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagEd25519, 0)
+		query := models.SuiObjectResponseQuery{
+			Filter: &models.SuiObjectDataFilter{
+				StructType: "0x2::coin::Coin<0x2::sui::SUI>",
+			},
+			Options: &models.SuiObjectDataOptions{
+				ShowType:    true,
+				ShowContent: true,
+			},
+		}
+		limit := uint(10)
+		objs, err := client.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
+			Address: signer.Address,
+			Query:   &query,
+			Limit:   &limit,
+		})
+		require.NoError(t, err)
+		require.Equal(t, len(objs.Data), int(limit))
+		require.NoError(t, err)
+		var fields models.CoinFields
+		err = json.Unmarshal(objs.Data[9].Data.Content.Data.MoveObject.Fields, &fields)
+		require.NoError(t, err)
+		require.Equal(t, "1000000000", fields.Balance.String())
 	})
-	require.NoError(t, err)
-	require.Equal(t, len(objs.Data), int(limit))
-	require.NoError(t, err)
-	var fields models.CoinFields
-	err = json.Unmarshal(objs.Data[9].Data.Content.Data.MoveObject.Fields, &fields)
-	require.NoError(t, err)
-	require.Equal(t, "1000000000", fields.Balance.String())
+
+	t.Run("move module", func(t *testing.T) {
+		client := sui.NewSuiClient(conn.TestnetEndpointUrl)
+		signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagEd25519, 0)
+		query := models.SuiObjectResponseQuery{
+			Filter: &models.SuiObjectDataFilter{
+				AddressOwner: signer.Address,
+			},
+			Options: &models.SuiObjectDataOptions{
+				ShowType:    true,
+				ShowContent: true,
+			},
+		}
+		limit := uint(9)
+		objs, err := client.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
+			Address: signer.Address,
+			Query:   &query,
+			Limit:   &limit,
+		})
+		require.NoError(t, err)
+		require.Equal(t, len(objs.Data), int(limit))
+		require.NoError(t, err)
+		var fields models.CoinFields
+		err = json.Unmarshal(objs.Data[1].Data.Content.Data.MoveObject.Fields, &fields)
+		require.NoError(t, err)
+		require.Equal(t, "1000000000", fields.Balance.String())
+	})
 }
 
 func TestQueryEvents(t *testing.T) {

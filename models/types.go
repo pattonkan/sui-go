@@ -92,8 +92,8 @@ type TimeRange struct {
 }
 
 type MoveModule struct {
-	Package sui_types.ObjectID `json:"package"`
-	Module  string             `json:"module"`
+	Package *sui_types.ObjectID  `json:"package"`
+	Module  sui_types.Identifier `json:"module"`
 }
 
 func (o ObjectOwner) MarshalJSON() ([]byte, error) {

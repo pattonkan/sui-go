@@ -190,11 +190,22 @@ type CheckpointedObjectID struct {
 
 type ObjectsPage = Page[SuiObjectResponse, sui_types.ObjectID]
 
-// TODO need use Enum
 type SuiObjectDataFilter struct {
-	Package    *sui_types.ObjectID `json:"Package,omitempty"`
-	MoveModule *MoveModule         `json:"MoveModule,omitempty"`
-	StructType string              `json:"StructType,omitempty"`
+	MatchAll  []*SuiObjectDataFilter `json:"MatchAll,omitempty"`
+	MatchAny  []*SuiObjectDataFilter `json:"MatchAny,omitempty"`
+	MatchNone []*SuiObjectDataFilter `json:"MatchNone,omitempty"`
+	// Query by type a specified Package.
+	Package *sui_types.ObjectID `json:"Package,omitempty"`
+	// Query by type a specified Move module.
+	MoveModule *MoveModule `json:"MoveModule,omitempty"`
+	// Query by type
+	StructType   string                `json:"StructType,omitempty"`
+	AddressOwner *sui_types.SuiAddress `json:"AddressOwner,omitempty"`
+	ObjectOwner  *sui_types.ObjectID   `json:"ObjectOwner,omitempty"`
+	ObjectId     *sui_types.ObjectID   `json:"ObjectId,omitempty"`
+	// allow querying for multiple object ids
+	ObjectIds []*sui_types.ObjectID `json:"ObjectIds,omitempty"`
+	Version   *BigInt               `json:"Version,omitempty"`
 }
 
 type SuiObjectResponseQuery struct {
