@@ -73,11 +73,11 @@ func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method
 	}
 	msg, err := c.newMessage(method.String(), args...)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to call newMessage: %w", err)
 	}
 	resp, err := c.doRequest(ctx, msg)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to call doRequest:%w", err)
 	}
 	defer resp.Body.Close()
 
@@ -91,7 +91,7 @@ func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method
 		return fmt.Errorf("could not unmarshal response body: %w", err)
 	}
 	if respmsg.Error != nil {
-		return respmsg.Error
+		return fmt.Errorf("sui returned error: %s", respmsg.Error)
 	}
 	if len(respmsg.Result) == 0 {
 		return ErrNoResult

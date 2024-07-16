@@ -83,6 +83,34 @@ func TypeTagFromString(data string) (*TypeTag, error) {
 	return nil, fmt.Errorf("not found")
 }
 
+func (t *TypeTag) String() string {
+	if t.Address != nil {
+		return "address"
+	} else if t.Signer != nil {
+		return "signer"
+	} else if t.Bool != nil {
+		return "bool"
+	} else if t.U8 != nil {
+		return "u8"
+	} else if t.U16 != nil {
+		return "u16"
+	} else if t.U32 != nil {
+		return "u32"
+	} else if t.U64 != nil {
+		return "u64"
+	} else if t.U128 != nil {
+		return "u128"
+	} else if t.U256 != nil {
+		return "u256"
+	} else if t.Vector != nil {
+		return fmt.Sprintf("vector<%s>", t.Vector.String())
+	} else if t.Struct != nil {
+		return t.Struct.String()
+	} else {
+		panic("unknown type")
+	}
+}
+
 func parseStructTypeArgs(structTypeParams string) ([]TypeTag, error) {
 	var retTypeTag []TypeTag
 	tokens := splitGenericParameters(structTypeParams, nil)
@@ -116,6 +144,33 @@ func (s *StructTag) UnmarshalJSON(data []byte) error {
 	s.Name = parsedStructTag.Name
 	s.TypeParams = parsedStructTag.TypeParams
 	return nil
+}
+
+func (s *StructTag) MarshalJSON() ([]byte, error) {
+	if s.Address == nil || s.Module == "" || s.Name == "" {
+		return nil, fmt.Errorf("empty StructTag")
+	}
+	return []byte(fmt.Sprintf(`"%s"`, s.String())), nil
+}
+
+func (s *StructTag) String() string {
+	if s.Address == nil || s.Module == "" || s.Name == "" {
+		panic("empty StructTag")
+	}
+	typeParams := ""
+	if len(s.TypeParams) > 0 {
+		tmp := ""
+		for i, typeTag := range s.TypeParams {
+			typeTagString := ""
+			if i != 0 {
+				typeTagString = ", "
+			}
+			typeTagString = typeTagString + typeTag.String()
+			tmp = tmp + typeTagString
+		}
+		typeParams = fmt.Sprintf("<%s>", tmp)
+	}
+	return s.Address.String() + "::" + s.Module + "::" + s.Name + typeParams
 }
 
 func StructTagFromString(data string) (*StructTag, error) {
