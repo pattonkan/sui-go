@@ -111,9 +111,11 @@ func TestGetOwnedObjects(t *testing.T) {
 	t.Run("struct tag", func(t *testing.T) {
 		client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 		signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagEd25519, 0)
+		structTag, err := sui_types.StructTagFromString("0x2::coin::Coin<0x2::sui::SUI>")
+		require.NoError(t, err)
 		query := models.SuiObjectResponseQuery{
 			Filter: &models.SuiObjectDataFilter{
-				StructType: "0x2::coin::Coin<0x2::sui::SUI>",
+				StructType: structTag,
 			},
 			Options: &models.SuiObjectDataOptions{
 				ShowType:    true,

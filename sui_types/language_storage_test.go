@@ -27,6 +27,28 @@ func TestTypeTagBcs(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestTypeTagString(t *testing.T) {
+	testcases := []string{
+		// Primitives
+		"u8",
+		"u16",
+		"u32",
+		"u64",
+		"u128",
+		"u256",
+		"bool",
+		"address",
+		"vector<u8>",
+		"0x0000000000000000000000000000000000000000000000000000000000000002::object::UID",
+		"0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI>",
+	}
+	for _, testcase := range testcases {
+		typetag, err := sui_types.TypeTagFromString(testcase)
+		require.NoError(t, err)
+		require.Equal(t, testcase, typetag.String())
+	}
+}
+
 func TestStructTagEncoding(t *testing.T) {
 	{
 		s1 := "0x2::foo::bar<0x3::baz::qux<0x4::nested::result, 0x5::funny::other>, bool>"

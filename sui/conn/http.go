@@ -73,11 +73,11 @@ func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method
 	}
 	msg, err := c.newMessage(method.String(), args...)
 	if err != nil {
-		return fmt.Errorf("failed to  call newMessage: %w", err)
+		return fmt.Errorf("failed to call newMessage: %w", err)
 	}
 	resp, err := c.doRequest(ctx, msg)
 	if err != nil {
-		return fmt.Errorf("failed to  call doRequest:%w", err)
+		return fmt.Errorf("failed to call doRequest:%w", err)
 	}
 	defer resp.Body.Close()
 

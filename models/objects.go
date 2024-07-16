@@ -199,7 +199,7 @@ type SuiObjectDataFilter struct {
 	// Query by type a specified Move module.
 	MoveModule *MoveModule `json:"MoveModule,omitempty"`
 	// Query by type
-	StructType   string                `json:"StructType,omitempty"`
+	StructType   *sui_types.StructTag  `json:"StructType,omitempty"`
 	AddressOwner *sui_types.SuiAddress `json:"AddressOwner,omitempty"`
 	ObjectOwner  *sui_types.ObjectID   `json:"ObjectOwner,omitempty"`
 	ObjectId     *sui_types.ObjectID   `json:"ObjectId,omitempty"`
