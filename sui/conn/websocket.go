@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 
 	"github.com/gorilla/websocket"
-	"github.com/tidwall/gjson"
 )
 
 type WebsocketClient struct {
@@ -24,6 +23,7 @@ type CallOp struct {
 }
 
 type SubscriptionResp struct {
+	Error   string `json:"error,omitempty"`
 	Jsonrpc string `json:"jsonrpc"`
 	Result  int64  `json:"result"`
 	ID      int64  `json:"id"`
@@ -67,29 +67,38 @@ func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte,
 	if nil != err {
 		return err
 	}
-
-	var rsp SubscriptionResp
-	if gjson.ParseBytes(msgData).Get("error").Exists() {
-		return fmt.Errorf(gjson.ParseBytes(msgData).Get("error").String())
-	}
-
-	err = json.Unmarshal([]byte(gjson.ParseBytes(msgData).String()), &rsp)
-	if err != nil {
+	var resp SubscriptionResp
+	if err = json.Unmarshal(msgData, &resp); err != nil {
 		return err
 	}
-
-	fmt.Printf("establish successfully, subscriptionID: %d, Waiting to accept data...\n", rsp.Result)
+	if resp.Error != "" {
+		return fmt.Errorf("websocket CallContext error: %s", resp.Error)
+	}
 
 	go func(conn *websocket.Conn) {
 		for {
 			messageType, messageData, err := conn.ReadMessage()
 			if nil != err {
-				log.Println(err)
+				log.Fatal(err)
 				break
 			}
 			switch messageType {
 			case websocket.TextMessage:
-				resultCh <- messageData
+				var respmsg jsonrpcMessage
+				if err := json.Unmarshal(messageData, &respmsg); err != nil {
+					log.Fatalf("could not unmarshal response body: %s", err)
+				}
+				if respmsg.Error != nil {
+					log.Fatalf("sui returned error: %s", respmsg.Error)
+				}
+				if len(respmsg.Params) == 0 {
+					log.Fatal(ErrNoResult)
+				}
+				var prams jsonrpcWebsocketParams
+				if err := json.Unmarshal(respmsg.Params, &prams); err != nil {
+					log.Fatalf("could not unmarshal respmsg.Params: %s", err)
+				}
+				resultCh <- prams.Result
 
 			default:
 				continue

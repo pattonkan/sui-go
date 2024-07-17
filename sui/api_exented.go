@@ -9,7 +9,6 @@ import (
 	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui_types"
 	"github.com/howjmay/sui-go/sui_types/serialization"
-	"github.com/tidwall/gjson"
 )
 
 func (s *ImplSuiAPI) GetDynamicFieldObject(
@@ -86,12 +85,7 @@ func (s *ImplSuiAPI) SubscribeEvent(
 	go func() {
 		for messageData := range resp {
 			var result models.SuiEvent
-			if gjson.ParseBytes(messageData).Get("error").Exists() {
-				log.Fatal(gjson.ParseBytes(messageData).Get("error").String())
-			}
-
-			err := json.Unmarshal([]byte(gjson.ParseBytes(messageData).Get("params.result").String()), &result)
-			if err != nil {
+			if err := json.Unmarshal(messageData, &result); err != nil {
 				log.Fatal(err)
 			}
 
@@ -115,12 +109,7 @@ func (s *ImplSuiAPI) SubscribeTransaction(
 	go func() {
 		for messageData := range resp {
 			var result serialization.TagJson[models.SuiTransactionBlockEffects]
-			if gjson.ParseBytes(messageData).Get("error").Exists() {
-				log.Fatal(gjson.ParseBytes(messageData).Get("error").String())
-			}
-
-			err := json.Unmarshal([]byte(gjson.ParseBytes(messageData).Get("params.result").String()), &result)
-			if err != nil {
+			if err := json.Unmarshal(messageData, &result); err != nil {
 				log.Fatal(err)
 			}
 
