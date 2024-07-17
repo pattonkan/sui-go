@@ -3,6 +3,8 @@ package conn
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/howjmay/sui-go/models"
 )
 
 const (
@@ -18,6 +20,11 @@ type jsonrpcMessage struct {
 	Params  json.RawMessage `json:"params,omitempty"`
 	Error   *jsonError      `json:"error,omitempty"`
 	Result  json.RawMessage `json:"result,omitempty"`
+}
+
+type jsonrpcWebsocketParams struct {
+	Subscription models.BigInt   `json:"subscription,omitempty"`
+	Result       json.RawMessage `json:"result,omitempty"`
 }
 
 type jsonError struct {
