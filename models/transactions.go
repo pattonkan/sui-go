@@ -326,15 +326,26 @@ type DevInspectResults struct {
 }
 
 type TransactionFilter struct {
-	Checkpoint       *BigInt                            `json:"Checkpoint,omitempty"`
-	MoveFunction     *TransactionFilterMoveFunction     `json:"MoveFunction,omitempty"`
-	InputObject      *sui_types.ObjectID                `json:"InputObject,omitempty"`
-	ChangedObject    *sui_types.ObjectID                `json:"ChangedObject,omitempty"`
-	FromAddress      *sui_types.SuiAddress              `json:"FromAddress,omitempty"`
-	ToAddress        *sui_types.SuiAddress              `json:"ToAddress,omitempty"`
+	// Query by checkpoint.
+	Checkpoint *BigInt `json:"Checkpoint,omitempty"`
+	// Query by move function.
+	MoveFunction *TransactionFilterMoveFunction `json:"MoveFunction,omitempty"`
+	// Query by input object.
+	InputObject *sui_types.ObjectID `json:"InputObject,omitempty"`
+	// Query by changed object, including created, mutated and unwrapped objects.
+	ChangedObject *sui_types.ObjectID `json:"ChangedObject,omitempty"`
+	// Query by sender address.
+	FromAddress *sui_types.SuiAddress `json:"FromAddress,omitempty"`
+	// Query by recipient address.
+	ToAddress *sui_types.SuiAddress `json:"ToAddress,omitempty"`
+	// Query by sender and recipient address.
 	FromAndToAddress *TransactionFilterFromAndToAddress `json:"FromAndToAddress,omitempty"`
-	FromOrToAddress  *sui_types.SuiAddress              `json:"FromOrToAddress,omitempty"`
-	TransactionKind  *string                            `json:"TransactionKind,omitempty"`
+	// Query txs that have a given address as sender or recipient.
+	FromOrToAddress *sui_types.SuiAddress `json:"FromOrToAddress,omitempty"`
+	// Query by transaction kind
+	TransactionKind *string `json:"TransactionKind,omitempty"`
+	// Query transactions of any given kind in the input.
+	TransactionKindIn []string `json:"TransactionKindIn,omitempty"`
 }
 
 type TransactionFilterMoveFunction struct {

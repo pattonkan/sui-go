@@ -227,8 +227,6 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	})
 }
 
-////// PTB impl
-
 func BCS_RequestAddStake(
 	signer *sui_types.SuiAddress,
 	coins []*sui_types.ObjectRef,
