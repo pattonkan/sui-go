@@ -30,21 +30,21 @@ type SuiEvent struct {
 type EventPage = Page[SuiEvent, EventId]
 
 type EventFilter struct {
-	/// Query by sender address
+	// Query by sender address
 	Sender *sui_types.SuiAddress `json:"Sender,omitempty"`
-	/// Return events emitted by the given transaction
-	///digest of the transaction, as base-64 encoded string
+	// Return events emitted by the given transaction
+	//digest of the transaction, as base-64 encoded string
 	Transaction *sui_types.TransactionDigest `json:"Transaction,omitempty"`
-	/// Return events emitted in a specified Package.
+	// Return events emitted in a specified Package.
 	Package *sui_types.ObjectID `json:"Package,omitempty"`
-	/// Return events emitted in a specified Move module.
-	/// If the event is defined in Module A but emitted in a tx with Module B,
-	/// query `MoveModule` by module B returns the event.
-	/// Query `MoveEventModule` by module A returns the event too.
+	// Return events emitted in a specified Move module.
+	// If the event is defined in Module A but emitted in a tx with Module B,
+	// query `MoveModule` by module B returns the event.
+	// Query `MoveEventModule` by module A returns the event too.
 	MoveModule *EventFilterMoveModule `json:"MoveModule,omitempty"`
-	/// Return events with the given Move event struct name (struct tag).
-	/// For example, if the event is defined in `0xabcd::MyModule`, and named
-	/// `Foo`, then the struct tag is `0xabcd::MyModule::Foo`.
+	// Return events with the given Move event struct name (struct tag).
+	// For example, if the event is defined in `0xabcd::MyModule`, and named
+	// `Foo`, then the struct tag is `0xabcd::MyModule::Foo`.
 	MoveEventType  *sui_types.StructTag       `json:"MoveEventType,omitempty"`
 	MoveEventField *EventFilterMoveEventField `json:"MoveEventField,omitempty"`
 	// Return events emitted in [start_time, end_time] interval
