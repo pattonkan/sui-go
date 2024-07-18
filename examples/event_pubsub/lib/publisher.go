@@ -25,7 +25,7 @@ func NewPublisher(client *sui.ImplSuiAPI, signer *sui_signer.Signer) *Publisher 
 func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.PackageID) {
 	txnBytes, err := p.client.MoveCall(
 		ctx,
-		&models.MoveCallRequest{
+		&sui.MoveCallRequest{
 			Signer:    p.signer.Address,
 			PackageID: packageID,
 			Module:    "eventpub",
@@ -44,7 +44,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageID *sui_types.Pack
 		log.Panic(err)
 	}
 
-	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, &models.ExecuteTransactionBlockRequest{
+	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, &sui.ExecuteTransactionBlockRequest{
 		TxDataBytes: txnBytes.TxBytes.Data(),
 		Signatures:  []*sui_signer.Signature{&signature},
 		Options: &models.SuiTransactionBlockResponseOptions{

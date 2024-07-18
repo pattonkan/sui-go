@@ -46,7 +46,7 @@ func TestGetDynamicFieldObject(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := api.GetDynamicFieldObject(tt.args.ctx, &models.GetDynamicFieldObjectRequest{
+				got, err := api.GetDynamicFieldObject(tt.args.ctx, &sui.GetDynamicFieldObjectRequest{
 					ParentObjectID: tt.args.parentObjectID,
 					Name:           tt.args.name,
 				})
@@ -89,7 +89,7 @@ func TestGetDynamicFields(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := client.GetDynamicFields(tt.args.ctx, &models.GetDynamicFieldsRequest{
+				got, err := client.GetDynamicFields(tt.args.ctx, &sui.GetDynamicFieldsRequest{
 					ParentObjectID: tt.args.parentObjectID,
 					Cursor:         tt.args.cursor,
 					Limit:          tt.args.limit,
@@ -123,7 +123,7 @@ func TestGetOwnedObjects(t *testing.T) {
 			},
 		}
 		limit := uint(10)
-		objs, err := client.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
+		objs, err := client.GetOwnedObjects(context.Background(), &sui.GetOwnedObjectsRequest{
 			Address: signer.Address,
 			Query:   &query,
 			Limit:   &limit,
@@ -150,7 +150,7 @@ func TestGetOwnedObjects(t *testing.T) {
 			},
 		}
 		limit := uint(9)
-		objs, err := client.GetOwnedObjects(context.Background(), &models.GetOwnedObjectsRequest{
+		objs, err := client.GetOwnedObjects(context.Background(), &sui.GetOwnedObjectsRequest{
 			Address: signer.Address,
 			Query:   &query,
 			Limit:   &limit,
@@ -200,7 +200,7 @@ func TestQueryEvents(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := api.QueryEvents(
 					tt.args.ctx,
-					&models.QueryEventsRequest{
+					&sui.QueryEventsRequest{
 						Query:           tt.args.query,
 						Cursor:          tt.args.cursor,
 						Limit:           tt.args.limit,
@@ -265,7 +265,7 @@ func TestQueryTransactionBlocks(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				got, err := api.QueryTransactionBlocks(
 					tt.args.ctx,
-					&models.QueryTransactionBlocksRequest{
+					&sui.QueryTransactionBlocksRequest{
 						Query:           tt.args.query,
 						Cursor:          tt.args.cursor,
 						Limit:           tt.args.limit,
@@ -295,7 +295,7 @@ func TestResolveNameServiceAddress(t *testing.T) {
 func TestResolveNameServiceNames(t *testing.T) {
 	api := sui.NewSuiClient(conn.MainnetEndpointUrl)
 	owner := sui_types.MustSuiAddressFromHex("0x57188743983628b3474648d8aa4a9ee8abebe8f6816243773d7e8ed4fd833a28")
-	namePage, err := api.ResolveNameServiceNames(context.Background(), &models.ResolveNameServiceNamesRequest{
+	namePage, err := api.ResolveNameServiceNames(context.Background(), &sui.ResolveNameServiceNamesRequest{
 		Owner: owner,
 	})
 	require.NoError(t, err)
@@ -303,7 +303,7 @@ func TestResolveNameServiceNames(t *testing.T) {
 	t.Log(namePage.Data)
 
 	owner = sui_types.MustSuiAddressFromHex("0x57188743983628b3474648d8aa4a9ee8abebe8f681")
-	namePage, err = api.ResolveNameServiceNames(context.Background(), &models.ResolveNameServiceNamesRequest{
+	namePage, err = api.ResolveNameServiceNames(context.Background(), &sui.ResolveNameServiceNamesRequest{
 		Owner: owner,
 	})
 	require.NoError(t, err)

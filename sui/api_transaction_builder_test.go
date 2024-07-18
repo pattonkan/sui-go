@@ -23,11 +23,11 @@ func TestBatchTransaction(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_signer.NewSignerByIndex(sui_signer.TEST_SEED, sui_signer.KeySchemeFlagDefault, 0)
 
-	getSuiCoins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{Owner: signer.Address})
+	getSuiCoins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{Owner: signer.Address})
 	require.NoError(t, err)
 
 	amount := 10
-	txnBytes, err := client.BatchTransaction(context.Background(), &models.BatchTransactionRequest{
+	txnBytes, err := client.BatchTransaction(context.Background(), &sui.BatchTransactionRequest{
 		Signer: signer.Address,
 		TxnParams: []models.RPCTransactionRequestParams{
 			{
@@ -61,7 +61,7 @@ func TestBatchTransaction(t *testing.T) {
 func TestMergeCoins(t *testing.T) {
 	client := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_signer.TEST_ADDRESS
-	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer,
 		Limit: 10,
 	})
@@ -74,7 +74,7 @@ func TestMergeCoins(t *testing.T) {
 
 	txn, err := client.MergeCoins(
 		context.Background(),
-		&models.MergeCoinsRequest{
+		&sui.MergeCoinsRequest{
 			Signer:      signer,
 			PrimaryCoin: coin1.CoinObjectID,
 			CoinToMerge: coin2.CoinObjectID,
@@ -104,7 +104,7 @@ func TestMoveCall(t *testing.T) {
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
@@ -131,7 +131,7 @@ func TestMoveCall(t *testing.T) {
 	input := []string{"haha", "gogo"}
 	txnBytes, err = client.MoveCall(
 		context.Background(),
-		&models.MoveCallRequest{
+		&sui.MoveCallRequest{
 			Signer:    signer.Address,
 			PackageID: packageID,
 			Module:    "sdk_verify",
@@ -156,7 +156,7 @@ func TestMoveCall(t *testing.T) {
 
 	queryEventsRes, err := client.QueryEvents(
 		context.Background(),
-		&models.QueryEventsRequest{
+		&sui.QueryEventsRequest{
 			Query: &models.EventFilter{Transaction: &txnResponse.Digest},
 		},
 	)
@@ -175,7 +175,7 @@ func TestMoveCall(t *testing.T) {
 func TestPay(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: 10,
 	})
@@ -189,7 +189,7 @@ func TestPay(t *testing.T) {
 
 	txn, err := client.Pay(
 		context.Background(),
-		&models.PayRequest{
+		&sui.PayRequest{
 			Signer:     signer.Address,
 			InputCoins: pickedCoins.CoinIds(),
 			Recipients: []*sui_types.SuiAddress{recipient.Address},
@@ -218,7 +218,7 @@ func TestPayAllSui(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -230,7 +230,7 @@ func TestPayAllSui(t *testing.T) {
 
 	txn, err := client.PayAllSui(
 		context.Background(),
-		&models.PayAllSuiRequest{
+		&sui.PayAllSuiRequest{
 			Signer:     signer.Address,
 			Recipient:  recipient.Address,
 			InputCoins: coins.ObjectIDs(),
@@ -274,7 +274,7 @@ func TestPaySui(t *testing.T) {
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
 	limit := uint(4)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -284,7 +284,7 @@ func TestPaySui(t *testing.T) {
 	sentAmounts := []uint64{123, 456, 789}
 	txn, err := client.PaySui(
 		context.Background(),
-		&models.PaySuiRequest{
+		&sui.PaySuiRequest{
 			Signer:     signer.Address,
 			InputCoins: coins.ObjectIDs(),
 			Recipients: []*sui_types.SuiAddress{
@@ -359,7 +359,7 @@ func TestPublish(t *testing.T) {
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
@@ -383,7 +383,7 @@ func TestPublish(t *testing.T) {
 func TestSplitCoin(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	limit := uint(4)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -392,7 +392,7 @@ func TestSplitCoin(t *testing.T) {
 
 	txn, err := client.SplitCoin(
 		context.Background(),
-		&models.SplitCoinRequest{
+		&sui.SplitCoinRequest{
 			Signer: signer.Address,
 			Coin:   coins[1].CoinObjectID,
 			SplitAmounts: []*models.BigInt{
@@ -421,7 +421,7 @@ func TestSplitCoin(t *testing.T) {
 func TestSplitCoinEqual(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	limit := uint(4)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -431,7 +431,7 @@ func TestSplitCoinEqual(t *testing.T) {
 	splitShares := uint64(3)
 	txn, err := client.SplitCoinEqual(
 		context.Background(),
-		&models.SplitCoinEqualRequest{
+		&sui.SplitCoinEqualRequest{
 			Signer:     signer.Address,
 			Coin:       coins[0].CoinObjectID,
 			SplitCount: models.NewBigInt(splitShares),
@@ -457,7 +457,7 @@ func TestTransferObject(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -466,7 +466,7 @@ func TestTransferObject(t *testing.T) {
 
 	txn, err := client.TransferObject(
 		context.Background(),
-		&models.TransferObjectRequest{
+		&sui.TransferObjectRequest{
 			Signer:    signer.Address,
 			Recipient: recipient.Address,
 			ObjectID:  transferCoin.CoinObjectID,
@@ -490,7 +490,7 @@ func TestTransferSui(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: limit,
 	})
@@ -499,7 +499,7 @@ func TestTransferSui(t *testing.T) {
 
 	txn, err := client.TransferSui(
 		context.Background(),
-		&models.TransferSuiRequest{
+		&sui.TransferSuiRequest{
 			Signer:    signer.Address,
 			Recipient: recipient.Address,
 			ObjectID:  transferCoin.CoinObjectID,

@@ -16,7 +16,7 @@ import (
 func main() {
 	client, signer := sui.NewSuiClient(conn.LocalnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: 4,
 	})
@@ -65,7 +65,7 @@ func main() {
 
 	resp, err := client.DevInspectTransactionBlock(
 		context.Background(),
-		&models.DevInspectTransactionBlockRequest{
+		&sui.DevInspectTransactionBlockRequest{
 			SenderAddress: signer.Address,
 			TxKindBytes:   txBytes,
 		},
@@ -97,7 +97,7 @@ func BuildDeployContract(
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,

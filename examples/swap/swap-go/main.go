@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/howjmay/sui-go/examples/swap/swap-go/pkg"
-	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
 	"github.com/howjmay/sui-go/sui/conn"
 	"github.com/howjmay/sui-go/sui_signer"
@@ -27,7 +26,7 @@ func main() {
 
 	testcoinCoins, err := suiClient.GetCoins(
 		context.Background(),
-		&models.GetCoinsRequest{
+		&sui.GetCoinsRequest{
 			Owner:    signer.Address,
 			CoinType: &testcoinCoinType,
 		},
@@ -38,7 +37,7 @@ func main() {
 
 	signerSuiCoinPage, err := suiClient.GetCoins(
 		context.Background(),
-		&models.GetCoinsRequest{
+		&sui.GetCoinsRequest{
 			Owner: signer.Address,
 		},
 	)
@@ -50,7 +49,7 @@ func main() {
 
 	swapperSuiCoinPage1, err := suiClient.GetAllCoins(
 		context.Background(),
-		&models.GetAllCoinsRequest{Owner: swapper.Address},
+		&sui.GetAllCoinsRequest{Owner: swapper.Address},
 	)
 	if err != nil {
 		panic(err)
@@ -62,7 +61,7 @@ func main() {
 
 	swapperSuiCoinPage2, err := suiClient.GetAllCoins(
 		context.Background(),
-		&models.GetAllCoinsRequest{Owner: swapper.Address},
+		&sui.GetAllCoinsRequest{Owner: swapper.Address},
 	)
 	if err != nil {
 		panic(err)

@@ -8,6 +8,25 @@ import (
 	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
+type RPCTransactionRequestParams struct {
+	TransferObjectRequestParams *TransferObjectParams `json:"transferObjectRequestParams,omitempty"`
+	MoveCallRequestParams       *MoveCallParams       `json:"moveCallRequestParams,omitempty"`
+}
+
+type TransferObjectParams struct {
+	Recipient *sui_types.SuiAddress `json:"recipient,omitempty"`
+	ObjectId  *sui_types.ObjectID   `json:"objectId,omitempty"`
+}
+
+type MoveCallParams struct {
+	PackageObjectId *sui_types.ObjectID  `json:"packageObjectId,omitempty"`
+	Module          sui_types.Identifier `json:"module,omitempty"`
+	Function        sui_types.Identifier `json:"function,omitempty"`
+	TypeArguments   []SuiTypeTag         `json:"typeArguments,omitempty"`
+	// MoveCall arguments in JSON format
+	Arguments []SuiJsonValue `json:"arguments,omitempty"`
+}
+
 type ExecuteTransactionRequestType string
 
 const (

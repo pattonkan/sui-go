@@ -11,20 +11,38 @@ import (
 	"github.com/howjmay/sui-go/sui_types/serialization"
 )
 
+type GetDynamicFieldObjectRequest struct {
+	ParentObjectID *sui_types.ObjectID
+	Name           *sui_types.DynamicFieldName
+}
+
 func (s *ImplSuiAPI) GetDynamicFieldObject(
 	ctx context.Context,
-	req *models.GetDynamicFieldObjectRequest,
+	req *GetDynamicFieldObjectRequest,
 ) (*models.SuiObjectResponse, error) {
 	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFieldObject, req.ParentObjectID, req.Name)
 }
 
+type GetDynamicFieldsRequest struct {
+	ParentObjectID *sui_types.ObjectID
+	Cursor         *sui_types.ObjectID // optional
+	Limit          *uint               // optional
+}
+
 func (s *ImplSuiAPI) GetDynamicFields(
 	ctx context.Context,
-	req *models.GetDynamicFieldsRequest,
+	req *GetDynamicFieldsRequest,
 ) (*models.DynamicFieldPage, error) {
 	var resp models.DynamicFieldPage
 	return &resp, s.http.CallContext(ctx, &resp, getDynamicFields, req.ParentObjectID, req.Cursor, req.Limit)
+}
+
+type GetOwnedObjectsRequest struct {
+	Address *sui_types.SuiAddress
+	Query   *models.SuiObjectResponseQuery // optional
+	Cursor  *models.CheckpointedObjectID   // optional
+	Limit   *uint                          // optional
 }
 
 // address : <SuiAddress> - the owner's Sui address
@@ -33,26 +51,46 @@ func (s *ImplSuiAPI) GetDynamicFields(
 // limit : <uint> - Max number of items returned per page, default to [QUERY_MAX_RESULT_LIMIT_OBJECTS] if is 0
 func (s *ImplSuiAPI) GetOwnedObjects(
 	ctx context.Context,
-	req *models.GetOwnedObjectsRequest,
+	req *GetOwnedObjectsRequest,
 ) (*models.ObjectsPage, error) {
 	var resp models.ObjectsPage
 	return &resp, s.http.CallContext(ctx, &resp, getOwnedObjects, req.Address, req.Query, req.Cursor, req.Limit)
 }
 
+type QueryEventsRequest struct {
+	Query           *models.EventFilter
+	Cursor          *models.EventId // optional
+	Limit           *uint           // optional
+	DescendingOrder bool            // optional
+}
+
 func (s *ImplSuiAPI) QueryEvents(
 	ctx context.Context,
-	req *models.QueryEventsRequest,
+	req *QueryEventsRequest,
 ) (*models.EventPage, error) {
 	var resp models.EventPage
 	return &resp, s.http.CallContext(ctx, &resp, queryEvents, req.Query, req.Cursor, req.Limit, req.DescendingOrder)
 }
 
+type QueryTransactionBlocksRequest struct {
+	Query           *models.SuiTransactionBlockResponseQuery
+	Cursor          *sui_types.TransactionDigest // optional
+	Limit           *uint                        // optional
+	DescendingOrder bool                         // optional
+}
+
 func (s *ImplSuiAPI) QueryTransactionBlocks(
 	ctx context.Context,
-	req *models.QueryTransactionBlocksRequest,
+	req *QueryTransactionBlocksRequest,
 ) (*models.TransactionBlocksPage, error) {
 	resp := models.TransactionBlocksPage{}
 	return &resp, s.http.CallContext(ctx, &resp, queryTransactionBlocks, req.Query, req.Cursor, req.Limit, req.DescendingOrder)
+}
+
+type ResolveNameServiceNamesRequest struct {
+	Owner  *sui_types.SuiAddress
+	Cursor *sui_types.ObjectID // optional
+	Limit  *uint               // optional
 }
 
 func (s *ImplSuiAPI) ResolveNameServiceAddress(ctx context.Context, suiName string) (*sui_types.SuiAddress, error) {
@@ -66,7 +104,7 @@ func (s *ImplSuiAPI) ResolveNameServiceAddress(ctx context.Context, suiName stri
 
 func (s *ImplSuiAPI) ResolveNameServiceNames(
 	ctx context.Context,
-	req *models.ResolveNameServiceNamesRequest,
+	req *ResolveNameServiceNamesRequest,
 ) (*models.SuiNamePage, error) {
 	var resp models.SuiNamePage
 	return &resp, s.http.CallContext(ctx, &resp, resolveNameServiceNames, req.Owner, req.Cursor, req.Limit)

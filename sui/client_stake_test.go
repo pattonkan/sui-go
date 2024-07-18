@@ -19,7 +19,7 @@ const (
 
 func TestRequestAddDelegation(t *testing.T) {
 	client, signer := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
-	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: 10,
 	})
@@ -59,7 +59,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	require.True(t, len(stakes) > 0)
 	require.True(t, len(stakes[0].Stakes) > 0)
 
-	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer,
 		Limit: 10,
 	})
@@ -67,7 +67,7 @@ func TestRequestWithdrawDelegation(t *testing.T) {
 	pickedCoins, err := models.PickupCoins(coins, new(big.Int), sui.DefaultGasBudget, 0, 0)
 	require.NoError(t, err)
 
-	detail, err := client.GetObject(context.Background(), &models.GetObjectRequest{
+	detail, err := client.GetObject(context.Background(), &sui.GetObjectRequest{
 		ObjectID: &stakes[0].Stakes[0].Data.StakedSuiId,
 	})
 	require.NoError(t, err)
