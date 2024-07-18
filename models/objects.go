@@ -267,3 +267,6 @@ type SuiGetPastObjectRequest struct {
 }
 
 type SuiNamePage = Page[string, sui_types.ObjectID]
+
+type SuiTypeTag string
+type SuiJsonValue string

@@ -20,7 +20,7 @@ func SwapSui(
 	poolObjectID *sui_types.ObjectID,
 	suiCoins []*models.Coin,
 ) {
-	poolGetObjectRes, err := suiClient.GetObject(context.Background(), &models.GetObjectRequest{
+	poolGetObjectRes, err := suiClient.GetObject(context.Background(), &sui.GetObjectRequest{
 		ObjectID: poolObjectID,
 		Options: &models.SuiObjectDataOptions{
 			ShowType:    true,

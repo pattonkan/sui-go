@@ -36,7 +36,7 @@ func TestPTBMoveCall(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+			coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 				Owner: sender.Address,
 				Limit: 3,
 			})
@@ -108,7 +108,7 @@ func TestPTBMoveCall(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+			coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 				Owner: sender.Address,
 				Limit: 3,
 			})
@@ -155,7 +155,7 @@ func TestPTBMoveCall(t *testing.T) {
 func TestPTBTransferObject(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 2,
 	})
@@ -181,7 +181,7 @@ func TestPTBTransferObject(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.TransferObject(
 		context.Background(),
-		&models.TransferObjectRequest{
+		&sui.TransferObjectRequest{
 			Signer:    sender.Address,
 			Recipient: recipient.Address,
 			ObjectID:  transferCoin.CoinObjectID,
@@ -197,7 +197,7 @@ func TestPTBTransferObject(t *testing.T) {
 func TestPTBTransferSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 1,
 	})
@@ -223,7 +223,7 @@ func TestPTBTransferSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.TransferSui(
 		context.Background(),
-		&models.TransferSuiRequest{
+		&sui.TransferSuiRequest{
 			Signer:    sender.Address,
 			Recipient: recipient.Address,
 			ObjectID:  coin.CoinObjectID,
@@ -239,7 +239,7 @@ func TestPTBTransferSui(t *testing.T) {
 func TestPTBPayAllSui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 3,
 	})
@@ -264,7 +264,7 @@ func TestPTBPayAllSui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.PayAllSui(
 		context.Background(),
-		&models.PayAllSuiRequest{
+		&sui.PayAllSuiRequest{
 			Signer:     sender.Address,
 			Recipient:  recipient.Address,
 			InputCoins: coins.ObjectIDs(),
@@ -280,7 +280,7 @@ func TestPTBPaySui(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 1,
 	})
@@ -326,7 +326,7 @@ func TestPTBPaySui(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.PaySui(
 		context.Background(),
-		&models.PaySuiRequest{
+		&sui.PaySuiRequest{
 			Signer:     sender.Address,
 			InputCoins: []*sui_types.ObjectID{coin.CoinObjectID},
 			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},
@@ -343,7 +343,7 @@ func TestPTBPay(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	_, recipient1 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 1)
 	_, recipient2 := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 2)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 3,
 	})
@@ -407,7 +407,7 @@ func TestPTBPay(t *testing.T) {
 	// build with remote rpc
 	txn, err := client.Pay(
 		context.Background(),
-		&models.PayRequest{
+		&sui.PayRequest{
 			Signer:     sender.Address,
 			InputCoins: transferCoins.ObjectIDs(),
 			Recipients: []*sui_types.SuiAddress{recipient1.Address, recipient2.Address},

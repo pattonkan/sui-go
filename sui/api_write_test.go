@@ -18,7 +18,7 @@ import (
 func TestDevInspectTransactionBlock(t *testing.T) {
 	client, sender := sui.NewSuiClient(conn.TestnetEndpointUrl).WithSignerAndFund(sui_signer.TEST_SEED, 0)
 	limit := uint(3)
-	coinPages, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coinPages, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: limit,
 	})
@@ -40,7 +40,7 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 
 	resp, err := client.DevInspectTransactionBlock(
 		context.Background(),
-		&models.DevInspectTransactionBlockRequest{
+		&sui.DevInspectTransactionBlockRequest{
 			SenderAddress: sender.Address,
 			TxKindBytes:   txBytes,
 		},
@@ -52,7 +52,7 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 func TestDryRunTransaction(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	signer := sui_signer.TEST_ADDRESS
-	coins, err := api.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := api.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner: signer,
 		Limit: 10,
 	})
@@ -61,7 +61,7 @@ func TestDryRunTransaction(t *testing.T) {
 	require.NoError(t, err)
 	tx, err := api.PayAllSui(
 		context.Background(),
-		&models.PayAllSuiRequest{
+		&sui.PayAllSuiRequest{
 			Signer:     signer,
 			Recipient:  signer,
 			InputCoins: pickedCoins.CoinIds(),

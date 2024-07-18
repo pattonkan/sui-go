@@ -19,7 +19,7 @@ func (s *ImplSuiAPI) GetCoinObjsForTargetAmount(
 	address *sui_types.SuiAddress,
 	targetAmount uint64,
 ) (models.Coins, error) {
-	coins, err := s.GetCoins(ctx, &models.GetCoinsRequest{
+	coins, err := s.GetCoins(ctx, &GetCoinsRequest{
 		Owner: address,
 		Limit: 200,
 	})
@@ -46,7 +46,7 @@ func (s *ImplSuiAPI) SignAndExecuteTransaction(
 	}
 	resp, err := s.ExecuteTransactionBlock(
 		ctx,
-		&models.ExecuteTransactionBlockRequest{
+		&ExecuteTransactionBlockRequest{
 			TxDataBytes: txBytes,
 			Signatures:  []*sui_signer.Signature{&signature},
 			Options:     options,
@@ -76,7 +76,7 @@ func (s *ImplSuiAPI) BuildAndPublishContract(
 
 	txnBytes, err := s.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
@@ -108,7 +108,7 @@ func (s *ImplSuiAPI) PublishContract(
 ) (*models.SuiTransactionBlockResponse, *sui_types.PackageID, error) {
 	txnBytes, err := s.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules,
 			Dependencies:    dependencies,
@@ -141,7 +141,7 @@ func (s *ImplSuiAPI) MintToken(
 ) (*models.SuiTransactionBlockResponse, error) {
 	txnBytes, err := s.MoveCall(
 		ctx,
-		&models.MoveCallRequest{
+		&MoveCallRequest{
 			Signer:    signer.Address,
 			PackageID: packageID,
 			Module:    tokenName,
@@ -168,7 +168,7 @@ const QUERY_MAX_RESULT_LIMIT = 50
 
 // GetSuiCoinsOwnedByAddress This function will retrieve a maximum of 200 coins.
 func (s *ImplSuiAPI) GetSuiCoinsOwnedByAddress(ctx context.Context, address *sui_types.SuiAddress) (models.Coins, error) {
-	page, err := s.GetCoins(ctx, &models.GetCoinsRequest{
+	page, err := s.GetCoins(ctx, &GetCoinsRequest{
 		Owner: address,
 		Limit: 200,
 	})
@@ -199,7 +199,7 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 	options *models.SuiObjectDataOptions,
 	filter func(*models.SuiObjectData) bool,
 ) ([]models.SuiObjectResponse, error) {
-	filteringObjs, err := s.GetOwnedObjects(ctx, &models.GetOwnedObjectsRequest{
+	filteringObjs, err := s.GetOwnedObjects(ctx, &GetOwnedObjectsRequest{
 		Address: address,
 		Query: &models.SuiObjectResponseQuery{
 			Options: &models.SuiObjectDataOptions{
@@ -221,7 +221,7 @@ func (s *ImplSuiAPI) BatchGetFilteredObjectsOwnedByAddress(
 		objIds = append(objIds, obj.Data.ObjectID)
 	}
 
-	return s.MultiGetObjects(ctx, &models.MultiGetObjectsRequest{
+	return s.MultiGetObjects(ctx, &MultiGetObjectsRequest{
 		ObjectIDs: objIds,
 		Options:   options,
 	})

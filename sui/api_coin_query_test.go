@@ -66,7 +66,7 @@ func TestGetAllCoins(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(
 			tt.name, func(t *testing.T) {
-				got, err := tt.a.GetAllCoins(tt.args.ctx, &models.GetAllCoinsRequest{
+				got, err := tt.a.GetAllCoins(tt.args.ctx, &sui.GetAllCoinsRequest{
 					Owner:  tt.args.address,
 					Cursor: tt.args.cursor,
 					Limit:  tt.args.limit,
@@ -85,7 +85,7 @@ func TestGetAllCoins(t *testing.T) {
 
 func TestGetBalance(t *testing.T) {
 	api := sui.NewSuiClient(conn.DevnetEndpointUrl)
-	balance, err := api.GetBalance(context.TODO(), &models.GetBalanceRequest{Owner: sui_signer.TEST_ADDRESS})
+	balance, err := api.GetBalance(context.TODO(), &sui.GetBalanceRequest{Owner: sui_signer.TEST_ADDRESS})
 	require.NoError(t, err)
 	t.Logf(
 		"Coin Name: %v, Count: %v, Total: %v, Locked: %v",
@@ -112,7 +112,7 @@ func TestGetCoinMetadata(t *testing.T) {
 func TestGetCoins(t *testing.T) {
 	api := sui.NewSuiClient(conn.TestnetEndpointUrl)
 	defaultCoinType := models.SuiCoinType
-	coins, err := api.GetCoins(context.TODO(), &models.GetCoinsRequest{
+	coins, err := api.GetCoins(context.TODO(), &sui.GetCoinsRequest{
 		Owner:    sui_signer.TEST_ADDRESS,
 		CoinType: &defaultCoinType,
 		Limit:    3,

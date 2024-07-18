@@ -40,7 +40,7 @@ func TestMintToken(t *testing.T) {
 	coinType := fmt.Sprintf("%s::testcoin::TESTCOIN", tokenPackageID.String())
 
 	// all the minted tokens were sent to the signer, so we should find a single object contains all the minted token
-	coins, err := client.GetCoins(context.Background(), &models.GetCoinsRequest{
+	coins, err := client.GetCoins(context.Background(), &sui.GetCoinsRequest{
 		Owner:    signer.Address,
 		CoinType: &coinType,
 		Limit:    10,
@@ -62,7 +62,7 @@ func deployTestcoin(t *testing.T, client *sui.ImplSuiAPI, signer *sui_signer.Sig
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,

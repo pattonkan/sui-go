@@ -17,7 +17,7 @@ func BuildAndPublish(client *sui.ImplSuiAPI, signer *sui_signer.Signer, path str
 	}
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
@@ -57,7 +57,7 @@ func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) 
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&models.PublishRequest{
+		&sui.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,

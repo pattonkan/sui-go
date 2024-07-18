@@ -17,7 +17,13 @@ func (s *ImplSuiAPI) GetCheckpoint(ctx context.Context, checkpointId *models.Big
 	return &resp, s.http.CallContext(ctx, &resp, getCheckpoint, checkpointId)
 }
 
-func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, req *models.GetCheckpointsRequest) (*models.CheckpointPage, error) {
+type GetCheckpointsRequest struct {
+	Cursor          *models.BigInt // optional
+	Limit           *uint64        // optional
+	DescendingOrder bool
+}
+
+func (s *ImplSuiAPI) GetCheckpoints(ctx context.Context, req *GetCheckpointsRequest) (*models.CheckpointPage, error) {
 	var resp models.CheckpointPage
 	return &resp, s.http.CallContext(ctx, &resp, getCheckpoints, req.Cursor, req.Limit, req.DescendingOrder)
 }
@@ -32,7 +38,12 @@ func (s *ImplSuiAPI) GetLatestCheckpointSequenceNumber(ctx context.Context) (str
 	return resp, s.http.CallContext(ctx, &resp, getLatestCheckpointSequenceNumber)
 }
 
-func (s *ImplSuiAPI) GetObject(ctx context.Context, req *models.GetObjectRequest) (*models.SuiObjectResponse, error) {
+type GetObjectRequest struct {
+	ObjectID *sui_types.ObjectID
+	Options  *models.SuiObjectDataOptions // optional
+}
+
+func (s *ImplSuiAPI) GetObject(ctx context.Context, req *GetObjectRequest) (*models.SuiObjectResponse, error) {
 	var resp models.SuiObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, getObject, req.ObjectID, req.Options)
 }
@@ -50,35 +61,61 @@ func (s *ImplSuiAPI) GetTotalTransactionBlocks(ctx context.Context) (string, err
 	return resp, s.http.CallContext(ctx, &resp, getTotalTransactionBlocks)
 }
 
-func (s *ImplSuiAPI) GetTransactionBlock(ctx context.Context, req *models.GetTransactionBlockRequest) (*models.SuiTransactionBlockResponse, error) {
+type GetTransactionBlockRequest struct {
+	Digest  *sui_types.TransactionDigest
+	Options *models.SuiTransactionBlockResponseOptions // optional
+}
+
+func (s *ImplSuiAPI) GetTransactionBlock(ctx context.Context, req *GetTransactionBlockRequest) (*models.SuiTransactionBlockResponse, error) {
 	resp := models.SuiTransactionBlockResponse{}
 	return &resp, s.http.CallContext(ctx, &resp, getTransactionBlock, req.Digest, req.Options)
 }
 
-func (s *ImplSuiAPI) MultiGetObjects(ctx context.Context, req *models.MultiGetObjectsRequest) ([]models.SuiObjectResponse, error) {
+type MultiGetObjectsRequest struct {
+	ObjectIDs []*sui_types.ObjectID
+	Options   *models.SuiObjectDataOptions // optional
+}
+
+func (s *ImplSuiAPI) MultiGetObjects(ctx context.Context, req *MultiGetObjectsRequest) ([]models.SuiObjectResponse, error) {
 	var resp []models.SuiObjectResponse
 	return resp, s.http.CallContext(ctx, &resp, multiGetObjects, req.ObjectIDs, req.Options)
 }
 
+type MultiGetTransactionBlocksRequest struct {
+	Digests []*sui_types.Digest
+	Options *models.SuiTransactionBlockResponseOptions // optional
+}
+
 func (s *ImplSuiAPI) MultiGetTransactionBlocks(
 	ctx context.Context,
-	req *models.MultiGetTransactionBlocksRequest,
+	req *MultiGetTransactionBlocksRequest,
 ) ([]*models.SuiTransactionBlockResponse, error) {
 	resp := []*models.SuiTransactionBlockResponse{}
 	return resp, s.http.CallContext(ctx, &resp, multiGetTransactionBlocks, req.Digests, req.Options)
 }
 
+type TryGetPastObjectRequest struct {
+	ObjectID *sui_types.ObjectID
+	Version  uint64
+	Options  *models.SuiObjectDataOptions // optional
+}
+
 func (s *ImplSuiAPI) TryGetPastObject(
 	ctx context.Context,
-	req *models.TryGetPastObjectRequest,
+	req *TryGetPastObjectRequest,
 ) (*models.SuiPastObjectResponse, error) {
 	var resp models.SuiPastObjectResponse
 	return &resp, s.http.CallContext(ctx, &resp, tryGetPastObject, req.ObjectID, req.Version, req.Options)
 }
 
+type TryMultiGetPastObjectsRequest struct {
+	PastObjects []*models.SuiGetPastObjectRequest
+	Options     *models.SuiObjectDataOptions // optional
+}
+
 func (s *ImplSuiAPI) TryMultiGetPastObjects(
 	ctx context.Context,
-	req *models.TryMultiGetPastObjectsRequest,
+	req *TryMultiGetPastObjectsRequest,
 ) ([]*models.SuiPastObjectResponse, error) {
 	var resp []*models.SuiPastObjectResponse
 	return resp, s.http.CallContext(ctx, &resp, tryMultiGetPastObjects, req.PastObjects, req.Options)
