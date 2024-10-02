@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+
 	"github.com/howjmay/sui-go/sui_types"
 )
 
@@ -45,7 +47,8 @@ type EventFilter struct {
 	// Return events with the given Move event struct name (struct tag).
 	// For example, if the event is defined in `0xabcd::MyModule`, and named
 	// `Foo`, then the struct tag is `0xabcd::MyModule::Foo`.
-	MoveEventType  *sui_types.StructTag       `json:"MoveEventType,omitempty"`
+	MoveEventType *sui_types.StructTag `json:"MoveEventType,omitempty"`
+	// Return the Event objects which contain the given field/value
 	MoveEventField *EventFilterMoveEventField `json:"MoveEventField,omitempty"`
 	// Return events emitted in [start_time, end_time] interval
 	TimeRange *EventFilterTimeRange `json:"TimeRange,omitempty"`
@@ -79,4 +82,8 @@ type EventFilterTimeRange struct {
 type AndOrEventFilter struct {
 	Filter1 *EventFilter
 	Filter2 *EventFilter
+}
+
+func (f AndOrEventFilter) MarshalJSON() ([]byte, error) {
+	return json.Marshal([2]interface{}{f.Filter1, f.Filter2})
 }
