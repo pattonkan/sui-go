@@ -6,23 +6,23 @@ import (
 
 	"github.com/fardream/go-bcs/bcs"
 
-	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/sui_signer"
-	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui/suiptb"
+	"github.com/howjmay/sui-go/suiclient"
+	"github.com/howjmay/sui-go/suisigner"
 )
 
 func SwapSui(
-	suiClient *sui.ImplSuiAPI,
-	swapper *sui_signer.Signer,
-	swapPackageID *sui_types.PackageID,
-	testcoinID *sui_types.ObjectID,
-	poolObjectID *sui_types.ObjectID,
-	suiCoins []*models.Coin,
+	suiClient *suiclient.ClientImpl,
+	swapper *suisigner.Signer,
+	swapPackageId *sui.PackageId,
+	testcoinId *sui.ObjectId,
+	poolObjectId *sui.ObjectId,
+	suiCoins []*suiclient.Coin,
 ) {
-	poolGetObjectRes, err := suiClient.GetObject(context.Background(), &sui.GetObjectRequest{
-		ObjectID: poolObjectID,
-		Options: &models.SuiObjectDataOptions{
+	poolGetObjectRes, err := suiClient.GetObject(context.Background(), &suiclient.GetObjectRequest{
+		ObjectId: poolObjectId,
+		Options: &suiclient.SuiObjectDataOptions{
 			ShowType:    true,
 			ShowContent: true,
 		},
@@ -32,41 +32,41 @@ func SwapSui(
 	}
 
 	// swap sui to testcoin
-	ptb := sui_types.NewProgrammableTransactionBuilder()
+	ptb := suiptb.NewTransactionDataTransactionBuilder()
 
-	arg0 := ptb.MustObj(sui_types.ObjectArg{SharedObject: &sui_types.SharedObjectArg{
-		Id:                   poolObjectID,
+	arg0 := ptb.MustObj(suiptb.ObjectArg{SharedObject: &suiptb.SharedObjectArg{
+		Id:                   poolObjectId,
 		InitialSharedVersion: poolGetObjectRes.Data.Ref().Version,
 		Mutable:              true,
 	}})
-	arg1 := ptb.MustObj(sui_types.ObjectArg{ImmOrOwnedObject: suiCoins[0].Ref()})
+	arg1 := ptb.MustObj(suiptb.ObjectArg{ImmOrOwnedObject: suiCoins[0].Ref()})
 
-	retCoinArg := ptb.Command(sui_types.Command{
-		MoveCall: &sui_types.ProgrammableMoveCall{
-			Package:  swapPackageID,
+	retCoinArg := ptb.Command(suiptb.Command{
+		MoveCall: &suiptb.ProgrammableMoveCall{
+			Package:  swapPackageId,
 			Module:   "swap",
 			Function: "swap_sui",
-			TypeArguments: []sui_types.TypeTag{{Struct: &sui_types.StructTag{
-				Address: testcoinID,
+			TypeArguments: []sui.TypeTag{{Struct: &sui.StructTag{
+				Address: testcoinId,
 				Module:  "testcoin",
 				Name:    "TESTCOIN",
 			}}},
-			Arguments: []sui_types.Argument{arg0, arg1},
+			Arguments: []suiptb.Argument{arg0, arg1},
 		}},
 	)
-	ptb.Command(sui_types.Command{
-		TransferObjects: &sui_types.ProgrammableTransferObjects{
-			Objects: []sui_types.Argument{retCoinArg},
+	ptb.Command(suiptb.Command{
+		TransferObjects: &suiptb.ProgrammableTransferObjects{
+			Objects: []suiptb.Argument{retCoinArg},
 			Address: ptb.MustPure(swapper.Address),
 		},
 	})
 	pt := ptb.Finish()
-	txData := sui_types.NewProgrammable(
+	txData := suiptb.NewTransactionData(
 		swapper.Address,
 		pt,
-		[]*sui_types.ObjectRef{suiCoins[1].Ref()},
-		sui.DefaultGasBudget,
-		sui.DefaultGasPrice,
+		[]*sui.ObjectRef{suiCoins[1].Ref()},
+		suiclient.DefaultGasBudget,
+		suiclient.DefaultGasPrice,
 	)
 	txBytes, err := bcs.Marshal(txData)
 	if err != nil {
@@ -77,7 +77,7 @@ func SwapSui(
 		context.Background(),
 		swapper,
 		txBytes,
-		&models.SuiTransactionBlockResponseOptions{
+		&suiclient.SuiTransactionBlockResponseOptions{
 			ShowObjectChanges: true,
 			ShowEffects:       true,
 		},
@@ -88,12 +88,12 @@ func SwapSui(
 
 	for _, change := range resp.ObjectChanges {
 		if change.Data.Created != nil {
-			fmt.Println("change.Data.Created.ObjectID: ", change.Data.Created.ObjectID)
+			fmt.Println("change.Data.Created.ObjectId: ", change.Data.Created.ObjectId)
 			fmt.Println("change.Data.Created.ObjectType: ", change.Data.Created.ObjectType)
 			fmt.Println("change.Data.Created.Owner.AddressOwner: ", change.Data.Created.Owner.AddressOwner)
 		}
 		if change.Data.Mutated != nil {
-			fmt.Println("change.Data.Mutated.ObjectID: ", change.Data.Mutated.ObjectID)
+			fmt.Println("change.Data.Mutated.ObjectId: ", change.Data.Mutated.ObjectId)
 			fmt.Println("change.Data.Mutated.ObjectType: ", change.Data.Mutated.ObjectType)
 			fmt.Println("change.Data.Mutated.Owner.AddressOwner: ", change.Data.Mutated.Owner.AddressOwner)
 		}

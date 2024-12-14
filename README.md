@@ -19,16 +19,16 @@ go get github.com/howjmay/sui-go
 Singer is a struct which holds the keypair of a user and will be used to sign transactions.
 
 ```go
-import "github.com/howjmay/sui-go/sui_signer"
+import "github.com/howjmay/sui-go/suisigner"
 
-// Create a sui_signer.Signer with mnemonic
+// Create a suisigner.Signer with mnemonic
 mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-signer1, err := sui_signer.NewSignerWithMnemonic(mnemonic, sui_signer.KeySchemeFlagEd25519)
+signer1, err := suisigner.NewSignerWithMnemonic(mnemonic, suisigner.KeySchemeFlagEd25519)
 fmt.Printf("address   : %v\n", signer1.Address)
 
-// create sui_signer.Signer with seed
+// create suisigner.Signer with seed
 seed, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-signer2 := sui_signer.NewSigner(seed, sui_signer.KeySchemeFlagDefault)
+signer2 := suisigner.NewSigner(seed, suisigner.KeySchemeFlagDefault)
 
 // Get private key, public key, address
 fmt.Printf("privateKey: %x\n", signer2.PrivateKey()[:32])
@@ -42,15 +42,15 @@ All data interactions on the Sui chain are implemented through the JSON RPC clie
 
 ```go
 import "github.com/howjmay/sui-go/sui"
-import "github.com/howjmay/sui-go/sui_types"
+import "github.com/howjmay/sui-go/suiclient"
 
-client := sui.NewSuiClient(rpcUrl) // some hardcoded endpoints are provided e.g. conn.TestnetEndpointUrl
+client := suiclient.NewClient(rpcUrl) // some hardcoded endpoints are provided e.g. conn.TestnetEndpointUrl
 
 // Call JSON RPC (e.g. call sui_getTransactionBlock)
-digest, err := sui_types.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
+digest, err := sui.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 require.NoError(t, err)
 resp, err := client.GetTransactionBlock(
-    context.Background(), *digest, models.SuiTransactionBlockResponseOptions{
+    context.Background(), *digest, sui.SuiTransactionBlockResponseOptions{
         ShowInput:          true,
         ShowEffects:        true,
         ShowObjectChanges:  true,

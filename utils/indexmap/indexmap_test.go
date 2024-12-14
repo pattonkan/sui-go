@@ -3,7 +3,7 @@ package indexmap_test
 import (
 	"testing"
 
-	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui/suiptb"
 	"github.com/howjmay/sui-go/utils/indexmap"
 	"github.com/stretchr/testify/require"
 )
@@ -38,7 +38,7 @@ func TestIndexMap(t *testing.T) {
 	})
 
 	t.Run("customized type", func(t *testing.T) {
-		m := indexmap.NewIndexMap[sui_types.BuilderArg, sui_types.CallArg]()
+		m := indexmap.NewIndexMap[suiptb.BuilderArg, suiptb.CallArg]()
 		testBytes := [][]byte{
 			[]byte{1, 4, 7},
 			[]byte{2, 5, 8},
@@ -46,32 +46,32 @@ func TestIndexMap(t *testing.T) {
 			[]byte{10, 11, 12},
 			[]byte{13, 14, 15},
 		}
-		m.Insert(sui_types.BuilderArg{Pure: &testBytes[0]}, sui_types.CallArg{Pure: &testBytes[0]})
-		m.Insert(sui_types.BuilderArg{Pure: &testBytes[1]}, sui_types.CallArg{Pure: &testBytes[1]})
+		m.Insert(suiptb.BuilderArg{Pure: &testBytes[0]}, suiptb.CallArg{Pure: &testBytes[0]})
+		m.Insert(suiptb.BuilderArg{Pure: &testBytes[1]}, suiptb.CallArg{Pure: &testBytes[1]})
 
-		val, ok := m.Get(sui_types.BuilderArg{Pure: &testBytes[0]})
+		val, ok := m.Get(suiptb.BuilderArg{Pure: &testBytes[0]})
 		require.True(t, ok)
-		require.Equal(t, sui_types.CallArg{Pure: &testBytes[0]}, val)
-		idx, ok := m.Find(sui_types.BuilderArg{Pure: &testBytes[0]})
+		require.Equal(t, suiptb.CallArg{Pure: &testBytes[0]}, val)
+		idx, ok := m.Find(suiptb.BuilderArg{Pure: &testBytes[0]})
 		require.True(t, ok)
 		require.Equal(t, idx, 0)
 
-		m.Insert(sui_types.BuilderArg{Pure: &testBytes[0]}, sui_types.CallArg{Pure: &testBytes[2]})
-		val, ok = m.Get(sui_types.BuilderArg{Pure: &testBytes[0]})
+		m.Insert(suiptb.BuilderArg{Pure: &testBytes[0]}, suiptb.CallArg{Pure: &testBytes[2]})
+		val, ok = m.Get(suiptb.BuilderArg{Pure: &testBytes[0]})
 		require.True(t, ok)
-		require.Equal(t, sui_types.CallArg{Pure: &testBytes[2]}, val)
-		idx, ok = m.Find(sui_types.BuilderArg{Pure: &testBytes[0]})
+		require.Equal(t, suiptb.CallArg{Pure: &testBytes[2]}, val)
+		idx, ok = m.Find(suiptb.BuilderArg{Pure: &testBytes[0]})
 		require.True(t, ok)
 		require.Equal(t, idx, 0)
 
-		var targetList []sui_types.CallArg = []sui_types.CallArg{
-			sui_types.CallArg{Pure: &testBytes[3]},
-			sui_types.CallArg{Pure: &testBytes[4]},
+		var targetList []suiptb.CallArg = []suiptb.CallArg{
+			suiptb.CallArg{Pure: &testBytes[3]},
+			suiptb.CallArg{Pure: &testBytes[4]},
 		}
-		var testList []sui_types.CallArg
+		var testList []suiptb.CallArg
 		i := 3
-		m.ForEach(func(k sui_types.BuilderArg, v sui_types.CallArg) {
-			testList = append(testList, sui_types.CallArg{Pure: &testBytes[i]})
+		m.ForEach(func(k suiptb.BuilderArg, v suiptb.CallArg) {
+			testList = append(testList, suiptb.CallArg{Pure: &testBytes[i]})
 			i++
 		})
 		require.Equal(t, targetList, testList)

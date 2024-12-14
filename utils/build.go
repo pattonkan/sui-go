@@ -8,13 +8,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/sui"
 )
 
 type CompiledMoveModules struct {
-	Modules      []*sui_types.Base64Data `json:"modules"`
-	Dependencies []*sui_types.SuiAddress `json:"dependencies"`
-	Digest       []int                   `json:"digest"`
+	Modules      []*sui.Base64Data `json:"modules"`
+	Dependencies []*sui.Address    `json:"dependencies"`
+	Digest       []int             `json:"digest"`
 }
 
 func MoveBuild(contractPath string) (*CompiledMoveModules, error) {
