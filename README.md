@@ -12,6 +12,13 @@ The Sui Golang SDK. We welcome other developers to participate in the developmen
 go get github.com/howjmay/sui-go
 ```
 
+## Features
+
+* Full coverage of Sui's JSON RPC APIs for both HTTP and Websocket
+* Websocket implementation for chain event/transaction subscriber
+* Native Support of Sui's Programmable Transaction Blocks (PTB) by Programmable Transaction Builder (see see package `suiptb`)
+* Decoder for easy decoding of returned Move objects in BCS format (see package `movebcs`)
+
 ## Usage
 
 ### Signer
@@ -62,8 +69,38 @@ fmt.Println("transaction status = ", resp.Effects.Status)
 fmt.Println("transaction timestamp = ", resp.TimestampMs)
 ```
 
+### Programmable Transaction Blocks (PTB)
+
+See `TestPTBMoveCall()` in `sui-go/sui/suiptb/programmable_transaction_builder_test.go`
+
+### Decode move object in BCS
+
+```go
+import "github.com/howjmay/sui-go/sui"
+import "github.com/howjmay/sui-go/suiclient"
+import "github.com/howjmay/sui-go/suisigner"
+
+// get Coin object in BCS format by its ObjectRef
+resGetObject, err := client.GetObject(context.TODO(), &suiclient.GetObjectRequest{
+	ObjectId: targetCoinRef.ObjectId,
+	Options: &suiclient.SuiObjectDataOptions{
+		ShowBcs: true,
+	},
+})
+require.NoError(t, err)
+var moveCoin movebcs.MoveCoin
+// here we get the Coin object for following usage
+_, err = bcs.Unmarshal(resGetObject.GetMoveObjectInBcs(), &moveCoin)
+require.NoError(t, err)
+```
+
 ## Reference
 
 * [Programmable Transaction Blocks (official doc)](https://docs.sui.io/concepts/transactions/prog-txn-blocks)
 * [Sui Programmable Transaction Blocks Basics (TypeScript SDK)](https://sdk.mystenlabs.com/typescript/transaction-building/basics)
 * [Sui JSON RPC API Reference](https://docs.sui.io/sui-api-ref)
+
+## Acknowledgments
+
+* https://github.com/coming-chat/go-sui-sdk
+* https://github.com/block-vision/sui-go-sdk

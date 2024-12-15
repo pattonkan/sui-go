@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	SuiCoinType = "0x2::sui::SUI"
 )
 

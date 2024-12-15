@@ -171,7 +171,9 @@ type SuiObjectResponse struct {
 	Error *WrapperTaggedJson[SuiObjectResponseError] `json:"error,omitempty"`
 }
 
-// type CheckpointSequenceNumber = uint64
+func (r *SuiObjectResponse) GetMoveObjectInBcs() []byte {
+	return r.Data.Bcs.Data.MoveObject.BcsBytes
+}
 
 type CheckpointedObjectId struct {
 	ObjectId     sui.ObjectId `json:"objectId"`
