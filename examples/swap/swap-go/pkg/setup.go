@@ -3,25 +3,24 @@ package pkg
 import (
 	"context"
 
-	"github.com/howjmay/sui-go/models"
 	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/sui_signer"
-	"github.com/howjmay/sui-go/sui_types"
+	"github.com/howjmay/sui-go/suiclient"
+	"github.com/howjmay/sui-go/suisigner"
 	"github.com/howjmay/sui-go/utils"
 )
 
-func BuildAndPublish(client *sui.ImplSuiAPI, signer *sui_signer.Signer, path string) *sui_types.PackageID {
+func BuildAndPublish(client *suiclient.ClientImpl, signer *suisigner.Signer, path string) *sui.PackageId {
 	modules, err := utils.MoveBuild(path)
 	if err != nil {
 		panic(err)
 	}
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&sui.PublishRequest{
+		&suiclient.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
-			GasBudget:       models.NewBigInt(10 * sui.DefaultGasBudget),
+			GasBudget:       sui.NewBigInt(10 * suiclient.DefaultGasBudget),
 		},
 	)
 	if err != nil {
@@ -31,7 +30,7 @@ func BuildAndPublish(client *sui.ImplSuiAPI, signer *sui_signer.Signer, path str
 		context.Background(),
 		signer,
 		txnBytes.TxBytes,
-		&models.SuiTransactionBlockResponseOptions{
+		&suiclient.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -39,16 +38,16 @@ func BuildAndPublish(client *sui.ImplSuiAPI, signer *sui_signer.Signer, path str
 	if err != nil || !txnResponse.Effects.Data.IsSuccess() {
 		panic(err)
 	}
-	packageID, err := txnResponse.GetPublishedPackageID()
+	packageId, err := txnResponse.GetPublishedPackageId()
 	if err != nil {
 		panic(err)
 	}
-	return packageID
+	return packageId
 }
 
-func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) (
-	*sui_types.PackageID,
-	*sui_types.ObjectID,
+func BuildDeployMintTestcoin(client *suiclient.ClientImpl, signer *suisigner.Signer) (
+	*sui.PackageId,
+	*sui.ObjectId,
 ) {
 	modules, err := utils.MoveBuild(utils.GetGitRoot() + "/contracts/testcoin/")
 	if err != nil {
@@ -57,18 +56,18 @@ func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) 
 
 	txnBytes, err := client.Publish(
 		context.Background(),
-		&sui.PublishRequest{
+		&suiclient.PublishRequest{
 			Sender:          signer.Address,
 			CompiledModules: modules.Modules,
 			Dependencies:    modules.Dependencies,
-			GasBudget:       models.NewBigInt(10 * sui.DefaultGasBudget),
+			GasBudget:       sui.NewBigInt(10 * suiclient.DefaultGasBudget),
 		},
 	)
 	if err != nil {
 		panic(err)
 	}
 	txnResponse, err := client.SignAndExecuteTransaction(
-		context.Background(), signer, txnBytes.TxBytes, &models.SuiTransactionBlockResponseOptions{
+		context.Background(), signer, txnBytes.TxBytes, &suiclient.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -77,7 +76,7 @@ func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) 
 		panic(err)
 	}
 
-	packageID, err := txnResponse.GetPublishedPackageID()
+	packageId, err := txnResponse.GetPublishedPackageId()
 	if err != nil {
 		panic(err)
 	}
@@ -91,11 +90,11 @@ func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) 
 	txnResponse, err = client.MintToken(
 		context.Background(),
 		signer,
-		packageID,
+		packageId,
 		"testcoin",
 		treasuryCap,
 		mintAmount,
-		&models.SuiTransactionBlockResponseOptions{
+		&suiclient.SuiTransactionBlockResponseOptions{
 			ShowEffects:       true,
 			ShowObjectChanges: true,
 		},
@@ -104,5 +103,5 @@ func BuildDeployMintTestcoin(client *sui.ImplSuiAPI, signer *sui_signer.Signer) 
 		panic(err)
 	}
 
-	return packageID, treasuryCap
+	return packageId, treasuryCap
 }
