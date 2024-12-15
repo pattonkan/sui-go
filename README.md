@@ -16,8 +16,8 @@ go get github.com/howjmay/sui-go
 
 * Full coverage of Sui's JSON RPC APIs for both HTTP and Websocket
 * Websocket implementation for chain event/transaction subscriber
-* Native Support of Sui's Programmable Transaction Blocks (PTB) by Programmable Transaction Builder (see see package `suiptb`)
-* Decoder for easy decoding of returned Move objects in BCS format (see package `movebcs`)
+* Native Support of Sui's Programmable Transaction Blocks (PTB) by Programmable Transaction Builder (see see package [`suiptb`](sui/suiptb))
+* Decoder for easy decoding of returned Move objects in BCS format (see package [`movebcs`](sui/movebcs))
 
 ## Usage
 
@@ -71,7 +71,7 @@ fmt.Println("transaction timestamp = ", resp.TimestampMs)
 
 ### Programmable Transaction Blocks (PTB)
 
-See `TestPTBMoveCall()` in `sui-go/sui/suiptb/programmable_transaction_builder_test.go`
+See `TestPTBMoveCall()` in [`programmable_transaction_builder_test.go`](sui/suiptb/programmable_transaction_builder_test.go)
 
 ### Decode move object in BCS
 
