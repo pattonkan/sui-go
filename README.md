@@ -4,8 +4,6 @@ Sui Golang SDK
 [![Documentation (main)](https://img.shields.io/badge/docs-master-59f)](https://github.com/howjmay/sui-go)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/howjmay/sui-go/blob/main/LICENSE)
 
-The Sui Golang SDK. We welcome other developers to participate in the development and testing of sui-sdk.
-
 ## Install
 
 ```sh
