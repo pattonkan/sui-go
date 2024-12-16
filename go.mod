@@ -1,4 +1,4 @@
-module github.com/howjmay/sui-go
+module github.com/pattonkan/sui-go
 
 go 1.21
 

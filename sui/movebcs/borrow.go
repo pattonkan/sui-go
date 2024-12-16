@@ -2,7 +2,7 @@ package movebcs
 
 import (
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type GetDynamicFieldObjectRequest struct {

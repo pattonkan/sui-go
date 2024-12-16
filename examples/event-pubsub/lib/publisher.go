@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suisigner"
 )
 
 type Publisher struct {

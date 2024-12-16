@@ -1,13 +1,13 @@
 # sui-go
 Sui Golang SDK
 
-[![Documentation (main)](https://img.shields.io/badge/docs-master-59f)](https://github.com/howjmay/sui-go)
-[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/howjmay/sui-go/blob/main/LICENSE)
+[![Documentation (main)](https://img.shields.io/badge/docs-master-59f)](https://github.com/pattonkan/sui-go)
+[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/pattonkan/sui-go/blob/main/LICENSE)
 
 ## Install
 
 ```sh
-go get github.com/howjmay/sui-go
+go get github.com/pattonkan/sui-go
 ```
 
 ## Features
@@ -24,7 +24,7 @@ go get github.com/howjmay/sui-go
 Singer is a struct which holds the keypair of a user and will be used to sign transactions.
 
 ```go
-import "github.com/howjmay/sui-go/suisigner"
+import "github.com/pattonkan/sui-go/suisigner"
 
 // Create a suisigner.Signer with mnemonic
 mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
@@ -46,8 +46,8 @@ fmt.Printf("address   : %v\n", signer2.Address)
 All data interactions on the Sui chain are implemented through the JSON RPC client.
 
 ```go
-import "github.com/howjmay/sui-go/sui"
-import "github.com/howjmay/sui-go/suiclient"
+import "github.com/pattonkan/sui-go/sui"
+import "github.com/pattonkan/sui-go/suiclient"
 
 client := suiclient.NewClient(rpcUrl) // some hardcoded endpoints are provided e.g. conn.TestnetEndpointUrl
 
@@ -74,9 +74,9 @@ See `TestPTBMoveCall()` in [`programmable_transaction_builder_test.go`](sui/suip
 ### Decode move object in BCS
 
 ```go
-import "github.com/howjmay/sui-go/sui"
-import "github.com/howjmay/sui-go/suiclient"
-import "github.com/howjmay/sui-go/suisigner"
+import "github.com/pattonkan/sui-go/sui"
+import "github.com/pattonkan/sui-go/suiclient"
+import "github.com/pattonkan/sui-go/suisigner"
 
 // get Coin object in BCS format by its ObjectRef
 resGetObject, err := client.GetObject(context.TODO(), &suiclient.GetObjectRequest{

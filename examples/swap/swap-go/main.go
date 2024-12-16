@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/howjmay/sui-go/examples/swap/swap-go/pkg"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suiclient/conn"
-	"github.com/howjmay/sui-go/suisigner"
-	"github.com/howjmay/sui-go/utils"
+	"github.com/pattonkan/sui-go/examples/swap/swap-go/pkg"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suiclient/conn"
+	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/utils"
 )
 
 func main() {

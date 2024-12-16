@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type StakeStatus = WrapperTaggedJson[Status]

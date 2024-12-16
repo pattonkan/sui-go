@@ -9,12 +9,12 @@ import (
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/stretchr/testify/require"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/sui/suiptb"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suiclient/conn"
-	"github.com/howjmay/sui-go/suisigner"
-	"github.com/howjmay/sui-go/utils"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui/suiptb"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suiclient/conn"
+	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/utils"
 )
 
 func TestPTBMoveCall(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/howjmay/sui-go/utils"
+	"github.com/pattonkan/sui-go/utils"
 
 	"github.com/stretchr/testify/require"
 )
