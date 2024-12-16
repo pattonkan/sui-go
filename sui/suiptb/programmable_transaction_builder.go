@@ -6,8 +6,8 @@ import (
 
 	"github.com/fardream/go-bcs/bcs"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/utils/indexmap"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/utils/indexmap"
 )
 
 // ProgrammableTransactionBuilder calls 'Finish()' to be built

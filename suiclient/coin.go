@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type Coin struct {

@@ -3,8 +3,8 @@ package suiclient
 import (
 	"context"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suisigner"
 )
 
 type DevInspectTransactionBlockRequest struct {

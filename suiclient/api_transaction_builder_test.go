@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suiclient/conn"
-	"github.com/howjmay/sui-go/suisigner"
-	"github.com/howjmay/sui-go/utils"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suiclient/conn"
+	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/utils"
 
 	"github.com/stretchr/testify/require"
 )

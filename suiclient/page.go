@@ -1,6 +1,6 @@
 package suiclient
 
-import "github.com/howjmay/sui-go/sui"
+import "github.com/pattonkan/sui-go/sui"
 
 type Page[T SuiTransactionBlockResponse | Event | Coin | *Coin | SuiObjectResponse | DynamicFieldInfo | string | *Checkpoint,
 	C sui.TransactionDigest | EventId | sui.ObjectId | sui.BigInt] struct {

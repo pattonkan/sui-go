@@ -3,7 +3,7 @@ package suiclient
 import (
 	"context"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type GetAllCoinsRequest struct {

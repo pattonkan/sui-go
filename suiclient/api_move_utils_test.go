@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suiclient/conn"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/stretchr/testify/require"
 )
 

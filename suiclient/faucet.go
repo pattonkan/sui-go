@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 // refer the implementation of `request_tokens_from_faucet()` in

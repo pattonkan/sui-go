@@ -3,7 +3,7 @@ package suiclient
 import (
 	"encoding/json"
 
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type EventId struct {

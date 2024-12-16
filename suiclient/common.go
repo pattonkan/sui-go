@@ -1,6 +1,6 @@
 package suiclient
 
-import "github.com/howjmay/sui-go/sui"
+import "github.com/pattonkan/sui-go/sui"
 
 type Balance struct {
 	CoinType        sui.ObjectType             `json:"coinType"`

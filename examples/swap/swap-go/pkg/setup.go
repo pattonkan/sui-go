@@ -3,10 +3,10 @@ package pkg
 import (
 	"context"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suiclient"
-	"github.com/howjmay/sui-go/suisigner"
-	"github.com/howjmay/sui-go/utils"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/utils"
 )
 
 func BuildAndPublish(client *suiclient.ClientImpl, signer *suisigner.Signer, path string) *sui.PackageId {

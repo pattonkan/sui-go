@@ -1,8 +1,8 @@
 package suiclient
 
 import (
-	"github.com/howjmay/sui-go/suiclient/conn"
-	"github.com/howjmay/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suiclient/conn"
+	"github.com/pattonkan/sui-go/suisigner"
 )
 
 type ClientImpl struct {

@@ -1,7 +1,7 @@
 package suiptb
 
 import (
-	"github.com/howjmay/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui"
 )
 
 type GasData struct {

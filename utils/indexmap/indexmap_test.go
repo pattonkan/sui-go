@@ -3,8 +3,8 @@ package indexmap_test
 import (
 	"testing"
 
-	"github.com/howjmay/sui-go/sui/suiptb"
-	"github.com/howjmay/sui-go/utils/indexmap"
+	"github.com/pattonkan/sui-go/sui/suiptb"
+	"github.com/pattonkan/sui-go/utils/indexmap"
 	"github.com/stretchr/testify/require"
 )
 

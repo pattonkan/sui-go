@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/howjmay/sui-go/sui"
-	"github.com/howjmay/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suiclient"
 
 	"github.com/stretchr/testify/require"
 )
