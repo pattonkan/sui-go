@@ -1,7 +1,6 @@
 # sui-go
 Sui Golang SDK
 
-[![Documentation (main)](https://img.shields.io/badge/docs-master-59f)](https://github.com/pattonkan/sui-go)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/pattonkan/sui-go/blob/main/LICENSE)
 
 ## Install
