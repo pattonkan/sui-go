@@ -13,7 +13,7 @@ type TransactionBytes struct {
 	// objects to be used in this transaction
 	InputObjects []*InputObjectKind `json:"inputObjects"`
 	// transaction data bytes
-	TxBytes sui.Base64Data `json:"txBytes"`
+	TxBytes sui.Base64 `json:"txBytes"`
 }
 
 type InputObjectKind map[string]interface{}
@@ -140,7 +140,7 @@ func (s *ClientImpl) PaySui(
 
 type PublishRequest struct {
 	Sender          *sui.Address
-	CompiledModules []*sui.Base64Data
+	CompiledModules []*sui.Base64
 	Dependencies    []*sui.ObjectId
 	Gas             *sui.ObjectId // optional
 	GasBudget       *sui.BigInt

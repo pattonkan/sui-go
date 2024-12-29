@@ -17,7 +17,7 @@ import (
 )
 
 func TestMintToken(t *testing.T) {
-	client, signer := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
 
 	// module name is 'testcoin'
 	tokenPackageId, treasuryCap := deployTestcoin(t, client, signer)

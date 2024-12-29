@@ -9,7 +9,7 @@ import (
 
 type DevInspectTransactionBlockRequest struct {
 	SenderAddress *sui.Address
-	TxKindBytes   sui.Base64Data
+	TxKindBytes   sui.Base64
 	GasPrice      *sui.BigInt // optional
 	Epoch         *uint64     // optional
 	// additional_args // optional // FIXME
@@ -36,14 +36,14 @@ func (s *ClientImpl) DevInspectTransactionBlock(
 
 func (s *ClientImpl) DryRunTransaction(
 	ctx context.Context,
-	txDataBytes sui.Base64Data,
+	txDataBytes sui.Base64,
 ) (*DryRunTransactionBlockResponse, error) {
 	var resp DryRunTransactionBlockResponse
 	return &resp, s.http.CallContext(ctx, &resp, dryRunTransactionBlock, txDataBytes)
 }
 
 type ExecuteTransactionBlockRequest struct {
-	TxDataBytes sui.Base64Data
+	TxDataBytes sui.Base64
 	Signatures  []*suisigner.Signature
 	Options     *SuiTransactionBlockResponseOptions // optional
 	RequestType ExecuteTransactionRequestType       // optional

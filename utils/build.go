@@ -12,9 +12,9 @@ import (
 )
 
 type CompiledMoveModules struct {
-	Modules      []*sui.Base64Data `json:"modules"`
-	Dependencies []*sui.Address    `json:"dependencies"`
-	Digest       []int             `json:"digest"`
+	Modules      []*sui.Base64  `json:"modules"`
+	Dependencies []*sui.Address `json:"dependencies"`
+	Digest       []int          `json:"digest"`
 }
 
 func MoveBuild(contractPath string) (*CompiledMoveModules, error) {

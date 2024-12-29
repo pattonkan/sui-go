@@ -6,18 +6,15 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pattonkan/sui-go/sui"
 	"github.com/pattonkan/sui-go/suisigner"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewSigner(t *testing.T) {
-	testMnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-	testEd25519Address := sui.MustAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
-	signer, err := suisigner.NewSignerWithMnemonic(testMnemonic, suisigner.KeySchemeFlagEd25519)
+	signer, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suisigner.KeySchemeFlagEd25519)
 	require.NoError(t, err)
-	require.Equal(t, testEd25519Address, signer.Address)
+	require.Equal(t, signer.Address, suisigner.TEST_ADDRESS)
 }
 
 func TestSignatureMarshalUnmarshal(t *testing.T) {

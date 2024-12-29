@@ -19,7 +19,7 @@ type Checkpoint struct {
 	TimestampMs                *sui.BigInt            `json:"timestampMs"`
 	Transactions               []*sui.Digest          `json:"transactions"`
 	CheckpointCommitments      []CheckpointCommitment `json:"checkpointCommitments"`
-	ValidatorSignature         sui.Base64Data         `json:"validatorSignature"`
+	ValidatorSignature         sui.Base64             `json:"validatorSignature"`
 }
 
 type CheckpointPage = Page[*Checkpoint, sui.BigInt]

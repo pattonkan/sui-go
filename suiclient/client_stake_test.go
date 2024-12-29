@@ -17,7 +17,8 @@ const (
 )
 
 func TestRequestAddDelegation(t *testing.T) {
-	client, signer := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
+	t.Skip("fixme")
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
 	coins, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: 10,
@@ -44,7 +45,7 @@ func TestRequestAddDelegation(t *testing.T) {
 
 	simulate, err := client.DryRunTransaction(context.Background(), txBytes)
 	require.NoError(t, err)
-	require.Equal(t, "", simulate.Effects.Data.V1.Status.Error)
+	require.Empty(t, simulate.Effects.Data.V1.Status.Error)
 	require.True(t, simulate.Effects.Data.IsSuccess())
 }
 

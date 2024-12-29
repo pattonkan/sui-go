@@ -41,7 +41,7 @@ func TestGetCheckpoint(t *testing.T) {
 		TimestampMs:           sui.NewBigInt(1681393657483),
 		Transactions:          []*sui.Digest{sui.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
 		CheckpointCommitments: []suiclient.CheckpointCommitment{},
-		ValidatorSignature:    *sui.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
+		ValidatorSignature:    *sui.MustNewBase64("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
 	}
 	require.Equal(t, targetCheckpoint, checkpoint)
 }
@@ -71,7 +71,7 @@ func TestGetCheckpoints(t *testing.T) {
 			TimestampMs:           sui.NewBigInt(1681393657483),
 			Transactions:          []*sui.Digest{sui.MustNewDigest("9NnjyPG8V2TPCSbNE391KDyge42AwV3vUD7aNtQQ9eqS")},
 			CheckpointCommitments: []suiclient.CheckpointCommitment{},
-			ValidatorSignature:    *sui.MustNewBase64Data("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
+			ValidatorSignature:    *sui.MustNewBase64("r8/5+Rm7niIlndcnvjSJ/vZLPrH3xY/ePGYTvrVbTascoQSpS+wsGlC+bQBpzIwA"),
 		},
 		{
 			Epoch:                    sui.NewBigInt(0),
@@ -88,7 +88,7 @@ func TestGetCheckpoints(t *testing.T) {
 			TimestampMs:           sui.NewBigInt(1681393661034),
 			Transactions:          []*sui.Digest{sui.MustNewDigest("9muLz7ZTocpBTdSo5Ak7ZxzEpfzywr6Y12Hj3AdT8dvV")},
 			CheckpointCommitments: []suiclient.CheckpointCommitment{},
-			ValidatorSignature:    *sui.MustNewBase64Data("jG5ViKThziBpnJnOw9dVdjIrv2IHhCrn8ZhvI1gUS2X1t90aRqhnLF6+WbS1S2WT"),
+			ValidatorSignature:    *sui.MustNewBase64("jG5ViKThziBpnJnOw9dVdjIrv2IHhCrn8ZhvI1gUS2X1t90aRqhnLF6+WbS1S2WT"),
 		},
 	}
 	require.Len(t, checkpointPage.Data, 2)

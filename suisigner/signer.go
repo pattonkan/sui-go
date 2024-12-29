@@ -20,7 +20,7 @@ const (
 
 var (
 	TEST_MNEMONIC = "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-	TEST_SEED     = []byte{26, 2, 214, 28, 100, 52, 180, 208, 255, 37, 42, 136, 12, 4, 5, 11, 95, 39, 200, 181, 116, 2, 108, 152, 221, 114, 38, 136, 101, 192, 237, 229}
+	TEST_SEED     = []byte{4, 66, 186, 181, 112, 134, 111, 192, 149, 13, 68, 115, 67, 195, 58, 59, 33, 20, 200, 10, 150, 185, 145, 3, 106, 160, 105, 37, 4, 153, 172, 103, 69, 228, 114, 210, 176, 182, 208, 21, 252, 59, 50, 82, 135, 160, 1, 131, 156, 104, 159, 240, 183, 20, 250, 216, 26, 228, 91, 220, 15, 222, 75, 91}
 	TEST_ADDRESS  = sui.MustAddressFromHex("0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5")
 )
 
@@ -32,7 +32,7 @@ type Signer struct {
 }
 
 func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
-	prikey := ed25519.NewKeyFromSeed(seed[:])
+	prikey := ed25519.NewKeyFromSeed(seed[:ed25519.SeedSize])
 	pubkey := prikey.Public().(ed25519.PublicKey)
 
 	// IOTA_DIFF iota ignore flag when signature scheme is ed25519

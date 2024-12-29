@@ -15,7 +15,7 @@ import (
 func (s *ClientImpl) SignAndExecuteTransaction(
 	ctx context.Context,
 	signer *suisigner.Signer,
-	txBytes sui.Base64Data,
+	txBytes sui.Base64,
 	options *SuiTransactionBlockResponseOptions,
 ) (*SuiTransactionBlockResponse, error) {
 	// FIXME we need to support other intent
@@ -80,7 +80,7 @@ func (s *ClientImpl) BuildAndPublishContract(
 func (s *ClientImpl) PublishContract(
 	ctx context.Context,
 	signer *suisigner.Signer,
-	modules []*sui.Base64Data,
+	modules []*sui.Base64,
 	dependencies []*sui.Address,
 	gasBudget uint64,
 	options *SuiTransactionBlockResponseOptions,
