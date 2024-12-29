@@ -26,7 +26,9 @@ func TestDevInspectTransactionBlock(t *testing.T) {
 	coins := suiclient.Coins(coinPages.Data)
 
 	ptb := suiptb.NewTransactionDataTransactionBuilder()
-	ptb.PayAllSui(sender.Address)
+	err = ptb.PayAllSui(sender.Address)
+	require.NoError(t, err)
+
 	pt := ptb.Finish()
 	tx := suiptb.NewTransactionData(
 		sender.Address,

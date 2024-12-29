@@ -8,6 +8,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -21,7 +22,7 @@ var (
 	ErrInvalidPath        = errors.New("invalid derivation path")
 	ErrNoPublicDerivation = errors.New("no public derivation for ed25519")
 
-	pathRegex = regexp.MustCompile(`^m(\/[0-9]+')+$`)
+	pathRegex = regexp.MustCompile(`^m(\/d+')+$`)
 )
 
 type Key struct {
@@ -82,7 +83,7 @@ func (k *Key) Derive(i uint32) (*Key, error) {
 	iBytes := make([]byte, 4)
 	binary.BigEndian.PutUint32(iBytes, i)
 	key := append([]byte{0x0}, k.Key...)
-	data := append(key, iBytes...)
+	data := slices.Concat(key, iBytes)
 
 	hash := hmac.New(sha512.New, k.ChainCode)
 	_, err := hash.Write(data)

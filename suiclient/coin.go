@@ -1,7 +1,6 @@
 package suiclient
 
 import (
-	"errors"
 	"math/big"
 
 	"github.com/pattonkan/sui-go/sui"
@@ -47,19 +46,6 @@ func (cs Coins) TotalBalance() *big.Int {
 		total = total.Add(total, new(big.Int).SetUint64(coin.Balance.Uint64()))
 	}
 	return total
-}
-
-func (cs Coins) PickCoinNoLess(amount uint64) (*Coin, error) {
-	for i, coin := range cs {
-		if coin.Balance.Uint64() >= amount {
-			cs = append(cs[:i], cs[i+1:]...)
-			return coin, nil
-		}
-	}
-	if len(cs) <= 3 {
-		return nil, errors.New("insufficient balance")
-	}
-	return nil, errors.New("no coin is enough to cover the gas")
 }
 
 func (cs Coins) CoinRefs() []*sui.ObjectRef {
