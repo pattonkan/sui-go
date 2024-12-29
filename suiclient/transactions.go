@@ -275,7 +275,7 @@ type BalanceChange struct {
 type SuiTransactionBlockResponse struct {
 	Digest                  sui.TransactionDigest                          `json:"digest"`
 	Transaction             *SuiTransactionBlock                           `json:"transaction,omitempty"`
-	RawTransaction          sui.Base64Data                                 `json:"rawTransaction,omitempty"` // enable by show_raw_input
+	RawTransaction          sui.Base64                                     `json:"rawTransaction,omitempty"` // enable by show_raw_input
 	Effects                 *WrapperTaggedJson[SuiTransactionBlockEffects] `json:"effects,omitempty"`
 	Events                  []*Event                                       `json:"events,omitempty"`
 	TimestampMs             *sui.BigInt                                    `json:"timestampMs,omitempty"`

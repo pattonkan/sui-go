@@ -16,7 +16,7 @@ import (
 )
 
 func TestDevInspectTransactionBlock(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,

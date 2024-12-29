@@ -7,10 +7,30 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test-all:
+  short-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Install Sui
+      run: |
+        # cargo install --locked --git https://github.com/MystenLabs/sui.git --branch testnet sui --features tracing
+        # Fetch the latest release tag from GitHub
+        latest_release=$(curl -s https://api.github.com/repos/MystenLabs/sui/releases/latest | jq -r .tag_name)
+        echo "latest_release: $latest_release"
+        # Download the corresponding tarball
+        curl -L -o sui.tar.gz "https://github.com/MystenLabs/sui/releases/download/${latest_release}/sui-${latest_release}-ubuntu-x86_64.tgz"
+        # Create a directory for Sui binaries
+        mkdir -p sui
+        # Extract the tarball into the sui directory
+        tar -xzf sui.tar.gz -C sui --strip-components=1
+        # Add Sui binaries to PATH
+        echo "$PWD/sui" >> $GITHUB_PATH
+
+    - name: Start Sui node
+      run: |
+        sui start --force-regenesis  --with-faucet=9123 >sui.log 2>&1 &
+        echo $! > sui.pid
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
@@ -18,7 +38,15 @@ jobs:
         go-version: '1.23'
 
     - name: Test
-      run: go test -v ./...
+      run: go test -short -v ./...
+    
+    - name: Stop Sui node
+      if: always()
+      run: |
+        if [ -f sui.pid ]; then
+          kill -9 $(cat sui.pid) || echo "Process already terminated"
+          rm -f sui.pid
+        fi
   
   golangci:
     name: run-linter

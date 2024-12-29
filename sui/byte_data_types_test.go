@@ -15,7 +15,7 @@ func TestSerialization(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, hexStr, hexdata.String())
 
-	base64data := sui.Bytes(hexdata.Data()).GetBase64Data()
+	base64data := sui.Bytes(hexdata.Data()).GetBase64()
 	base64Str := base64data.String()
 
 	t.Log(base64Str)
@@ -34,11 +34,11 @@ func TestHexdataJson(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, hexdata.Data(), hexdata2.Data())
 
-	base64data := sui.Bytes(hexdata.Data()).GetBase64Data()
+	base64data := sui.Bytes(hexdata.Data()).GetBase64()
 	dataJsonb, err := json.Marshal(base64data)
 	require.Nil(t, err)
 
-	base64data2 := sui.Base64Data{}
+	base64data2 := sui.Base64{}
 	err = json.Unmarshal(dataJsonb, &base64data2)
 	require.Nil(t, err)
 	require.Equal(t, base64data.Data(), base64data2.Data())

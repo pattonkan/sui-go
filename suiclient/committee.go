@@ -12,7 +12,7 @@ type CommitteeInfo struct {
 }
 
 type Validator struct {
-	PublicKey *sui.Base64Data
+	PublicKey *sui.Base64
 	Stake     *sui.BigInt
 }
 
@@ -34,7 +34,7 @@ func (c *CommitteeInfo) UnmarshalJSON(data []byte) error {
 		for _, validator := range validators {
 			var epochSafeBigInt sui.BigInt
 			if validatorElts, ok := validator.([]interface{}); ok && len(validatorElts) == 2 {
-				publicKey, err := sui.NewBase64Data(validatorElts[0].(string))
+				publicKey, err := sui.NewBase64(validatorElts[0].(string))
 				if err != nil {
 					return err
 				}

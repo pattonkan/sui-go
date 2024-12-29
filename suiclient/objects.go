@@ -66,15 +66,15 @@ type SuiRawMoveObject struct {
 	Type              sui.StructTag      `json:"type"`
 	HasPublicTransfer bool               `json:"hasPublicTransfer"`
 	Version           sui.SequenceNumber `json:"version"`
-	BcsBytes          sui.Base64Data     `json:"bcsBytes"`
+	BcsBytes          sui.Base64         `json:"bcsBytes"`
 }
 
 // FIXME Replace with sui.MovePackage
 type SuiRawMovePackage struct {
-	Id              *sui.ObjectId             `json:"id"`
-	Version         sui.SequenceNumber        `json:"version"`
-	ModuleMap       map[string]sui.Base64Data `json:"moduleMap"`
-	TypeOriginTable []sui.TypeOrigin          `json:"typeOriginTable"`
+	Id              *sui.ObjectId         `json:"id"`
+	Version         sui.SequenceNumber    `json:"version"`
+	ModuleMap       map[string]sui.Base64 `json:"moduleMap"`
+	TypeOriginTable []sui.TypeOrigin      `json:"typeOriginTable"`
 	LinkageTable    map[sui.ObjectId]sui.UpgradeInfo
 }
 

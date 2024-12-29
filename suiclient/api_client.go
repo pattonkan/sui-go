@@ -19,10 +19,7 @@ func NewClient(url string) *ClientImpl {
 // test only. If localnet is used then iota network will be connect
 func (i *ClientImpl) WithSignerAndFund(seed []byte, index int) (*ClientImpl, *suisigner.Signer) {
 	keySchemeFlag := suisigner.KeySchemeFlagEd25519
-	// special case if localnet is used, then
-	if i.http.Url() == conn.LocalnetEndpointUrl {
-		keySchemeFlag = suisigner.KeySchemeFlagIotaEd25519
-	}
+
 	// there are only 256 different signers can be generated
 	signer := suisigner.NewSignerByIndex(seed, keySchemeFlag, index)
 	var faucetUrl string

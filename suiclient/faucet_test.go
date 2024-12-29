@@ -16,12 +16,14 @@ func TestRequestFundFromFaucet_Devnet(t *testing.T) {
 }
 
 func TestRequestFundFromFaucet_Testnet(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 	err := suiclient.RequestFundFromFaucet(suisigner.TEST_ADDRESS, conn.TestnetFaucetUrl)
 	require.NoError(t, err)
 }
 
 func TestRequestFundFromFaucet_Localnet(t *testing.T) {
-	t.Skip("only run with local node is set up")
 	err := suiclient.RequestFundFromFaucet(suisigner.TEST_ADDRESS, conn.LocalnetFaucetUrl)
 	require.NoError(t, err)
 }
