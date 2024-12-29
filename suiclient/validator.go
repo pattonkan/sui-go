@@ -38,7 +38,7 @@ type Stake struct {
 	StakeRequestEpoch *sui.BigInt  `json:"stakeRequestEpoch"`
 	StakeActiveEpoch  *sui.BigInt  `json:"stakeActiveEpoch"`
 	Principal         *sui.BigInt  `json:"principal"`
-	StakeStatus       *StakeStatus `json:"-,flatten"`
+	StakeStatus       *StakeStatus `json:"-,flatten"` //nolint:staticcheck
 }
 
 func (s *Stake) IsActive() bool {
