@@ -54,7 +54,7 @@ func (m *IndexMap[K, V]) Get(key K) (V, bool) {
 
 func (m *IndexMap[K, V]) Find(key K) (int, bool) {
 	for i, v := range m.InsertOrderList {
-		if v == key {
+		if GetHash(v) == GetHash(key) {
 			return i, true
 		}
 	}
