@@ -54,15 +54,19 @@ client := suiclient.NewClient(rpcUrl) // some hardcoded endpoints are provided e
 digest, err := sui.NewDigest("D1TM8Esaj3G9xFEDirqMWt9S7HjJXFrAGYBah1zixWTL")
 require.NoError(t, err)
 resp, err := client.GetTransactionBlock(
-    context.Background(), *digest, sui.SuiTransactionBlockResponseOptions{
-        ShowInput:          true,
-        ShowEffects:        true,
-        ShowObjectChanges:  true,
-        ShowBalanceChanges: true,
-        ShowEvents:         true,
+    context.Background(),
+    &suiclient.GetTransactionBlockRequest{
+        digest, &suiclient.SuiTransactionBlockResponseOptions{
+            ShowInput:          true,
+            ShowEffects:        true,
+            ShowObjectChanges:  true,
+            ShowBalanceChanges: true,
+            ShowEvents:         true,
+        },
     },
 )
-fmt.Println("transaction status = ", resp.Effects.Status)
+effects := resp.Effects.Data
+fmt.Println("transaction status = ", effects.V1.Status.Status)
 fmt.Println("transaction timestamp = ", resp.TimestampMs)
 ```
 
