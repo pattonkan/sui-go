@@ -77,8 +77,11 @@ func (p *ProgrammableTransactionBuilder) Obj(objArg ObjectArg) (Argument, error)
 		}
 
 		switch {
-		case oldObjArg.SharedObject.InitialSharedVersion == objArg.SharedObject.InitialSharedVersion:
-			if oldObjArg.id() != objArg.id() {
+		case oldObjArg.SharedObject != nil && objArg.SharedObject != nil &&
+			oldObjArg.SharedObject.InitialSharedVersion == objArg.SharedObject.InitialSharedVersion:
+			oldId := oldObjArg.id()
+			newId := objArg.id()
+			if oldId != nil && newId != nil && *oldId != *newId {
 				return Argument{}, errors.New("invariant violation! object has id does not match call arg")
 			}
 			oj = ObjectArg{
