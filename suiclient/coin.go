@@ -17,7 +17,7 @@ type Coin struct {
 	PreviousTransaction sui.TransactionDigest `json:"previousTransaction"`
 }
 
-type CoinPage = Page[*Coin, sui.ObjectId]
+type CoinPage = Page[*Coin, string]
 
 func (c *Coin) Ref() *sui.ObjectRef {
 	return &sui.ObjectRef{

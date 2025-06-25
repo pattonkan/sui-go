@@ -96,7 +96,11 @@ func (c *HttpClient) CallContext(ctx context.Context, result interface{}, method
 	if len(respmsg.Result) == 0 {
 		return ErrNoResult
 	}
-	return json.Unmarshal(respmsg.Result, result)
+	err = json.Unmarshal(respmsg.Result, result)
+	if err != nil {
+		return fmt.Errorf("could not unmarshal result: %w", err)
+	}
+	return nil
 }
 
 // BatchCall sends all given requests as a single batch and waits for the server
