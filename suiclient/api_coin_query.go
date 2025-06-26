@@ -46,7 +46,7 @@ func (s *ClientImpl) GetCoinMetadata(ctx context.Context, coinType string) (*Coi
 type GetCoinsRequest struct {
 	Owner    *sui.Address
 	CoinType *sui.ObjectType // optional
-	Cursor   *sui.ObjectId   // optional
+	Cursor   *string         // optional
 	Limit    uint            // optional
 }
 
