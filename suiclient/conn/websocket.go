@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	"github.com/gorilla/websocket"
+	"github.com/coder/websocket"
 )
 
 type WebsocketClient struct {
@@ -32,8 +32,7 @@ type SubscriptionResp struct {
 var DefaultReceiveMsgChanSize = 10
 
 func NewWebsocketClient(url string) *WebsocketClient {
-	dialer := websocket.Dialer{}
-	conn, _, err := dialer.Dial(url, nil)
+	conn, _, err := websocket.Dial(context.Background(), url, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))
 	}
@@ -58,12 +57,12 @@ func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte,
 	if err != nil {
 		return err
 	}
-	err = c.conn.WriteMessage(websocket.TextMessage, reqBody)
+	err = c.conn.Write(ctx, websocket.MessageText, reqBody)
 	if nil != err {
 		return err
 	}
 
-	_, msgData, err := c.conn.ReadMessage()
+	_, msgData, err := c.conn.Read(ctx)
 	if nil != err {
 		return err
 	}
@@ -77,13 +76,13 @@ func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte,
 
 	go func(conn *websocket.Conn) {
 		for {
-			messageType, messageData, err := conn.ReadMessage()
+			messageType, messageData, err := conn.Read(ctx)
 			if nil != err {
 				log.Fatal(err)
 				break
 			}
 			switch messageType {
-			case websocket.TextMessage:
+			case websocket.MessageText:
 				var respmsg jsonrpcMessage
 				if err := json.Unmarshal(messageData, &respmsg); err != nil {
 					log.Fatalf("could not unmarshal response body: %s", err)
