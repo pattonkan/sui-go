@@ -82,7 +82,7 @@ func TestContains(t *testing.T) {
 			want:   true,
 		},
 		{
-			name:   "failed, two levels",
+			name:   "unsuccessful, two levels",
 			str:    "0xe87e::swap::Pool<0x2f63::testcoin::TESTCOIN>",
 			target: &sui.ResourceType{Module: "name", ObjectName: "Pool"},
 			want:   false,
