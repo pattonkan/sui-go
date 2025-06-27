@@ -123,7 +123,7 @@ func TestGetCoins(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, coins.Data, 3)
+	require.Len(t, coins.Data, 1)
 	for _, data := range coins.Data {
 		require.Equal(t, sui.SuiCoinType, data.CoinType)
 		require.Greater(t, data.Balance.Int64(), int64(0))

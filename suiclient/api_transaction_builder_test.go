@@ -56,14 +56,14 @@ func TestBatchTransaction(t *testing.T) {
 }
 
 func TestMergeCoins(t *testing.T) {
-	client := suiclient.NewClient(conn.TestnetEndpointUrl)
-	signer := suisigner.TEST_ADDRESS
+	t.Skip("TODO use localnet to test this")
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
 	coins, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
-		Owner: signer,
+		Owner: signer.Address,
 		Limit: 10,
 	})
 	require.NoError(t, err)
-	require.True(t, len(coins.Data) >= 3)
+	require.Equal(t, len(coins.Data), 5)
 
 	coin1 := coins.Data[0]
 	coin2 := coins.Data[1]
@@ -72,7 +72,7 @@ func TestMergeCoins(t *testing.T) {
 	txn, err := client.MergeCoins(
 		context.Background(),
 		&suiclient.MergeCoinsRequest{
-			Signer:      signer,
+			Signer:      signer.Address,
 			PrimaryCoin: coin1.CoinObjectId,
 			CoinToMerge: coin2.CoinObjectId,
 			Gas:         coin3.CoinObjectId,

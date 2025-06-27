@@ -50,7 +50,11 @@ func (a Address) String() string {
 
 // ShortString Returns the address with leading zeros trimmed, e.g. 0x2
 func (a Address) ShortString() string {
-	return "0x" + strings.TrimLeft(hex.EncodeToString(a[:]), "0")
+	addr := strings.TrimLeft(hex.EncodeToString(a[:]), "0")
+	if addr == "" {
+		return "0x0"
+	}
+	return "0x" + addr
 }
 
 func (a Address) MarshalJSON() ([]byte, error) {
