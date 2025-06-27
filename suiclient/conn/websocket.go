@@ -123,3 +123,7 @@ func (c *WebsocketClient) nextId() json.RawMessage {
 	id := atomic.AddUint32(&c.idCounter, 1)
 	return strconv.AppendUint(nil, uint64(id), 10)
 }
+
+func (c *WebsocketClient) Close() error {
+	return c.conn.Close(websocket.StatusNormalClosure, "normal closure")
+}

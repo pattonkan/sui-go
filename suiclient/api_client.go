@@ -50,6 +50,14 @@ func NewSuiWebsocketClient(url string) *ClientImpl {
 	}
 }
 
+func (i *ClientImpl) Close() error {
+	if i.websocket != nil {
+		return i.websocket.Close()
+	}
+
+	return nil
+}
+
 const (
 	DefaultGasBudget uint64 = 10000000
 	DefaultGasPrice  uint64 = 1000
