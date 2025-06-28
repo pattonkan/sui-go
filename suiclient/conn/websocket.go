@@ -43,6 +43,18 @@ func NewWebsocketClient(url string) *WebsocketClient {
 	}
 }
 
+func NewWebsocketClientWithContext(url string, ctx context.Context) *WebsocketClient {
+	conn, _, err := websocket.Dial(ctx, url, nil)
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))
+	}
+
+	return &WebsocketClient{
+		url:  url,
+		conn: conn,
+	}
+}
+
 func (c *WebsocketClient) Call(resultCh chan []byte, method JsonRpcMethod, args ...interface{}) error {
 	ctx := context.Background()
 	return c.CallContext(ctx, resultCh, method, args...)
