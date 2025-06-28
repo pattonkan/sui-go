@@ -60,6 +60,16 @@ func (c *WebsocketClient) Call(resultCh chan []byte, method JsonRpcMethod, args 
 	return c.CallContext(ctx, resultCh, method, args...)
 }
 
+func NewWebsocketClientWithConn(conn *websocket.Conn) *WebsocketClient {
+	return &WebsocketClient{
+		conn: conn,
+	}
+}
+
+func (c *WebsocketClient) SetConn(conn *websocket.Conn) {
+	c.conn = conn
+}
+
 func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte, method JsonRpcMethod, args ...interface{}) error {
 	msg, err := c.newMessage(method.String(), args...)
 	if err != nil {
