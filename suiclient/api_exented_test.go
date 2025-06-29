@@ -311,7 +311,7 @@ func TestResolveNameServiceNames(t *testing.T) {
 
 func TestSubscribeEvent(t *testing.T) {
 	t.Skip("fixme: change to another endpoint")
-	api := suiclient.NewSuiWebsocketClient("wss://sui-mainnet.public.blastapi.io")
+	api := suiclient.NewSuiWebsocketClient(context.TODO(), "wss://sui-mainnet.public.blastapi.io")
 
 	type args struct {
 		ctx      context.Context
@@ -363,7 +363,7 @@ func TestSubscribeEvent(t *testing.T) {
 
 func TestSubscribeTransaction(t *testing.T) {
 	t.Skip("fixme: change to another endpoint")
-	api := suiclient.NewSuiWebsocketClient("wss://sui-mainnet.public.blastapi.io")
+	api := suiclient.NewSuiWebsocketClient(context.TODO(), "wss://sui-mainnet.public.blastapi.io")
 
 	type args struct {
 		ctx      context.Context
