@@ -13,7 +13,6 @@ import (
 
 type WebsocketClient struct {
 	idCounter uint32
-	url       string
 	conn      *websocket.Conn
 }
 
@@ -38,7 +37,6 @@ func NewWebsocketClient(url string) *WebsocketClient {
 	}
 
 	return &WebsocketClient{
-		url:  url,
 		conn: conn,
 	}
 }
@@ -50,7 +48,6 @@ func NewWebsocketClientWithContext(url string, ctx context.Context) *WebsocketCl
 	}
 
 	return &WebsocketClient{
-		url:  url,
 		conn: conn,
 	}
 }
