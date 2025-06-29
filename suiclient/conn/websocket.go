@@ -30,18 +30,7 @@ type SubscriptionResp struct {
 
 var DefaultReceiveMsgChanSize = 10
 
-func NewWebsocketClient(url string) *WebsocketClient {
-	conn, _, err := websocket.Dial(context.Background(), url, nil)
-	if err != nil {
-		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))
-	}
-
-	return &WebsocketClient{
-		conn: conn,
-	}
-}
-
-func NewWebsocketClientWithContext(url string, ctx context.Context) *WebsocketClient {
+func NewWebsocketClient(ctx context.Context, url string) *WebsocketClient {
 	conn, _, err := websocket.Dial(ctx, url, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))

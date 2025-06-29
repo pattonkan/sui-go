@@ -2,7 +2,7 @@ module github.com/pattonkan/sui-go
 
 go 1.23.0
 
-toolchain go1.24.4
+toolchain go1.23
 
 require (
 	github.com/btcsuite/btcutil v1.0.2

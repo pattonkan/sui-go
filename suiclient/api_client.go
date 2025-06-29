@@ -1,6 +1,8 @@
 package suiclient
 
 import (
+	"context"
+
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
 )
@@ -40,13 +42,13 @@ func (i *ClientImpl) WithSignerAndFund(seed []byte, index int) (*ClientImpl, *su
 	return i, signer
 }
 
-func (i *ClientImpl) WithWebsocket(url string) {
-	i.websocket = conn.NewWebsocketClient(url)
+func (i *ClientImpl) WithWebsocket(ctx context.Context, url string) {
+	i.websocket = conn.NewWebsocketClient(ctx, url)
 }
 
-func NewSuiWebsocketClient(url string) *ClientImpl {
+func NewSuiWebsocketClient(ctx context.Context, url string) *ClientImpl {
 	return &ClientImpl{
-		websocket: conn.NewWebsocketClient(url),
+		websocket: conn.NewWebsocketClient(ctx, url),
 	}
 }
 
