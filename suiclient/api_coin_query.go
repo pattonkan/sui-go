@@ -8,8 +8,8 @@ import (
 
 type GetAllCoinsRequest struct {
 	Owner  *sui.Address
-	Cursor *sui.ObjectId // optional
-	Limit  uint          // optional
+	Cursor *string // optional
+	Limit  uint    // optional
 }
 
 func (s *ClientImpl) GetAllBalances(ctx context.Context, owner *sui.Address) ([]*Balance, error) {

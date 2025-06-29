@@ -282,17 +282,18 @@ func TestQueryTransactionBlocks(t *testing.T) {
 
 func TestResolveNameServiceAddress(t *testing.T) {
 	api := suiclient.NewClient(conn.MainnetEndpointUrl)
-	addr, err := api.ResolveNameServiceAddress(context.Background(), "2222.sui")
+	addr, err := api.ResolveNameServiceAddress(context.Background(), "example.sui")
 	require.NoError(t, err)
-	require.Equal(t, "0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9", addr.String())
+	require.Equal(t, "0x214a4199264348df2364acd683a3971a9927a5252747f4e0776f0506922f9db0", addr.String())
 
-	_, err = api.ResolveNameServiceAddress(context.Background(), "2222.suijjzzww")
-	require.ErrorContains(t, err, "not found")
+	addr, err = api.ResolveNameServiceAddress(context.Background(), "2222.suijjzzww")
+	require.Equal(t, "0x0", addr.ShortString())
+	require.NoError(t, err)
 }
 
 func TestResolveNameServiceNames(t *testing.T) {
 	api := suiclient.NewClient(conn.MainnetEndpointUrl)
-	owner := sui.MustAddressFromHex("0x6174c5bd8ab9bf492e159a64e102de66429cfcde4fa883466db7b03af28b3ce9")
+	owner := sui.MustAddressFromHex("0x214a4199264348df2364acd683a3971a9927a5252747f4e0776f0506922f9db0")
 	namePage, err := api.ResolveNameServiceNames(context.Background(), &suiclient.ResolveNameServiceNamesRequest{
 		Owner: owner,
 	})
