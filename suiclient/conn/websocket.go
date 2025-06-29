@@ -8,12 +8,11 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	"github.com/gorilla/websocket"
+	"github.com/coder/websocket"
 )
 
 type WebsocketClient struct {
 	idCounter uint32
-	url       string
 	conn      *websocket.Conn
 }
 
@@ -32,14 +31,23 @@ type SubscriptionResp struct {
 var DefaultReceiveMsgChanSize = 10
 
 func NewWebsocketClient(url string) *WebsocketClient {
-	dialer := websocket.Dialer{}
-	conn, _, err := dialer.Dial(url, nil)
+	conn, _, err := websocket.Dial(context.Background(), url, nil)
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))
 	}
 
 	return &WebsocketClient{
-		url:  url,
+		conn: conn,
+	}
+}
+
+func NewWebsocketClientWithContext(url string, ctx context.Context) *WebsocketClient {
+	conn, _, err := websocket.Dial(ctx, url, nil)
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect to websocket server: %s, %s", err, url))
+	}
+
+	return &WebsocketClient{
 		conn: conn,
 	}
 }
@@ -47,6 +55,16 @@ func NewWebsocketClient(url string) *WebsocketClient {
 func (c *WebsocketClient) Call(resultCh chan []byte, method JsonRpcMethod, args ...interface{}) error {
 	ctx := context.Background()
 	return c.CallContext(ctx, resultCh, method, args...)
+}
+
+func NewWebsocketClientWithConn(conn *websocket.Conn) *WebsocketClient {
+	return &WebsocketClient{
+		conn: conn,
+	}
+}
+
+func (c *WebsocketClient) SetConn(conn *websocket.Conn) {
+	c.conn = conn
 }
 
 func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte, method JsonRpcMethod, args ...interface{}) error {
@@ -58,12 +76,12 @@ func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte,
 	if err != nil {
 		return err
 	}
-	err = c.conn.WriteMessage(websocket.TextMessage, reqBody)
+	err = c.conn.Write(ctx, websocket.MessageText, reqBody)
 	if nil != err {
 		return err
 	}
 
-	_, msgData, err := c.conn.ReadMessage()
+	_, msgData, err := c.conn.Read(ctx)
 	if nil != err {
 		return err
 	}
@@ -77,13 +95,13 @@ func (c *WebsocketClient) CallContext(ctx context.Context, resultCh chan []byte,
 
 	go func(conn *websocket.Conn) {
 		for {
-			messageType, messageData, err := conn.ReadMessage()
+			messageType, messageData, err := conn.Read(ctx)
 			if nil != err {
 				log.Fatal(err)
 				break
 			}
 			switch messageType {
-			case websocket.TextMessage:
+			case websocket.MessageText:
 				var respmsg jsonrpcMessage
 				if err := json.Unmarshal(messageData, &respmsg); err != nil {
 					log.Fatalf("could not unmarshal response body: %s", err)
@@ -123,4 +141,8 @@ func (c *WebsocketClient) newMessage(method string, paramsIn ...interface{}) (*j
 func (c *WebsocketClient) nextId() json.RawMessage {
 	id := atomic.AddUint32(&c.idCounter, 1)
 	return strconv.AppendUint(nil, uint64(id), 10)
+}
+
+func (c *WebsocketClient) Close() error {
+	return c.conn.Close(websocket.StatusNormalClosure, "normal closure")
 }
