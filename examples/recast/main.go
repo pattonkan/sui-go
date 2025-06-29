@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
 
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: signer.Address,

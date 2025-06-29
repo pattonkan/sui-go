@@ -38,7 +38,7 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageId *sui.PackageId)
 		log.Panic(err)
 	}
 
-	signature, err := p.signer.SignTransactionBlock(txnBytes.TxBytes.Data(), suisigner.DefaultIntent())
+	signature, err := p.signer.SignDigest(txnBytes.TxBytes.Data(), suisigner.DefaultIntent())
 	if err != nil {
 		log.Panic(err)
 	}
