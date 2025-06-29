@@ -18,7 +18,7 @@ const (
 
 func TestRequestAddDelegation(t *testing.T) {
 	t.Skip("fixme")
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
 	coins, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: signer.Address,
 		Limit: 10,
