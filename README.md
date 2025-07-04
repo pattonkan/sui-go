@@ -3,6 +3,10 @@ Sui Golang SDK
 
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://github.com/pattonkan/sui-go/blob/main/LICENSE)
 
+<div align="center">
+  <img src="./logo.png" width="800"/>
+</div>
+
 ## Install
 
 ```sh
