@@ -1,21 +1,12 @@
 package suisigner
 
 import (
-	"crypto/ed25519"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/pattonkan/sui-go/sui"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
-)
-
-const (
-	SignatureFlagEd25519   = 0x0
-	SignatureFlagSecp256k1 = 0x1
-
-	// IOTA_DIFF 4218 is for iota
-	DerivationPathEd25519   = `m/44'/784'/0'/0'/0'`
-	DerivationPathSecp256k1 = `m/54'/784'/0'/0/0`
 )
 
 var (
@@ -26,38 +17,27 @@ var (
 
 // FIXME support more than ed25519
 type Signer struct {
-	ed25519Keypair *KeypairEd25519
-	// secp256k1Keypair *KeypairSecp256k1
-	Address *sui.Address
+	KeypairEd25519   *KeypairEd25519
+	KeypairSecp256k1 *KeypairSecp256k1
+	Address          *sui.Address
 }
 
 func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
-	prikey := ed25519.NewKeyFromSeed(seed[:ed25519.SeedSize])
-	pubkey := prikey.Public().(ed25519.PublicKey)
+	signer := Signer{}
 
 	// IOTA_DIFF iota ignore flag when signature scheme is ed25519
-	var buf []byte
 	switch flag {
 	case KeySchemeFlagEd25519:
-		buf = []byte{KeySchemeFlagEd25519.Byte()}
+		k := NewKeypairEd25519FromSeed(seed)
+		signer.KeypairEd25519 = k
 	case KeySchemeFlagSecp256k1:
-		buf = []byte{KeySchemeFlagEd25519.Byte()}
-	case KeySchemeFlagIotaEd25519:
-		buf = []byte{}
+		k := NewKeypairSecp256k1FromSeed(seed)
+		signer.KeypairSecp256k1 = k
 	default:
 		panic("unrecognizable key scheme flag")
 	}
-	buf = append(buf, pubkey...)
-	addrBytes := blake2b.Sum256(buf)
-	addr := "0x" + hex.EncodeToString(addrBytes[:])
-
-	return &Signer{
-		ed25519Keypair: &KeypairEd25519{
-			PriKey: prikey,
-			PubKey: pubkey,
-		},
-		Address: sui.MustAddressFromHex(addr),
-	}
+	signer.Address = signer.calculateAddress(flag)
+	return &signer
 }
 
 // there are only 256 different signers can be generated
@@ -76,17 +56,30 @@ func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error)
 	if err != nil {
 		return nil, err
 	}
-	key, err := DeriveForPath(DerivationPathEd25519, seed)
+
+	var derivePath string
+	switch flag {
+	case KeySchemeFlagEd25519:
+		derivePath = DerivationPathEd25519
+	case KeySchemeFlagSecp256k1:
+		derivePath = DerivationPathSecp256k1
+	default:
+		return nil, fmt.Errorf("unsupported key scheme")
+	}
+
+	key, err := DeriveForPath(derivePath, seed)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to derive %s key for path: %w", flag.String(), err)
 	}
 	return NewSigner(key.Key, flag), nil
 }
 
 func (s *Signer) PrivateKey() []byte {
 	switch {
-	case s.ed25519Keypair != nil:
-		return s.ed25519Keypair.PriKey
+	case s.KeypairEd25519 != nil:
+		return s.KeypairEd25519.PriKey
+	case s.KeypairSecp256k1 != nil:
+		return s.KeypairSecp256k1.PriKey.Serialize()
 	default:
 		return nil
 	}
@@ -94,25 +87,60 @@ func (s *Signer) PrivateKey() []byte {
 
 func (s *Signer) PublicKey() []byte {
 	switch {
-	case s.ed25519Keypair != nil:
-		return s.ed25519Keypair.PubKey
+	case s.KeypairEd25519 != nil:
+		return s.KeypairEd25519.PubKey
+	case s.KeypairSecp256k1 != nil:
+		return s.KeypairSecp256k1.PubKey.SerializeCompressed()
 	default:
 		return nil
 	}
 }
 
+// Signer implements the UserSignature trait in Sui Rust SDK
+// refer sui-rust-sdk/crates/sui-sdk-types/src/crypto/signature.rs
+//
+//	pub enum UserSignature {
+//	    Simple(SimpleSignature),
+//	    Multisig(MultisigAggregatedSignature),
+//	    ZkLogin(Box<ZkLoginAuthenticator>),
+//	    Passkey(PasskeyAuthenticator),
+//	}
+//
+// SimpleSignature include Ed25519, Secp256k1, and Secp256r1 signatures
 func (s *Signer) Sign(data []byte) Signature {
-	// FIXME support more than ed25519
-	return Signature{
-		Ed25519SuiSignature: NewEd25519SuiSignature(s, data),
+	var sig Signature
+	switch {
+	case s.KeypairEd25519 != nil:
+		sig.Ed25519SuiSignature = NewEd25519SuiSignature(s, data)
+	case s.KeypairSecp256k1 != nil:
+		sig.Secp256k1SuiSignature = NewSecp256k1SuiSignature(s, data)
+	default:
+		panic("signer does not have keypair")
 	}
+	return sig
 }
 
-// FIXME support more than ed25519
-func (a *Signer) SignTransactionBlock(txnBytes []byte, intent Intent) (Signature, error) {
-	data := MessageWithIntent(intent, bcsBytes(txnBytes))
+// it is the signing_digest() interface in Sui Rust SDK
+func (a *Signer) SignDigest(msg []byte, intent Intent) (Signature, error) {
+	data := MessageWithIntent(intent, bcsBytes(msg))
 	hash := blake2b.Sum256(data)
 	return a.Sign(hash[:]), nil
+}
+
+func (a *Signer) calculateAddress(flag KeySchemeFlag) *sui.Address {
+	var buf []byte
+	switch flag {
+	case KeySchemeFlagEd25519:
+		buf = []byte{KeySchemeFlagEd25519.Byte()}
+	case KeySchemeFlagSecp256k1:
+		buf = []byte{KeySchemeFlagSecp256k1.Byte()}
+	default:
+		panic("unrecognizable key scheme flag")
+	}
+	buf = append(buf, a.PublicKey()...)
+	addrBytes := blake2b.Sum256(buf)
+	addr := "0x" + hex.EncodeToString(addrBytes[:])
+	return sui.MustAddressFromHex(addr)
 }
 
 type bcsBytes []byte

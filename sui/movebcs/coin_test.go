@@ -14,7 +14,7 @@ import (
 )
 
 func TestCoinDecode(t *testing.T) {
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 10)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 10)
 	resGetCoins, err := client.GetCoins(context.TODO(), &suiclient.GetCoinsRequest{
 		Owner:    signer.Address,
 		CoinType: &sui.SuiCoinType,
