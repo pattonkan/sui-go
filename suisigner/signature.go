@@ -15,7 +15,7 @@ type Signature struct {
 const (
 	SizeEd25519SuiSignature   = ed25519.PublicKeySize + ed25519.SignatureSize + 1
 	SizeSecp256k1SuiSignature = KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1
-	// SizeSecp256r1SuiSignature = KeypairSecp256r1PublicKeySize + KeypairSecp256r1SignatureSize + 1
+	SizeSecp256r1SuiSignature = KeypairSecp256r1PublicKeySize + KeypairSecp256r1SignatureSize + 1
 )
 
 type Ed25519SuiSignature struct {
@@ -27,7 +27,7 @@ type Secp256k1SuiSignature struct {
 }
 
 type Secp256r1SuiSignature struct {
-	Signature []byte //secp256r1.pubKey + Secp256r1Signature + 1
+	Signature [SizeSecp256r1SuiSignature]byte //secp256r1.pubKey + Secp256r1Signature + 1
 }
 
 func (s Signature) Bytes() []byte {

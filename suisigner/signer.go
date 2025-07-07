@@ -19,6 +19,7 @@ var (
 type Signer struct {
 	KeypairEd25519   *KeypairEd25519
 	KeypairSecp256k1 *KeypairSecp256k1
+	KeypairSecp256r1 *KeypairSecp256r1
 	Address          *sui.Address
 }
 
@@ -33,6 +34,9 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 	case KeySchemeFlagSecp256k1:
 		k := NewKeypairSecp256k1FromSeed(seed)
 		signer.KeypairSecp256k1 = k
+	case KeySchemeFlagSecp256r1:
+		k := NewKeypairSecp256r1FromSeed(seed)
+		signer.KeypairSecp256r1 = k
 	default:
 		panic("unrecognizable key scheme flag")
 	}
@@ -91,6 +95,8 @@ func (s *Signer) PublicKey() []byte {
 		return s.KeypairEd25519.PubKey
 	case s.KeypairSecp256k1 != nil:
 		return s.KeypairSecp256k1.PubKey.SerializeCompressed()
+	case s.KeypairSecp256r1 != nil:
+		return compressSecp256r1PublicKey(s.KeypairSecp256r1.PubKey)
 	default:
 		return nil
 	}
@@ -114,6 +120,8 @@ func (s *Signer) Sign(data []byte) Signature {
 		sig.Ed25519SuiSignature = NewEd25519SuiSignature(s, data)
 	case s.KeypairSecp256k1 != nil:
 		sig.Secp256k1SuiSignature = NewSecp256k1SuiSignature(s, data)
+	case s.KeypairSecp256r1 != nil:
+		sig.Secp256r1SuiSignature = NewSecp256r1SuiSignature(s, data)
 	default:
 		panic("signer does not have keypair")
 	}
@@ -134,6 +142,8 @@ func (a *Signer) calculateAddress(flag KeySchemeFlag) *sui.Address {
 		buf = []byte{KeySchemeFlagEd25519.Byte()}
 	case KeySchemeFlagSecp256k1:
 		buf = []byte{KeySchemeFlagSecp256k1.Byte()}
+	case KeySchemeFlagSecp256r1:
+		buf = []byte{KeySchemeFlagSecp256r1.Byte()}
 	default:
 		panic("unrecognizable key scheme flag")
 	}

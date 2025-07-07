@@ -73,6 +73,36 @@ func TestSignSecp256k1Static(t *testing.T) {
 	require.Equal(t, targetSig, sig.Secp256k1SuiSignature.Signature[:])
 }
 
+func TestSignSecp256r1Static(t *testing.T) {
+	seed, err := hex.DecodeString("a72c740033ddfeb3d22c5dc47d9b555e1d290d3c3b844554b0d94d311971767d")
+	require.NoError(t, err)
+	targetSig, err := hex.DecodeString("025a963dd9081366d9014aae2afd93761f62f8887ead54905c7fd8b20bf092678e251d182e32ff91a762be83ed89092f641435648f1e0d9c5ef1268b9e2c284fcf0387efef02e19fd54ae8b854dd79fa411169f76a9cbcc7711ec4de5ce444b31837")
+	require.NoError(t, err)
+	data := []byte("hello")
+
+	keypair := suisigner.NewKeypairSecp256r1FromSeed(seed)
+	require.NotNil(t, keypair)
+	signer := suisigner.NewSigner(seed, suisigner.KeySchemeFlagSecp256r1)
+
+	intent := suisigner.Intent{
+		Scope: suisigner.IntentScope{
+			PersonalMessage: &sui.EmptyEnum{},
+		},
+		Version: suisigner.IntentVersion{
+			V0: &sui.EmptyEnum{},
+		},
+		AppId: suisigner.AppId{
+			Sui: &sui.EmptyEnum{},
+		},
+	}
+	data, err = bcs.Marshal(data)
+	require.NoError(t, err)
+
+	sig, err := signer.SignDigest(data, intent)
+	require.NoError(t, err)
+	require.Equal(t, targetSig, sig.Secp256r1SuiSignature.Signature[:])
+}
+
 func TestSign(t *testing.T) {
 	tests := []struct {
 		name string
@@ -85,6 +115,10 @@ func TestSign(t *testing.T) {
 		{
 			name: "successful, secp256k1",
 			flag: suisigner.KeySchemeFlagSecp256k1,
+		},
+		{
+			name: "successful, secp256r1",
+			flag: suisigner.KeySchemeFlagSecp256r1,
 		},
 	}
 	for _, tt := range tests {

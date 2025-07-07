@@ -19,7 +19,12 @@ go get github.com/pattonkan/sui-go
 * Websocket implementation for chain event/transaction subscriber
 * Native Support of Sui's Programmable Transaction Blocks (PTB) by Programmable Transaction Builder (see see package [`suiptb`](sui/suiptb))
 * Decoder for easy decoding of returned Move objects in BCS format (see package [`movebcs`](sui/movebcs))
-
+* Broader key scheme support
+  * [x] Ed25519
+  * [x] Secp256k1
+  * [x] Secp256r1
+  * [ ] ZkLogin
+  * [ ] Passkey
 ## Usage
 
 ### Signer

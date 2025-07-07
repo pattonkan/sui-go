@@ -48,7 +48,7 @@ func NewSecp256k1SuiSignature(s *Signer, msg []byte) *Secp256k1SuiSignature {
 	sigBuffer.WriteByte(byte(KeySchemeFlagSecp256k1))
 	// if we call func sig.Serialize() it will serialize the signature in DER format.
 	// However, Sui requires the signature to be in raw R and S format.
-	rawRS, err := toRawRSFormat(sig)
+	rawRS, err := dcrecconcatRS(sig)
 	if err != nil {
 		return nil
 	}
@@ -60,7 +60,7 @@ func NewSecp256k1SuiSignature(s *Signer, msg []byte) *Secp256k1SuiSignature {
 	}
 }
 
-func toRawRSFormat(sig *secp256k1_ecdsa.Signature) ([64]byte, error) {
+func dcrecconcatRS(sig *secp256k1_ecdsa.Signature) ([64]byte, error) {
 	rawRS := [64]byte{}
 	r, err := hex.DecodeString(sig.R().String())
 	if err != nil {
