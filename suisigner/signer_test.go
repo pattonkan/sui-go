@@ -1,11 +1,17 @@
 package suisigner_test
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"testing"
 
+	"github.com/fardream/go-bcs/bcs"
+	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui/suiptb"
+	"github.com/pattonkan/sui-go/suiclient"
+	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
 
 	"github.com/stretchr/testify/require"
@@ -24,7 +30,7 @@ func TestSignatureMarshalUnmarshal(t *testing.T) {
 	msg := "I want to have some bubble tea"
 	msgBytes := []byte(msg)
 
-	signature1, err := signer.SignTransactionBlock(msgBytes, suisigner.DefaultIntent())
+	signature1, err := signer.SignDigest(msgBytes, suisigner.DefaultIntent())
 	require.NoError(t, err)
 
 	marshaledData, err := json.Marshal(signature1)
@@ -35,6 +41,126 @@ func TestSignatureMarshalUnmarshal(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, signature1, signature2)
+}
+
+func TestSignSecp256k1Static(t *testing.T) {
+	seed, err := hex.DecodeString("ac0c60b4cf8f6f975139f2594a059633386ff596b61e95b21dffbc1b30f197c1")
+	require.NoError(t, err)
+	targetSig, err := hex.DecodeString("0151405868ee0fcfb152873a8cc0b494aa8cb53fb8ba4967eefcfef0dbaff846d82a5e3b8f0cce5a7dfd99a0ecaaef3591eccb3e02f3cfaa3f01f484d0cf7e8d5c0295caed8aec9482012dffa084662f3e250f8d4bd4e63a13c1655d97d4a8e1182c")
+	require.NoError(t, err)
+	data := []byte("hello")
+
+	keypair := suisigner.NewKeypairSecp256k1FromSeed(seed)
+	require.NotNil(t, keypair)
+	signer := suisigner.NewSigner(seed, suisigner.KeySchemeFlagSecp256k1)
+
+	intent := suisigner.Intent{
+		Scope: suisigner.IntentScope{
+			PersonalMessage: &sui.EmptyEnum{},
+		},
+		Version: suisigner.IntentVersion{
+			V0: &sui.EmptyEnum{},
+		},
+		AppId: suisigner.AppId{
+			Sui: &sui.EmptyEnum{},
+		},
+	}
+	data, err = bcs.Marshal(data)
+	require.NoError(t, err)
+
+	sig, err := signer.SignDigest(data, intent)
+	require.NoError(t, err)
+	require.Equal(t, targetSig, sig.Secp256k1SuiSignature.Signature[:])
+}
+
+func TestSignSecp256r1Static(t *testing.T) {
+	seed, err := hex.DecodeString("a72c740033ddfeb3d22c5dc47d9b555e1d290d3c3b844554b0d94d311971767d")
+	require.NoError(t, err)
+	targetSig, err := hex.DecodeString("025a963dd9081366d9014aae2afd93761f62f8887ead54905c7fd8b20bf092678e251d182e32ff91a762be83ed89092f641435648f1e0d9c5ef1268b9e2c284fcf0387efef02e19fd54ae8b854dd79fa411169f76a9cbcc7711ec4de5ce444b31837")
+	require.NoError(t, err)
+	data := []byte("hello")
+
+	keypair := suisigner.NewKeypairSecp256r1FromSeed(seed)
+	require.NotNil(t, keypair)
+	signer := suisigner.NewSigner(seed, suisigner.KeySchemeFlagSecp256r1)
+
+	intent := suisigner.Intent{
+		Scope: suisigner.IntentScope{
+			PersonalMessage: &sui.EmptyEnum{},
+		},
+		Version: suisigner.IntentVersion{
+			V0: &sui.EmptyEnum{},
+		},
+		AppId: suisigner.AppId{
+			Sui: &sui.EmptyEnum{},
+		},
+	}
+	data, err = bcs.Marshal(data)
+	require.NoError(t, err)
+
+	sig, err := signer.SignDigest(data, intent)
+	require.NoError(t, err)
+	require.Equal(t, targetSig, sig.Secp256r1SuiSignature.Signature[:])
+}
+
+func TestSign(t *testing.T) {
+	tests := []struct {
+		name string
+		flag suisigner.KeySchemeFlag
+	}{
+		{
+			name: "successful, ed25519",
+			flag: suisigner.KeySchemeFlagEd25519,
+		},
+		{
+			name: "successful, secp256k1",
+			flag: suisigner.KeySchemeFlagSecp256k1,
+		},
+		{
+			name: "successful, secp256r1",
+			flag: suisigner.KeySchemeFlagSecp256r1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(
+			tt.name, func(t *testing.T) {
+				c, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, tt.flag, 0)
+
+				coinPages, err := c.GetCoins(context.Background(), &suiclient.GetCoinsRequest{Owner: signer.Address})
+				require.NoError(t, err)
+				coins := suiclient.Coins(coinPages.Data)
+
+				ptb := suiptb.NewTransactionDataTransactionBuilder()
+				err = ptb.PayAllSui(signer.Address)
+				require.NoError(t, err)
+				pt := ptb.Finish()
+				tx := suiptb.NewTransactionData(
+					signer.Address,
+					pt,
+					coins.CoinRefs(),
+					suiclient.DefaultGasBudget,
+					suiclient.DefaultGasPrice,
+				)
+				txBytes, err := bcs.Marshal(tx)
+				require.NoError(t, err)
+				options := &suiclient.SuiTransactionBlockResponseOptions{ShowEffects: true}
+
+				signature, err := signer.SignDigest(txBytes, suisigner.DefaultIntent())
+				require.NoError(t, err)
+				resp, err := c.ExecuteTransactionBlock(
+					context.TODO(),
+					&suiclient.ExecuteTransactionBlockRequest{
+						TxDataBytes: txBytes,
+						Signatures:  []*suisigner.Signature{&signature},
+						Options:     options,
+						RequestType: suiclient.TxnRequestTypeWaitForLocalExecution,
+					},
+				)
+				require.NoError(t, err)
+				require.True(t, resp.Effects.Data.IsSuccess())
+			},
+		)
+	}
 }
 
 func ExampleSigner() {

@@ -14,6 +14,11 @@ import (
 )
 
 const (
+	DerivationPathEd25519   = `m/44'/784'/0'/0'/0'`
+	DerivationPathSecp256k1 = `m/54'/784'/0'/0/0`
+)
+
+const (
 	FirstHardenedIndex = uint32(0x80000000)
 	seedModifier       = "ed25519 seed"
 )

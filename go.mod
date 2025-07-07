@@ -2,11 +2,10 @@ module github.com/pattonkan/sui-go
 
 go 1.23.0
 
-toolchain go1.23
-
 require (
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/coder/websocket v1.8.13
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0
 	github.com/fardream/go-bcs v0.7.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/stretchr/testify v1.9.0

@@ -1,7 +1,6 @@
 package suisigner
 
 import (
-	"bytes"
 	"crypto/ed25519"
 	"encoding/json"
 	"errors"
@@ -14,19 +13,21 @@ type Signature struct {
 }
 
 const (
-	SizeEd25519SuiSignature = ed25519.PublicKeySize + ed25519.SignatureSize + 1
+	SizeEd25519SuiSignature   = ed25519.PublicKeySize + ed25519.SignatureSize + 1
+	SizeSecp256k1SuiSignature = KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1
+	SizeSecp256r1SuiSignature = KeypairSecp256r1PublicKeySize + KeypairSecp256r1SignatureSize + 1
 )
-
-type Secp256k1SuiSignature struct {
-	Signature []byte //secp256k1.pubKey + Secp256k1Signature + 1
-}
-
-type Secp256r1SuiSignature struct {
-	Signature []byte //secp256k1.pubKey + Secp256k1Signature + 1
-}
 
 type Ed25519SuiSignature struct {
 	Signature [SizeEd25519SuiSignature]byte
+}
+
+type Secp256k1SuiSignature struct {
+	Signature [SizeSecp256k1SuiSignature]byte //secp256k1.pubKey + Secp256k1Signature + 1
+}
+
+type Secp256r1SuiSignature struct {
+	Signature [SizeSecp256r1SuiSignature]byte //secp256r1.pubKey + Secp256r1Signature + 1
 }
 
 func (s Signature) Bytes() []byte {
@@ -62,7 +63,7 @@ func (s *Signature) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch signature[0] {
-	case 0:
+	case KeySchemeFlagEd25519.Byte():
 		if len(signature) != ed25519.PublicKeySize+ed25519.SignatureSize+1 {
 			return errors.New("invalid ed25519 signature")
 		}
@@ -71,21 +72,17 @@ func (s *Signature) UnmarshalJSON(data []byte) error {
 		s.Ed25519SuiSignature = &Ed25519SuiSignature{
 			Signature: signatureBytes,
 		}
+	case KeySchemeFlagSecp256k1.Byte():
+		if len(signature) != KeypairSecp256k1PublicKeySize+KeypairSecp256k1SignatureSize+1 {
+			return errors.New("invalid secp256k1 signature")
+		}
+		var signatureBytes [KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1]byte
+		copy(signatureBytes[:], signature)
+		s.Secp256k1SuiSignature = &Secp256k1SuiSignature{
+			Signature: signatureBytes,
+		}
 	default:
 		return errors.New("not supported signature")
 	}
 	return nil
-}
-
-func NewEd25519SuiSignature(s *Signer, msg []byte) *Ed25519SuiSignature {
-	sig := ed25519.Sign(s.ed25519Keypair.PriKey, msg)
-
-	sigBuffer := bytes.NewBuffer([]byte{})
-	sigBuffer.WriteByte(byte(KeySchemeFlagEd25519))
-	sigBuffer.Write(sig[:])
-	sigBuffer.Write(s.ed25519Keypair.PubKey)
-
-	return &Ed25519SuiSignature{
-		Signature: [SizeEd25519SuiSignature]byte(sigBuffer.Bytes()),
-	}
 }

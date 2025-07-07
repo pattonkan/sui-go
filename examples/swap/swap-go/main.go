@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	suiClient, signer := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 0)
-	_, swapper := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, 1)
+	suiClient, signer := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+	_, swapper := suiclient.NewClient(conn.TestnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
 	fmt.Println("signer: ", signer.Address)
 	fmt.Println("swapper: ", swapper.Address)
 
