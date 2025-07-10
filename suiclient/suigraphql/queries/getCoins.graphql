@@ -1,0 +1,36 @@
+# Copyright (c) Mysten Labs, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+query GetCoins(
+	$owner: SuiAddress!,
+	# @genqlient(pointer: true)
+	$first: Int,
+	# @genqlient(pointer: true)
+	$cursor: String,
+	# @genqlient(pointer: true)
+	$fetchCoinType: String = "0x2::sui::SUI",
+) {
+	address(address: $owner) {
+		address
+		coins(first: $first, after: $cursor, type: $fetchCoinType) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			nodes {
+				coinBalance
+				contents {
+					type {
+						repr
+					}
+				}
+				address
+				version
+				digest
+				previousTransactionBlock {
+					digest
+				}
+			}
+		}
+	}
+}

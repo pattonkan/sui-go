@@ -14,6 +14,10 @@ const (
 	DevnetFaucetUrl   = "https://faucet.devnet.sui.io/v1/gas"
 	TestnetFaucetUrl  = "https://faucet.testnet.sui.io/v1/gas"
 	LocalnetFaucetUrl = "http://localhost:9123/gas"
+
+	DevnetGraphQLEndpointUrl  = "https://sui-devnet.mystenlabs.com/graphql"
+	TestnetGraphQLEndpointUrl = "https://sui-testnet.mystenlabs.com/graphql"
+	MainnetGraphQLEndpointUrl = "https://sui-mainnet.mystenlabs.com/graphql"
 )
 
 const (

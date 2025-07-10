@@ -1,0 +1,232 @@
+# Copyright (c) Mysten Labs, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+query GetOwnedObjects(
+	$owner: SuiAddress!
+	# @genqlient(pointer: true)
+	$limit: Int
+	# @genqlient(pointer: true)
+	$cursor: String
+	# @genqlient(pointer: true)
+	$showBcs: Boolean = false
+	# @genqlient(pointer: true)
+	$showContent: Boolean = false
+	# @genqlient(pointer: true)
+	$showDisplay: Boolean = false
+	# @genqlient(pointer: true)
+	$showType: Boolean = false
+	# @genqlient(pointer: true)
+	$showOwner: Boolean = false
+	# @genqlient(pointer: true)
+	$showPreviousTransaction: Boolean = false
+	# @genqlient(pointer: true)
+	$showStorageRebate: Boolean = false
+	# @genqlient(pointer: true)
+	$filter: ObjectFilter
+) {
+	address(address: $owner) {
+		objects(first: $limit, after: $cursor, filter: $filter) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			nodes {
+				...RPC_MOVE_OBJECT_FIELDS
+			}
+		}
+	}
+}
+
+query GetObject(
+	$id: SuiAddress!
+	# @genqlient(pointer: true)
+	$showBcs: Boolean = false
+	# @genqlient(pointer: true)
+	$showOwner: Boolean = false
+	# @genqlient(pointer: true)
+	$showPreviousTransaction: Boolean = false
+	# @genqlient(pointer: true)
+	$showContent: Boolean = false
+	# @genqlient(pointer: true)
+	$showDisplay: Boolean = false
+	# @genqlient(pointer: true)
+	$showType: Boolean = false
+	# @genqlient(pointer: true)
+	$showStorageRebate: Boolean = false
+) {
+	object(address: $id) {
+		...RPC_OBJECT_FIELDS
+	}
+}
+
+query TryGetPastObject(
+	$id: SuiAddress!
+	# @genqlient(pointer: true)
+	$version: UInt53
+	# @genqlient(pointer: true)
+	$showBcs: Boolean = false
+	# @genqlient(pointer: true)
+	$showOwner: Boolean = false
+	# @genqlient(pointer: true)
+	$showPreviousTransaction: Boolean = false
+	# @genqlient(pointer: true)
+	$showContent: Boolean = false
+	# @genqlient(pointer: true)
+	$showDisplay: Boolean = false
+	# @genqlient(pointer: true)
+	$showType: Boolean = false
+	# @genqlient(pointer: true)
+	$showStorageRebate: Boolean = false
+) {
+	current: object(address: $id) {
+		address
+		version
+	}
+	object(address: $id, version: $version) {
+		...RPC_OBJECT_FIELDS
+	}
+}
+
+query MultiGetObjects(
+	$ids: [SuiAddress!]!
+	# @genqlient(pointer: true)
+	$limit: Int
+	# @genqlient(pointer: true)
+	$cursor: String
+	# @genqlient(pointer: true)
+	$showBcs: Boolean = false
+	# @genqlient(pointer: true)
+	$showContent: Boolean = false
+	# @genqlient(pointer: true)
+	$showDisplay: Boolean = false
+	# @genqlient(pointer: true)
+	$showType: Boolean = false
+	# @genqlient(pointer: true)
+	$showOwner: Boolean = false
+	# @genqlient(pointer: true)
+	$showPreviousTransaction: Boolean = false
+	# @genqlient(pointer: true)
+	$showStorageRebate: Boolean = false
+) {
+	objects(first: $limit, after: $cursor, filter: { objectIds: $ids }) {
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		nodes {
+			...RPC_OBJECT_FIELDS
+		}
+	}
+}
+
+fragment RPC_OBJECT_FIELDS on Object {
+	objectId: address
+	version
+	asMoveObjectType: asMoveObject @include(if: $showType) {
+		contents {
+			type {
+				repr
+			}
+		}
+	}
+	asMoveObjectContent: asMoveObject @include(if: $showContent) {
+		hasPublicTransfer
+		contents {
+			data
+			type {
+				repr
+				layout
+				signature
+			}
+		}
+	}
+	asMoveObject @include(if: $showBcs) {
+		hasPublicTransfer
+		contents {
+			bcs
+			type {
+				repr
+			}
+		}
+	}
+	owner @include(if: $showOwner) {
+		...RPC_OBJECT_OWNER_FIELDS
+	}
+	previousTransactionBlock @include(if: $showPreviousTransaction) {
+		digest
+	}
+
+	storageRebate @include(if: $showStorageRebate)
+	digest
+	version
+	display @include(if: $showDisplay) {
+		key
+		value
+		error
+	}
+}
+
+fragment RPC_MOVE_OBJECT_FIELDS on MoveObject {
+	objectId: address
+	bcs @include(if: $showBcs)
+	contents_type: contents @include(if: $showType) {
+		type {
+			repr
+		}
+	}
+	hasPublicTransfer @include(if: $showContent)
+	contents_content: contents @include(if: $showContent) {
+		data
+		type {
+			repr
+			layout
+			signature
+		}
+	}
+
+	hasPublicTransfer @include(if: $showBcs)
+	contents @include(if: $showBcs) {
+		bcs
+		type {
+			repr
+		}
+	}
+
+	owner @include(if: $showOwner) {
+		...RPC_OBJECT_OWNER_FIELDS
+	}
+	previousTransactionBlock @include(if: $showPreviousTransaction) {
+		digest
+	}
+
+	storageRebate @include(if: $showStorageRebate)
+	digest
+	version
+	display @include(if: $showDisplay) {
+		key
+		value
+		error
+	}
+}
+
+fragment RPC_OBJECT_OWNER_FIELDS on ObjectOwner {
+	__typename
+	... on AddressOwner {
+		owner {
+			asObject {
+				address
+			}
+			asAddress {
+				address
+			}
+		}
+	}
+	... on Parent {
+		parent {
+			address
+		}
+	}
+	... on Shared {
+		initialSharedVersion
+	}
+}

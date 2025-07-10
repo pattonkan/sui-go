@@ -15,7 +15,11 @@ go get github.com/pattonkan/sui-go
 
 ## Features
 
-* Full coverage of Sui's JSON RPC APIs for both HTTP and Websocket
+* The most comprehensive support of Sui's communication protocols
+  * [x] HTTP JSON RPC
+  * [x] Websocket
+  * [x] GraphQL (see [`suigraphql`](suiclient/conn/graphql.go))
+  * [ ] gRPC
 * Websocket implementation for chain event/transaction subscriber
 * Native Support of Sui's Programmable Transaction Blocks (PTB) by Programmable Transaction Builder (see see package [`suiptb`](sui/suiptb))
 * Decoder for easy decoding of returned Move objects in BCS format (see package [`movebcs`](sui/movebcs))
@@ -23,6 +27,7 @@ go get github.com/pattonkan/sui-go
   * [x] Ed25519
   * [x] Secp256k1
   * [x] Secp256r1
+  * [ ] Multisig
   * [ ] ZkLogin
   * [ ] Passkey
 ## Usage

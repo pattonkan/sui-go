@@ -1,0 +1,29 @@
+schema:
+  - ./schema.graphql
+operations:
+  - ./queries/*.graphql
+generated: ./generated.go
+package: suigraphql
+
+# FIXME we need to go through the following bindings and make sure they are the best ones for the types
+bindings:
+  SuiAddress:
+    type: sui.Address
+  Base64:
+    type: sui.Base64
+  UInt53:
+    type: uint64
+  JSON:
+    type: json.RawMessage
+  BigInt:
+    type: sui.BigInt
+  DateTime:
+    type: time.Time
+  OpenMoveTypeSignature:
+    type: string
+  MoveTypeSignature:
+    type: string
+  MoveTypeLayout:
+    type: string
+  MoveData:
+    type: json.RawMessage
