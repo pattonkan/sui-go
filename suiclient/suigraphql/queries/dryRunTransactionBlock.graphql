@@ -1,0 +1,27 @@
+# Copyright (c) Mysten Labs, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+query DryRunTransactionBlock(
+	$txBytes: String!
+	# @genqlient(pointer: true)
+	$showBalanceChanges: Boolean = false
+	# @genqlient(pointer: true)
+	$showEffects: Boolean = false
+	# @genqlient(pointer: true)
+	$showRawEffects: Boolean = false
+	# @genqlient(pointer: true)
+	$showEvents: Boolean = false
+	# @genqlient(pointer: true)
+	$showInput: Boolean = false
+	# @genqlient(pointer: true)
+	$showObjectChanges: Boolean = false
+	# @genqlient(pointer: true)
+	$showRawInput: Boolean = false
+) {
+	dryRunTransactionBlock(txBytes: $txBytes) {
+		error
+		transaction {
+			...RPC_TRANSACTION_FIELDS
+		}
+	}
+}

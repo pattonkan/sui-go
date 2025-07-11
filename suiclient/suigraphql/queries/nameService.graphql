@@ -1,0 +1,30 @@
+# Copyright (c) Mysten Labs, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+query ResolveNameServiceAddress(
+	# @genqlient(pointer: true)
+	$domain: String!) {
+	resolveSuinsAddress(domain: $domain) {
+		address
+	}
+}
+
+query ResolveNameServiceNames(
+	$address: SuiAddress!,
+	# @genqlient(pointer: true)
+	$limit: Int,
+	# @genqlient(pointer: true)
+	$cursor: String,
+) {
+	address(address: $address) {
+		suinsRegistrations(first: $limit, after: $cursor) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			nodes {
+				domain
+			}
+		}
+	}
+}

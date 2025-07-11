@@ -1,0 +1,24 @@
+# Copyright (c) Mysten Labs, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+query GetNormalizedMoveModulesByPackage(
+	$packageId: SuiAddress!,
+	# @genqlient(pointer: true)
+	$cursor: String,
+) {
+	object(address: $packageId) {
+		asMovePackage {
+			address
+
+			modules(after: $cursor) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				nodes {
+					...RPC_MOVE_MODULE_FIELDS
+				}
+			}
+		}
+	}
+}
