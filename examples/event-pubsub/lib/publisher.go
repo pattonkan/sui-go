@@ -38,14 +38,14 @@ func (p *Publisher) PublishEvents(ctx context.Context, packageId *sui.PackageId)
 		log.Panic(err)
 	}
 
-	signature, err := p.signer.SignDigest(txnBytes.TxBytes.Data(), suisigner.DefaultIntent())
+	signature, err := p.signer.SignDigest(txnBytes.TxBytes.Data(), suisigner.IntentTransaction())
 	if err != nil {
 		log.Panic(err)
 	}
 
 	txnResponse, err := p.client.ExecuteTransactionBlock(ctx, &suiclient.ExecuteTransactionBlockRequest{
 		TxDataBytes: txnBytes.TxBytes.Data(),
-		Signatures:  []*suisigner.Signature{&signature},
+		Signatures:  []*suisigner.Signature{signature},
 		Options: &suiclient.SuiTransactionBlockResponseOptions{
 			ShowInput:          true,
 			ShowEffects:        true,

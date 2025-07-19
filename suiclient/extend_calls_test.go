@@ -11,13 +11,14 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 	"github.com/pattonkan/sui-go/utils"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestMintToken(t *testing.T) {
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
 
 	// module name is 'testcoin'
 	tokenPackageId, treasuryCap := deployTestcoin(t, client, signer)

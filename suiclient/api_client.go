@@ -5,6 +5,7 @@ import (
 
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 )
 
 type ClientImpl struct {
@@ -19,7 +20,7 @@ func NewClient(url string) *ClientImpl {
 }
 
 // test only. If localnet is used then iota network will be connect
-func (i *ClientImpl) WithSignerAndFund(seed []byte, flag suisigner.KeySchemeFlag, index int) (*ClientImpl, *suisigner.Signer) {
+func (i *ClientImpl) WithSignerAndFund(seed []byte, flag suicrypto.KeySchemeFlag, index int) (*ClientImpl, *suisigner.Signer) {
 	// there are only 256 different signers can be generated
 	signer := suisigner.NewSignerByIndex(seed, flag, index)
 	var faucetUrl string

@@ -1,4 +1,4 @@
-package suisigner
+package suicrypto
 
 import (
 	"bytes"

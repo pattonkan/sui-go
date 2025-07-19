@@ -1,7 +1,10 @@
 package suiptb
 
 import (
+	"github.com/fardream/go-bcs/bcs"
 	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suisigner"
+	"golang.org/x/crypto/blake2b"
 )
 
 var (
@@ -23,6 +26,17 @@ type TransactionData struct {
 }
 
 func (t TransactionData) IsBcsEnum() {}
+
+func (t TransactionData) SigningDigest() ([]byte, error) {
+	intent := suisigner.IntentTransaction()
+	msg, err := bcs.Marshal(t)
+	if err != nil {
+		return nil, err
+	}
+	data := suisigner.MessageWithIntent(intent, msg)
+	hash := blake2b.Sum256(data)
+	return hash[:], nil
+}
 
 type TransactionDataV1 struct {
 	Kind       TransactionKind

@@ -8,29 +8,29 @@ import (
 	"testing"
 
 	"github.com/fardream/go-bcs/bcs"
-	"github.com/pattonkan/sui-go/sui"
 	"github.com/pattonkan/sui-go/sui/suiptb"
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewSigner(t *testing.T) {
-	signer, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suisigner.KeySchemeFlagEd25519)
+	signer, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suicrypto.KeySchemeFlagEd25519)
 	require.NoError(t, err)
 	require.Equal(t, signer.Address, suisigner.TEST_ADDRESS)
 }
 
 func TestSignatureMarshalUnmarshal(t *testing.T) {
-	signer, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suisigner.KeySchemeFlagDefault)
+	signer, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suicrypto.KeySchemeFlagDefault)
 	require.NoError(t, err)
 
 	msg := "I want to have some bubble tea"
 	msgBytes := []byte(msg)
 
-	signature1, err := signer.SignDigest(msgBytes, suisigner.DefaultIntent())
+	signature1, err := signer.SignDigest(msgBytes, suisigner.IntentTransaction())
 	require.NoError(t, err)
 
 	marshaledData, err := json.Marshal(signature1)
@@ -40,7 +40,7 @@ func TestSignatureMarshalUnmarshal(t *testing.T) {
 	err = json.Unmarshal(marshaledData, &signature2)
 	require.NoError(t, err)
 
-	require.Equal(t, signature1, signature2)
+	require.Equal(t, *signature1, signature2)
 }
 
 func TestSignSecp256k1Static(t *testing.T) {
@@ -50,25 +50,14 @@ func TestSignSecp256k1Static(t *testing.T) {
 	require.NoError(t, err)
 	data := []byte("hello")
 
-	keypair := suisigner.NewKeypairSecp256k1FromSeed(seed)
+	keypair := suicrypto.NewKeypairSecp256k1FromSeed(seed)
 	require.NotNil(t, keypair)
-	signer := suisigner.NewSigner(seed, suisigner.KeySchemeFlagSecp256k1)
+	signer := suisigner.NewSigner(seed, suicrypto.KeySchemeFlagSecp256k1)
 
-	intent := suisigner.Intent{
-		Scope: suisigner.IntentScope{
-			PersonalMessage: &sui.EmptyEnum{},
-		},
-		Version: suisigner.IntentVersion{
-			V0: &sui.EmptyEnum{},
-		},
-		AppId: suisigner.AppId{
-			Sui: &sui.EmptyEnum{},
-		},
-	}
 	data, err = bcs.Marshal(data)
 	require.NoError(t, err)
 
-	sig, err := signer.SignDigest(data, intent)
+	sig, err := signer.SignDigest(data, suisigner.IntentPersonalMessage())
 	require.NoError(t, err)
 	require.Equal(t, targetSig, sig.Secp256k1SuiSignature.Signature[:])
 }
@@ -80,25 +69,14 @@ func TestSignSecp256r1Static(t *testing.T) {
 	require.NoError(t, err)
 	data := []byte("hello")
 
-	keypair := suisigner.NewKeypairSecp256r1FromSeed(seed)
+	keypair := suicrypto.NewKeypairSecp256r1FromSeed(seed)
 	require.NotNil(t, keypair)
-	signer := suisigner.NewSigner(seed, suisigner.KeySchemeFlagSecp256r1)
+	signer := suisigner.NewSigner(seed, suicrypto.KeySchemeFlagSecp256r1)
 
-	intent := suisigner.Intent{
-		Scope: suisigner.IntentScope{
-			PersonalMessage: &sui.EmptyEnum{},
-		},
-		Version: suisigner.IntentVersion{
-			V0: &sui.EmptyEnum{},
-		},
-		AppId: suisigner.AppId{
-			Sui: &sui.EmptyEnum{},
-		},
-	}
 	data, err = bcs.Marshal(data)
 	require.NoError(t, err)
 
-	sig, err := signer.SignDigest(data, intent)
+	sig, err := signer.SignDigest(data, suisigner.IntentPersonalMessage())
 	require.NoError(t, err)
 	require.Equal(t, targetSig, sig.Secp256r1SuiSignature.Signature[:])
 }
@@ -106,19 +84,19 @@ func TestSignSecp256r1Static(t *testing.T) {
 func TestSign(t *testing.T) {
 	tests := []struct {
 		name string
-		flag suisigner.KeySchemeFlag
+		flag suicrypto.KeySchemeFlag
 	}{
 		{
 			name: "successful, ed25519",
-			flag: suisigner.KeySchemeFlagEd25519,
+			flag: suicrypto.KeySchemeFlagEd25519,
 		},
 		{
 			name: "successful, secp256k1",
-			flag: suisigner.KeySchemeFlagSecp256k1,
+			flag: suicrypto.KeySchemeFlagSecp256k1,
 		},
 		{
 			name: "successful, secp256r1",
-			flag: suisigner.KeySchemeFlagSecp256r1,
+			flag: suicrypto.KeySchemeFlagSecp256r1,
 		},
 	}
 	for _, tt := range tests {
@@ -145,13 +123,13 @@ func TestSign(t *testing.T) {
 				require.NoError(t, err)
 				options := &suiclient.SuiTransactionBlockResponseOptions{ShowEffects: true}
 
-				signature, err := signer.SignDigest(txBytes, suisigner.DefaultIntent())
+				signature, err := signer.SignDigest(txBytes, suisigner.IntentTransaction())
 				require.NoError(t, err)
 				resp, err := c.ExecuteTransactionBlock(
 					context.TODO(),
 					&suiclient.ExecuteTransactionBlockRequest{
 						TxDataBytes: txBytes,
-						Signatures:  []*suisigner.Signature{&signature},
+						Signatures:  []*suisigner.Signature{signature},
 						Options:     options,
 						RequestType: suiclient.TxnRequestTypeWaitForLocalExecution,
 					},
@@ -166,16 +144,16 @@ func TestSign(t *testing.T) {
 func ExampleSigner() {
 	// Create a suisigner.Signer with mnemonic
 	mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-	signer1, _ := suisigner.NewSignerWithMnemonic(mnemonic, suisigner.KeySchemeFlagDefault)
+	signer1, _ := suisigner.NewSignerWithMnemonic(mnemonic, suicrypto.KeySchemeFlagDefault)
 	fmt.Printf("address   : %v\n", signer1.Address)
 
 	// Create suisigner.Signer with private key
 	privKey, _ := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-	signer2 := suisigner.NewSigner(privKey, suisigner.KeySchemeFlagDefault)
+	signer2 := suisigner.NewSigner(privKey, suicrypto.KeySchemeFlagDefault)
 
 	// Get private key, public key, address
-	fmt.Printf("privateKey: %x\n", signer2.PrivateKey()[:32])
-	fmt.Printf("publicKey : %x\n", signer2.PublicKey())
+	fmt.Printf("privateKey: %x\n", signer2.PrivateKeyBytes())
+	fmt.Printf("publicKey : %x\n", signer2.PublicKeyBytes())
 	fmt.Printf("address   : %v\n", signer2.Address)
 
 	// Output:

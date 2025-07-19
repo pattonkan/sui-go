@@ -1,9 +1,12 @@
 package suisigner
 
 import (
-	"crypto/ed25519"
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 )
 
 type Signature struct {
@@ -12,22 +15,16 @@ type Signature struct {
 	*Secp256r1SuiSignature
 }
 
-const (
-	SizeEd25519SuiSignature   = ed25519.PublicKeySize + ed25519.SignatureSize + 1
-	SizeSecp256k1SuiSignature = KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1
-	SizeSecp256r1SuiSignature = KeypairSecp256r1PublicKeySize + KeypairSecp256r1SignatureSize + 1
-)
-
 type Ed25519SuiSignature struct {
-	Signature [SizeEd25519SuiSignature]byte
+	Signature [suicrypto.SizeSuiSignatureEd25519]byte
 }
 
 type Secp256k1SuiSignature struct {
-	Signature [SizeSecp256k1SuiSignature]byte //secp256k1.pubKey + Secp256k1Signature + 1
+	Signature [suicrypto.SizeSuiSignatureSecp256k1]byte
 }
 
 type Secp256r1SuiSignature struct {
-	Signature [SizeSecp256r1SuiSignature]byte //secp256r1.pubKey + Secp256r1Signature + 1
+	Signature [suicrypto.SizeSuiSignatureSecp256r1]byte
 }
 
 func (s Signature) Bytes() []byte {
@@ -63,26 +60,81 @@ func (s *Signature) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch signature[0] {
-	case KeySchemeFlagEd25519.Byte():
-		if len(signature) != ed25519.PublicKeySize+ed25519.SignatureSize+1 {
+	case suicrypto.KeySchemeFlagEd25519.Byte():
+		if len(signature) != suicrypto.SizeSuiSignatureEd25519 {
 			return errors.New("invalid ed25519 signature")
 		}
-		var signatureBytes [ed25519.PublicKeySize + ed25519.SignatureSize + 1]byte
+		var signatureBytes [suicrypto.SizeSuiSignatureEd25519]byte
 		copy(signatureBytes[:], signature)
 		s.Ed25519SuiSignature = &Ed25519SuiSignature{
 			Signature: signatureBytes,
 		}
-	case KeySchemeFlagSecp256k1.Byte():
-		if len(signature) != KeypairSecp256k1PublicKeySize+KeypairSecp256k1SignatureSize+1 {
+	case suicrypto.KeySchemeFlagSecp256k1.Byte():
+		if len(signature) != suicrypto.SizeSuiSignatureSecp256k1 {
 			return errors.New("invalid secp256k1 signature")
 		}
-		var signatureBytes [KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1]byte
+		var signatureBytes [suicrypto.SizeSuiSignatureSecp256k1]byte
 		copy(signatureBytes[:], signature)
 		s.Secp256k1SuiSignature = &Secp256k1SuiSignature{
+			Signature: signatureBytes,
+		}
+	case suicrypto.KeySchemeFlagSecp256r1.Byte():
+		if len(signature) != suicrypto.SizeSuiSignatureSecp256r1 {
+			return errors.New("invalid secp256r1 signature")
+		}
+		var signatureBytes [suicrypto.SizeSuiSignatureSecp256r1]byte
+		copy(signatureBytes[:], signature)
+		s.Secp256r1SuiSignature = &Secp256r1SuiSignature{
 			Signature: signatureBytes,
 		}
 	default:
 		return errors.New("not supported signature")
 	}
 	return nil
+}
+
+func NewEd25519SuiSignature(s *suicrypto.KeypairEd25519, data []byte) (*Ed25519SuiSignature, error) {
+	sigBuffer := bytes.NewBuffer([]byte{})
+	sigBuffer.WriteByte(byte(suicrypto.KeySchemeFlagEd25519))
+
+	sig, err := s.Sign(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign data with ed25519: %w", err)
+	}
+	sigBuffer.Write(sig[:])
+	sigBuffer.Write(s.PubKey.Bytes())
+
+	return &Ed25519SuiSignature{
+		Signature: [suicrypto.SizeSuiSignatureEd25519]byte(sigBuffer.Bytes()),
+	}, nil
+}
+func NewSecp256k1SuiSignature(s *suicrypto.KeypairSecp256k1, data []byte) (*Secp256k1SuiSignature, error) {
+	sigBuffer := bytes.NewBuffer([]byte{})
+	sigBuffer.WriteByte(byte(suicrypto.KeySchemeFlagSecp256k1))
+
+	sig, err := s.Sign(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign data with secp256k1: %w", err)
+	}
+	sigBuffer.Write(sig[:])
+	sigBuffer.Write(s.PubKey.Bytes())
+
+	return &Secp256k1SuiSignature{
+		Signature: [suicrypto.SizeSuiSignatureSecp256k1]byte(sigBuffer.Bytes()),
+	}, nil
+}
+func NewSecp256r1SuiSignature(s *suicrypto.KeypairSecp256r1, data []byte) (*Secp256r1SuiSignature, error) {
+	sigBuffer := bytes.NewBuffer([]byte{})
+	sigBuffer.WriteByte(byte(suicrypto.KeySchemeFlagSecp256r1))
+
+	sig, err := s.Sign(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign data with secp256r1: %w", err)
+	}
+	sigBuffer.Write(sig[:])
+	sigBuffer.Write(s.PubKey.Bytes())
+
+	return &Secp256r1SuiSignature{
+		Signature: [suicrypto.SizeSuiSignatureSecp256r1]byte(sigBuffer.Bytes()),
+	}, nil
 }

@@ -10,13 +10,14 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 
 	"github.com/fardream/go-bcs/bcs"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDevInspectTransactionBlock(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
 	limit := uint(3)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,

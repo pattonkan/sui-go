@@ -19,7 +19,7 @@ func (s *ClientImpl) SignAndExecuteTransaction(
 	options *SuiTransactionBlockResponseOptions,
 ) (*SuiTransactionBlockResponse, error) {
 	// FIXME we need to support other intent
-	signature, err := signer.SignDigest(txBytes, suisigner.DefaultIntent())
+	signature, err := signer.SignDigest(txBytes, suisigner.IntentTransaction())
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign transaction block: %w", err)
 	}
@@ -27,7 +27,7 @@ func (s *ClientImpl) SignAndExecuteTransaction(
 		ctx,
 		&ExecuteTransactionBlockRequest{
 			TxDataBytes: txBytes,
-			Signatures:  []*suisigner.Signature{&signature},
+			Signatures:  []*suisigner.Signature{signature},
 			Options:     options,
 			RequestType: TxnRequestTypeWaitForLocalExecution,
 		},
