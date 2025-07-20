@@ -12,7 +12,9 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/multisig"
 	"github.com/pattonkan/sui-go/suisigner/suicrypto"
+	"github.com/pattonkan/sui-go/utils/randtypes"
 
 	"github.com/stretchr/testify/require"
 )
@@ -158,7 +160,75 @@ func ExampleSigner() {
 
 	// Output:
 	// address   : 0x1a02d61c6434b4d0ff252a880c04050b5f27c8b574026c98dd72268865c0ede5
-	// privateKey: 4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b
+	// privateKey: 4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b9342fa65507f5cf61f1b8fb3b94a5aa80fa9b2e2c68963e30d68a2660a50c57e
 	// publicKey : 9342fa65507f5cf61f1b8fb3b94a5aa80fa9b2e2c68963e30d68a2660a50c57e
 	// address   : 0x579a9ef1ca86431df106abb86f1f129806cd336b28f5bc17d16ce247aa3a0623
+}
+
+func TestMultisig(t *testing.T) {
+	seed1 := [32]byte{0x01}
+	keypair1 := suicrypto.NewKeypairSecp256k1FromSeed(seed1[:])
+	require.NotNil(t, keypair1)
+	seed2 := [32]byte{0x02}
+	keypair2 := suicrypto.NewKeypairSecp256r1FromSeed(seed2[:])
+	require.NotNil(t, keypair2)
+	seed3 := [32]byte{0x03}
+	keypair3 := suicrypto.NewKeypairEd25519FromSeed(seed3[:])
+	require.NotNil(t, keypair3)
+
+	committee := multisig.NewCommittee(
+		[]*multisig.Member{
+			{PublicKey: multisig.MemberPublicKey{Secp256k1PublicKey: keypair1.PubKey}, Weight: 2},
+			{PublicKey: multisig.MemberPublicKey{Secp256r1PublicKey: keypair2.PubKey}, Weight: 2},
+			{PublicKey: multisig.MemberPublicKey{Ed25519PublicKey: keypair3.PubKey}, Weight: 3},
+		},
+		3,
+	)
+
+	t.Run("pass threshold", func(t *testing.T) {
+		tx := randtypes.RandomTransactionData()
+		aggregator, err := multisig.NewAggregatorWithTransaction(committee, tx)
+		require.NoError(t, err)
+		digest, err := tx.SigningDigest()
+		require.NoError(t, err)
+		sig1, err := keypair1.Sign(digest)
+		require.NoError(t, err)
+		err = aggregator.AddSignature(multisig.MemberSignatureFromBytesSecp256k1(keypair1.PubKey, sig1))
+		require.NoError(t, err)
+		sig2, err := keypair2.Sign(digest)
+		require.NoError(t, err)
+		err = aggregator.AddSignature(multisig.MemberSignatureFromBytesSecp256r1(keypair2.PubKey, sig2))
+		require.NoError(t, err)
+		sig3, err := keypair3.Sign(digest)
+		require.NoError(t, err)
+		err = aggregator.AddSignature(multisig.MemberSignatureFromBytesEd25519(keypair3.PubKey, sig3))
+		require.NoError(t, err)
+
+		aggregatedSig1, err := aggregator.Finish()
+		require.NoError(t, err)
+		aggregatedSigBytes, err := bcs.Marshal(aggregatedSig1)
+		require.NoError(t, err)
+
+		verifier := multisig.Verifier{}
+		aggregatedSig2 := multisig.NewAggregatedSignature()
+		_, err = bcs.Unmarshal(aggregatedSigBytes, aggregatedSig2)
+		require.NoError(t, err)
+		err = verifier.VerifyAggregatedSignature(digest, aggregatedSig2)
+		require.NoError(t, err)
+	})
+
+	t.Run("insufficient weight", func(t *testing.T) {
+		tx := randtypes.RandomTransactionData()
+		aggregator, err := multisig.NewAggregatorWithTransaction(committee, tx)
+		require.NoError(t, err)
+		digest, err := tx.SigningDigest()
+		require.NoError(t, err)
+		sig1, err := keypair1.Sign(digest)
+		require.NoError(t, err)
+		err = aggregator.AddSignature(multisig.MemberSignatureFromBytesSecp256k1(keypair1.PubKey, sig1))
+		require.NoError(t, err)
+
+		_, err = aggregator.Finish()
+		require.Equal(t, fmt.Errorf("insufficient signature weight to reach threshold"), err)
+	})
 }

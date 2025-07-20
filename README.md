@@ -27,9 +27,10 @@ go get github.com/pattonkan/sui-go
   * [x] Ed25519
   * [x] Secp256k1
   * [x] Secp256r1
-  * [ ] Multisig
+  * [x] Multisig
   * [ ] ZkLogin
   * [ ] Passkey
+
 ## Usage
 
 ### Signer

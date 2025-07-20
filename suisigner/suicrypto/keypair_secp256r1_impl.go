@@ -96,3 +96,48 @@ func DeterministicSecp256r1Sign(priv *ecdsa.PrivateKey, msg []byte) (r, s *big.I
 
 	return r, s, nil
 }
+
+// Verifies a secp256r1 ECDSA signature (RFC 6979 compatible).
+func VerifySecp256r1(pub *ecdsa.PublicKey, msg []byte, r, s *big.Int) bool {
+	curve := pub.Curve
+	N := curve.Params().N
+
+	// Check that r and s are in the valid range
+	if r.Sign() <= 0 || s.Sign() <= 0 {
+		return false
+	}
+	if r.Cmp(N) >= 0 || s.Cmp(N) >= 0 {
+		return false
+	}
+
+	// Hash message
+	hash := sha256.Sum256(msg)
+	z := new(big.Int).SetBytes(hash[:])
+
+	// w = s^-1 mod n
+	w := new(big.Int).ModInverse(s, N)
+	if w == nil {
+		return false
+	}
+
+	// u1 = z * w mod n
+	u1 := new(big.Int).Mul(z, w)
+	u1.Mod(u1, N)
+
+	// u2 = r * w mod n
+	u2 := new(big.Int).Mul(r, w)
+	u2.Mod(u2, N)
+
+	// (x1, y1) = u1*G + u2*Q
+	x1, y1 := curve.ScalarBaseMult(u1.Bytes())
+	x2, y2 := curve.ScalarMult(pub.X, pub.Y, u2.Bytes())
+	X, Y := curve.Add(x1, y1, x2, y2)
+	if X == nil || Y == nil {
+		return false
+	}
+
+	// v = x1 mod n
+	v := new(big.Int).Mod(X, N)
+
+	return v.Cmp(r) == 0
+}
