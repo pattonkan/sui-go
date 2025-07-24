@@ -10,11 +10,13 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestCoinDecode(t *testing.T) {
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 10)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 10)
 	resGetCoins, err := client.GetCoins(context.TODO(), &suiclient.GetCoinsRequest{
 		Owner:    signer.Address,
 		CoinType: &sui.SuiCoinType,

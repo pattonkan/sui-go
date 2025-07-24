@@ -12,6 +12,7 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
 	api := suiclient.NewClient(conn.TestnetEndpointUrl)
-	sender, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suisigner.KeySchemeFlagDefault)
+	sender, err := suisigner.NewSignerWithMnemonic(suisigner.TEST_MNEMONIC, suicrypto.KeySchemeFlagDefault)
 	if err != nil {
 		log.Panic(err)
 	}

@@ -14,13 +14,14 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 	"github.com/pattonkan/sui-go/utils"
 )
 
 func TestPTBMoveCall(t *testing.T) {
 	t.Run(
 		"access_multiple_return_values_from_move_func", func(t *testing.T) {
-			client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+			client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
 			var modules utils.CompiledMoveModules
 			data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
 			require.NoError(t, err)
@@ -92,7 +93,7 @@ func TestPTBMoveCall(t *testing.T) {
 
 	t.Run(
 		"option<T> arguments", func(t *testing.T) {
-			client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+			client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
 			var modules utils.CompiledMoveModules
 			data, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
 			require.NoError(t, err)
@@ -153,8 +154,8 @@ func TestPTBMoveCall(t *testing.T) {
 }
 
 func TestPTBTransferObject(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
-	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 2,
@@ -195,8 +196,8 @@ func TestPTBTransferObject(t *testing.T) {
 }
 
 func TestPTBTransferSui(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
-	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 1,
@@ -237,8 +238,8 @@ func TestPTBTransferSui(t *testing.T) {
 }
 
 func TestPTBPayAllSui(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
-	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+	_, recipient := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 3,
@@ -277,9 +278,9 @@ func TestPTBPayAllSui(t *testing.T) {
 }
 
 func TestPTBPaySui(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
-	_, recipient1 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
-	_, recipient2 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 2)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+	_, recipient1 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
+	_, recipient2 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 2)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 1,
@@ -340,9 +341,9 @@ func TestPTBPaySui(t *testing.T) {
 }
 
 func TestPTBPay(t *testing.T) {
-	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
-	_, recipient1 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
-	_, recipient2 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 2)
+	client, sender := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+	_, recipient1 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
+	_, recipient2 := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 2)
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: sender.Address,
 		Limit: 3,

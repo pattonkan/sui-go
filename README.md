@@ -27,9 +27,10 @@ go get github.com/pattonkan/sui-go
   * [x] Ed25519
   * [x] Secp256k1
   * [x] Secp256r1
-  * [ ] Multisig
+  * [x] Multisig
   * [ ] ZkLogin
   * [ ] Passkey
+
 ## Usage
 
 ### Signer
@@ -41,12 +42,12 @@ import "github.com/pattonkan/sui-go/suisigner"
 
 // Create a suisigner.Signer with mnemonic
 mnemonic := "ordinary cry margin host traffic bulb start zone mimic wage fossil eight diagram clay say remove add atom"
-signer1, err := suisigner.NewSignerWithMnemonic(mnemonic, suisigner.KeySchemeFlagEd25519)
+signer1, err := suisigner.NewSignerWithMnemonic(mnemonic, suicrypto.KeySchemeFlagEd25519)
 fmt.Printf("address   : %v\n", signer1.Address)
 
 // create suisigner.Signer with seed
 seed, err := hex.DecodeString("4ec5a9eefc0bb86027a6f3ba718793c813505acc25ed09447caf6a069accdd4b")
-signer2 := suisigner.NewSigner(seed, suisigner.KeySchemeFlagDefault)
+signer2 := suisigner.NewSigner(seed, suicrypto.KeySchemeFlagDefault)
 
 // Get private key, public key, address
 fmt.Printf("privateKey: %x\n", signer2.PrivateKey()[:32])

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/blake2b"
 )
@@ -17,25 +18,25 @@ var (
 
 // FIXME support more than ed25519
 type Signer struct {
-	KeypairEd25519   *KeypairEd25519
-	KeypairSecp256k1 *KeypairSecp256k1
-	KeypairSecp256r1 *KeypairSecp256r1
+	KeypairEd25519   *suicrypto.KeypairEd25519
+	KeypairSecp256k1 *suicrypto.KeypairSecp256k1
+	KeypairSecp256r1 *suicrypto.KeypairSecp256r1
 	Address          *sui.Address
 }
 
-func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
+func NewSigner(seed []byte, flag suicrypto.KeySchemeFlag) *Signer {
 	signer := Signer{}
 
 	// IOTA_DIFF iota ignore flag when signature scheme is ed25519
 	switch flag {
-	case KeySchemeFlagEd25519:
-		k := NewKeypairEd25519FromSeed(seed)
+	case suicrypto.KeySchemeFlagEd25519:
+		k := suicrypto.NewKeypairEd25519FromSeed(seed)
 		signer.KeypairEd25519 = k
-	case KeySchemeFlagSecp256k1:
-		k := NewKeypairSecp256k1FromSeed(seed)
+	case suicrypto.KeySchemeFlagSecp256k1:
+		k := suicrypto.NewKeypairSecp256k1FromSeed(seed)
 		signer.KeypairSecp256k1 = k
-	case KeySchemeFlagSecp256r1:
-		k := NewKeypairSecp256r1FromSeed(seed)
+	case suicrypto.KeySchemeFlagSecp256r1:
+		k := suicrypto.NewKeypairSecp256r1FromSeed(seed)
 		signer.KeypairSecp256r1 = k
 	default:
 		panic("unrecognizable key scheme flag")
@@ -45,7 +46,7 @@ func NewSigner(seed []byte, flag KeySchemeFlag) *Signer {
 }
 
 // there are only 256 different signers can be generated
-func NewSignerByIndex(seed []byte, flag KeySchemeFlag, index int) *Signer {
+func NewSignerByIndex(seed []byte, flag suicrypto.KeySchemeFlag, index int) *Signer {
 	seed[0] = seed[0] + byte(index)
 	return NewSigner(seed, flag)
 }
@@ -55,7 +56,7 @@ func NewSignerByIndex(seed []byte, flag KeySchemeFlag, index int) *Signer {
 // let phrase = "asset pink record dawn hundred sure various crime client enforce carbon blossom";
 // let mut keystore = Keystore::from(InMemKeystore::new_insecure_for_tests(0));
 // let generated_address = keystore.import_from_mnemonic(&phrase, SignatureScheme::ED25519, None, None).unwrap();
-func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error) {
+func NewSignerWithMnemonic(mnemonic string, flag suicrypto.KeySchemeFlag) (*Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
 		return nil, err
@@ -63,10 +64,11 @@ func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error)
 
 	var derivePath string
 	switch flag {
-	case KeySchemeFlagEd25519:
+	case suicrypto.KeySchemeFlagEd25519:
 		derivePath = DerivationPathEd25519
-	case KeySchemeFlagSecp256k1:
+	case suicrypto.KeySchemeFlagSecp256k1:
 		derivePath = DerivationPathSecp256k1
+	// FIXME support secp256r1
 	default:
 		return nil, fmt.Errorf("unsupported key scheme")
 	}
@@ -78,25 +80,27 @@ func NewSignerWithMnemonic(mnemonic string, flag KeySchemeFlag) (*Signer, error)
 	return NewSigner(key.Key, flag), nil
 }
 
-func (s *Signer) PrivateKey() []byte {
+func (s *Signer) PrivateKeyBytes() []byte {
 	switch {
 	case s.KeypairEd25519 != nil:
-		return s.KeypairEd25519.PriKey
+		return s.KeypairEd25519.PriKey.Bytes()
 	case s.KeypairSecp256k1 != nil:
-		return s.KeypairSecp256k1.PriKey.Serialize()
+		return s.KeypairSecp256k1.PriKey.Bytes()
+	case s.KeypairSecp256r1 != nil:
+		return s.KeypairSecp256r1.PriKey.Bytes()
 	default:
 		return nil
 	}
 }
 
-func (s *Signer) PublicKey() []byte {
+func (s *Signer) PublicKeyBytes() []byte {
 	switch {
 	case s.KeypairEd25519 != nil:
-		return s.KeypairEd25519.PubKey
+		return s.KeypairEd25519.PubKey.Bytes()
 	case s.KeypairSecp256k1 != nil:
-		return s.KeypairSecp256k1.PubKey.SerializeCompressed()
+		return s.KeypairSecp256k1.PubKey.Bytes()
 	case s.KeypairSecp256r1 != nil:
-		return compressSecp256r1PublicKey(s.KeypairSecp256r1.PubKey)
+		return s.KeypairSecp256r1.PubKey.Bytes()
 	default:
 		return nil
 	}
@@ -113,41 +117,62 @@ func (s *Signer) PublicKey() []byte {
 //	}
 //
 // SimpleSignature include Ed25519, Secp256k1, and Secp256r1 signatures
-func (s *Signer) Sign(data []byte) Signature {
-	var sig Signature
+func (s *Signer) Sign(data []byte) (*Signature, error) {
+	var sigRes Signature
 	switch {
 	case s.KeypairEd25519 != nil:
-		sig.Ed25519SuiSignature = NewEd25519SuiSignature(s, data)
+		sig, err := NewEd25519SuiSignature(s.KeypairEd25519, data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to sign: %w", err)
+		}
+		sigRes.Ed25519SuiSignature = sig
 	case s.KeypairSecp256k1 != nil:
-		sig.Secp256k1SuiSignature = NewSecp256k1SuiSignature(s, data)
+		sig, err := NewSecp256k1SuiSignature(s.KeypairSecp256k1, data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to sign: %w", err)
+		}
+		sigRes.Secp256k1SuiSignature = sig
 	case s.KeypairSecp256r1 != nil:
-		sig.Secp256r1SuiSignature = NewSecp256r1SuiSignature(s, data)
+		sig, err := NewSecp256r1SuiSignature(s.KeypairSecp256r1, data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to sign: %w", err)
+		}
+		sigRes.Secp256r1SuiSignature = sig
 	default:
 		panic("signer does not have keypair")
 	}
-	return sig
+	return &sigRes, nil
 }
 
 // it is the signing_digest() interface in Sui Rust SDK
-func (a *Signer) SignDigest(msg []byte, intent Intent) (Signature, error) {
+func SigningDigest(msg []byte, intent Intent) []byte {
 	data := MessageWithIntent(intent, bcsBytes(msg))
 	hash := blake2b.Sum256(data)
-	return a.Sign(hash[:]), nil
+	return hash[:]
 }
 
-func (a *Signer) calculateAddress(flag KeySchemeFlag) *sui.Address {
+// SignDigest is a general implementation of sui-rust-sdk's
+// `fn sign_transaction(&self, transaction: &Transaction)` and
+// fn sign_personal_message(&self, message: &PersonalMessage<'_>,)
+// These two functions are the same except the contents of Intent are different.
+func (a *Signer) SignDigest(msg []byte, intent Intent) (*Signature, error) {
+	hash := SigningDigest(msg, intent)
+	return a.Sign(hash)
+}
+
+func (a *Signer) calculateAddress(flag suicrypto.KeySchemeFlag) *sui.Address {
 	var buf []byte
 	switch flag {
-	case KeySchemeFlagEd25519:
-		buf = []byte{KeySchemeFlagEd25519.Byte()}
-	case KeySchemeFlagSecp256k1:
-		buf = []byte{KeySchemeFlagSecp256k1.Byte()}
-	case KeySchemeFlagSecp256r1:
-		buf = []byte{KeySchemeFlagSecp256r1.Byte()}
+	case suicrypto.KeySchemeFlagEd25519:
+		buf = []byte{suicrypto.KeySchemeFlagEd25519.Byte()}
+	case suicrypto.KeySchemeFlagSecp256k1:
+		buf = []byte{suicrypto.KeySchemeFlagSecp256k1.Byte()}
+	case suicrypto.KeySchemeFlagSecp256r1:
+		buf = []byte{suicrypto.KeySchemeFlagSecp256r1.Byte()}
 	default:
 		panic("unrecognizable key scheme flag")
 	}
-	buf = append(buf, a.PublicKey()...)
+	buf = append(buf, a.PublicKeyBytes()...)
 	addrBytes := blake2b.Sum256(buf)
 	addr := "0x" + hex.EncodeToString(addrBytes[:])
 	return sui.MustAddressFromHex(addr)

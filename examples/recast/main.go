@@ -10,11 +10,12 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
 	"github.com/pattonkan/sui-go/utils"
 )
 
 func main() {
-	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 0)
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
 
 	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{
 		Owner: signer.Address,

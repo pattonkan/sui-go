@@ -10,6 +10,8 @@ import (
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
+	"github.com/pattonkan/sui-go/suisigner/suicrypto"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -107,8 +109,8 @@ func TestGetDynamicFields(t *testing.T) {
 
 func TestGetOwnedObjects(t *testing.T) {
 	t.Run("struct tag", func(t *testing.T) {
-		client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
-		client.WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
+		client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
+		client.WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
 		structTag, err := sui.StructTagFromString("0x2::coin::Coin<0x2::sui::SUI>")
 		require.NoError(t, err)
 		query := suiclient.SuiObjectResponseQuery{
@@ -136,8 +138,8 @@ func TestGetOwnedObjects(t *testing.T) {
 	})
 
 	t.Run("move module", func(t *testing.T) {
-		client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
-		client.WithSignerAndFund(suisigner.TEST_SEED, suisigner.KeySchemeFlagDefault, 1)
+		client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
+		client.WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 1)
 		query := suiclient.SuiObjectResponseQuery{
 			Filter: &suiclient.SuiObjectDataFilter{
 				AddressOwner: signer.Address,

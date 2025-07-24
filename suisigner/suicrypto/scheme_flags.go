@@ -1,9 +1,8 @@
-package suisigner
+package suicrypto
 
-import (
-	"math"
-)
+import "math"
 
+// KeySchemeFlag represents the type of key scheme used for signatures.
 type KeySchemeFlag byte
 
 var KeySchemeFlagDefault = KeySchemeFlagEd25519
@@ -44,8 +43,3 @@ func (k KeySchemeFlag) String() string {
 		return "Unknown"
 	}
 }
-
-const (
-	PublicKeyLengthEd25519   = 32
-	PublicKeyLengthSecp256k1 = 33
-)

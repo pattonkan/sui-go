@@ -16,10 +16,24 @@ type Intent struct {
 	AppId AppId
 }
 
-func DefaultIntent() Intent {
+func IntentTransaction() Intent {
 	return Intent{
 		Scope: IntentScope{
 			TransactionData: &sui.EmptyEnum{},
+		},
+		Version: IntentVersion{
+			V0: &sui.EmptyEnum{},
+		},
+		AppId: AppId{
+			Sui: &sui.EmptyEnum{},
+		},
+	}
+}
+
+func IntentPersonalMessage() Intent {
+	return Intent{
+		Scope: IntentScope{
+			PersonalMessage: &sui.EmptyEnum{},
 		},
 		Version: IntentVersion{
 			V0: &sui.EmptyEnum{},
