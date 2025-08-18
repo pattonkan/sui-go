@@ -5,24 +5,7 @@ import (
 	"math/bits"
 )
 
-// pub struct MultisigAggregatedSignature {
-//     /// The plain signature encoded with signature scheme.
-//     ///
-//     /// The signatures must be in the same order as they are listed in the committee.
-//     #[cfg_attr(feature = "proptest", any(proptest::collection::size_range(0..=10).lift()))]
-//     signatures: Vec<MultisigMemberSignature>,
-//     /// A bitmap that indicates the position of which public key the signature should be
-//     /// authenticated with.
-//     bitmap: BitmapUnit,
-//     /// Legacy encoding for the bitmap.
-//     //TODO implement a strategy for legacy bitmap
-//     #[cfg_attr(feature = "proptest", strategy(proptest::strategy::Just(None)))]
-//     legacy_bitmap: Option<roaring::RoaringBitmap>,
-//     /// The public key encoded with each public key with its signature scheme used along with the
-//     /// corresponding weight.
-//     committee: MultisigCommittee,
-// }
-
+// 'MultisigAggregatedSignature' in sui-rust-sdk
 type AggregatedSignature struct {
 	Signatures []*MemberSignature
 	Bitmap     BitmapUnit

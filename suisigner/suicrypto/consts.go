@@ -6,8 +6,8 @@ import (
 
 // Sui signatures are composed of a scheme flag, a public key, and a signature.
 // The byte layout is as follows:
-// | scheme flag | public key in bytes.   | signature in bytes    |
-// | 1 byte      | Keypair*PublicKeySize  | Keypair*SignatureSize |
+// | scheme flag | public key in bytes.    | signature in bytes     |
+// | 1 byte      | Keypair PublicKey Size  | Keypair Signature Size |
 const (
 	SizeSuiSignatureEd25519   = KeypairEd25519PublicKeySize + KeypairEd25519SignatureSize + 1
 	SizeSuiSignatureSecp256k1 = KeypairSecp256k1PublicKeySize + KeypairSecp256k1SignatureSize + 1

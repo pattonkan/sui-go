@@ -4,16 +4,6 @@ import (
 	"bytes"
 )
 
-// pub struct MultisigCommittee {
-//     /// A list of committee members and their corresponding weight.
-//     #[cfg_attr(feature = "proptest", any(proptest::collection::size_range(0..=10).lift()))]
-//     members: Vec<MultisigMember>,
-
-//	    /// If the total weight of the public keys corresponding to verified signatures is larger than
-//	    /// threshold, the Multisig is verified.
-//	    threshold: ThresholdUnit,
-//	}
-
 type Committee struct {
 	Members   []*Member
 	Threshold ThresholdUnit

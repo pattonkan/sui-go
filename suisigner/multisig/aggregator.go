@@ -35,40 +35,6 @@ func NewAggregatorWithTransaction(
 // 	return &Aggregator{}
 // }
 
-// pub fn add_signature(&mut self, signature: UserSignature) -> Result<(), SignatureError> {
-//     use std::collections::btree_map::Entry;
-
-//     let (public_key, signature) = multisig_pubkey_and_signature_from_user_signature(signature)?;
-//     let member_idx = self
-//         .committee
-//         .members()
-//         .iter()
-//         .position(|member| member.public_key() == &public_key)
-//         .ok_or_else(|| {
-//             SignatureError::from_source(
-//                 "provided signature does not belong to committee member",
-//             )
-//         })?;
-
-//     self.verifier()
-//         .verify_member_signature(&self.message, &public_key, &signature)?;
-
-//     match self.signatures.entry(member_idx) {
-//         Entry::Vacant(v) => {
-//             v.insert(signature);
-//         }
-//         Entry::Occupied(_) => {
-//             return Err(SignatureError::from_source(
-//                 "duplicate signature from same committee member",
-//             ))
-//         }
-//     }
-
-//     self.signed_weight += self.committee.members()[member_idx].weight() as u16;
-
-//     Ok(())
-// }
-
 func (a *Aggregator) AddSignature(signature *MemberSignature) error {
 	pubkey, _, err := signature.ExtractPubkeyAndSignature()
 	if err != nil {
