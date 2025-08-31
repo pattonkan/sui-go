@@ -118,8 +118,8 @@ type SuiObjectData struct {
 	Display interface{} `json:"display,omitempty"`
 }
 
-func (data *SuiObjectData) Ref() sui.ObjectRef {
-	return sui.ObjectRef{
+func (data *SuiObjectData) Ref() *sui.ObjectRef {
+	return &sui.ObjectRef{
 		ObjectId: data.ObjectId,
 		Version:  data.Version.Uint64(),
 		Digest:   data.Digest,

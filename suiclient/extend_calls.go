@@ -257,7 +257,7 @@ func BCS_RequestAddStake(
 
 func BCS_RequestWithdrawStake(
 	signer *sui.Address,
-	stakedSuiRef sui.ObjectRef,
+	stakedSuiRef *sui.ObjectRef,
 	gas []*sui.ObjectRef,
 	gasBudget, gasPrice uint64,
 ) ([]byte, error) {
@@ -269,7 +269,7 @@ func BCS_RequestWithdrawStake(
 	}
 	arg1, err := ptb.Obj(
 		suiptb.ObjectArg{
-			ImmOrOwnedObject: &stakedSuiRef,
+			ImmOrOwnedObject: stakedSuiRef,
 		},
 	)
 	if err != nil {
