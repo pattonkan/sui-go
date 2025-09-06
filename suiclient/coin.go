@@ -1,6 +1,7 @@
 package suiclient
 
 import (
+	"encoding/json"
 	"math/big"
 
 	"github.com/pattonkan/sui-go/sui"
@@ -29,6 +30,14 @@ func (c *Coin) Ref() *sui.ObjectRef {
 
 func (c *Coin) IsSUI() bool {
 	return c.CoinType == sui.SuiCoinType
+}
+
+func (c Coin) String() string {
+	b, err := json.Marshal(c)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }
 
 type CoinFields struct {
@@ -70,6 +79,14 @@ func (cs Coins) ObjectIdVals() []sui.ObjectId {
 		coinIds[idx] = *coin.CoinObjectId
 	}
 	return coinIds
+}
+
+func (cs Coins) String() string {
+	b, err := json.Marshal(cs)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }
 
 func (cs Coins) CoinIds() []*sui.Address {
