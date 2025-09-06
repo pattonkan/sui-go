@@ -126,6 +126,17 @@ func (data *SuiObjectData) Ref() *sui.ObjectRef {
 	}
 }
 
+func (data *SuiObjectData) RefSharedObject() *sui.ObjectRef {
+	if data.Owner == nil || data.Owner.Shared == nil || data.Owner.Shared.InitialSharedVersion == nil {
+		panic("SuiObjectData.Owner is empty")
+	}
+	return &sui.ObjectRef{
+		ObjectId: data.ObjectId,
+		Version:  *data.Owner.Shared.InitialSharedVersion,
+		Digest:   data.Digest,
+	}
+}
+
 type SuiObjectDataOptions struct {
 	/* Whether to fetch the object type, default to be false */
 	ShowType bool `json:"showType,omitempty"`
