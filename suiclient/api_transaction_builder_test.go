@@ -9,7 +9,9 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/fardream/go-bcs/bcs"
 	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui/suiptb"
 	"github.com/pattonkan/sui-go/suiclient"
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
@@ -168,6 +170,93 @@ func TestMoveCall(t *testing.T) {
 
 	require.Equal(t, []byte("haha"), res[0])
 	require.Equal(t, []byte("gogo"), res[1])
+}
+
+func TestGetFuncReturnValue(t *testing.T) {
+	client, signer := suiclient.NewClient(conn.LocalnetEndpointUrl).WithSignerAndFund(suisigner.TEST_SEED, suicrypto.KeySchemeFlagDefault, 0)
+
+	jsonData, err := os.ReadFile(utils.GetGitRoot() + "/contracts/sdk_verify/contract_base64.json")
+	require.NoError(t, err)
+
+	var modules utils.CompiledMoveModules
+	err = json.Unmarshal(jsonData, &modules)
+	require.NoError(t, err)
+
+	txnBytes, err := client.Publish(
+		context.Background(),
+		&suiclient.PublishRequest{
+			Sender:          signer.Address,
+			CompiledModules: modules.Modules,
+			Dependencies:    modules.Dependencies,
+			GasBudget:       sui.NewBigInt(suiclient.DefaultGasBudget),
+		},
+	)
+	require.NoError(t, err)
+	txnResponse, err := client.SignAndExecuteTransaction(
+		context.Background(),
+		signer,
+		txnBytes.TxBytes,
+		&suiclient.SuiTransactionBlockResponseOptions{
+			ShowEffects:       true,
+			ShowObjectChanges: true,
+		},
+	)
+	require.NoError(t, err)
+	require.True(t, txnResponse.Effects.Data.IsSuccess())
+
+	packageId, err := txnResponse.GetPublishedPackageId()
+	require.NoError(t, err)
+
+	ptb := suiptb.NewTransactionDataTransactionBuilder()
+	ptb.Command(suiptb.Command{
+		MoveCall: &suiptb.ProgrammableMoveCall{
+			Package:       packageId,
+			Module:        "sdk_verify",
+			Function:      "ret_two_1",
+			TypeArguments: []sui.TypeTag{},
+			Arguments:     []suiptb.Argument{},
+		},
+	})
+	pt := ptb.Finish()
+
+	coinPages, err := client.GetCoins(context.Background(), &suiclient.GetCoinsRequest{Owner: signer.Address})
+	require.NoError(t, err)
+
+	coins := suiclient.Coins(coinPages.Data)
+	tx := suiptb.NewTransactionData(
+		signer.Address,
+		pt,
+		[]*sui.ObjectRef{coins[0].Ref()},
+		suiclient.DefaultGasBudget,
+		suiclient.DefaultGasPrice,
+	)
+	txBytes, err := bcs.Marshal(tx.V1.Kind)
+	require.NoError(t, err)
+
+	resp, err := client.DevInspectTransactionBlock(
+		context.Background(),
+		&suiclient.DevInspectTransactionBlockRequest{
+			SenderAddress: signer.Address,
+			TxKindBytes:   txBytes,
+		},
+	)
+	require.NoError(t, err)
+	expectedResults := []suiclient.ExecutionResultType{
+		{
+			ReturnValues: []suiclient.ReturnValueType{
+				{
+					Data:    []byte{1, 0, 0, 0, 0, 0, 0, 0},
+					TypeTag: sui.MustNewTypeTag("u64"),
+				},
+				{
+					Data:    []byte{2, 0, 0, 0},
+					TypeTag: sui.MustNewTypeTag("u32"),
+				},
+			},
+		},
+	}
+	require.Equal(t, expectedResults, resp.Results)
+	// fmt.Println("resp.Results: ", resp.Results)
 }
 
 func TestPay(t *testing.T) {

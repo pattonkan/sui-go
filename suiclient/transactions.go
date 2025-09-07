@@ -1,6 +1,8 @@
 package suiclient
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -329,8 +331,57 @@ func (r *SuiTransactionBlockResponse) GetCreatedObjectInfo(module string, objNam
 	return nil, "", fmt.Errorf("not found")
 }
 
-type ReturnValueType interface{}
-type MutableReferenceOutputType interface{}
+type ReturnValueType struct {
+	Data    []byte
+	TypeTag *sui.TypeTag
+}
+
+func (r *ReturnValueType) UnmarshalJSON(b []byte) error {
+	var tuple []json.RawMessage
+	if err := json.Unmarshal(b, &tuple); err != nil {
+		return fmt.Errorf("ReturnValueType: not a tuple: %w", err)
+	}
+	if len(tuple) != 2 {
+		return fmt.Errorf("ReturnValueType: expected 2 elements, got %d", len(tuple))
+	}
+
+	// decode bytes (either array-of-nums or base64 string)
+	var asBytes []byte
+	if err := json.Unmarshal(tuple[0], &asBytes); err != nil {
+		var asString string
+		if err2 := json.Unmarshal(tuple[0], &asString); err2 != nil {
+			return fmt.Errorf("ReturnValueType: data must be []byte or base64 string: %v / %v", err, err2)
+		}
+		dec, err3 := base64.StdEncoding.DecodeString(asString)
+		if err3 != nil {
+			return fmt.Errorf("ReturnValueType: base64 decode: %w", err3)
+		}
+		asBytes = dec
+	}
+	r.Data = asBytes
+
+	// decode TypeTag
+	var ttStr string
+	if err := json.Unmarshal(tuple[1], &ttStr); err == nil {
+		tt, err := sui.NewTypeTag(ttStr)
+		if err != nil {
+			return fmt.Errorf("ReturnValueType: parse TypeTag %q: %w", ttStr, err)
+		}
+		r.TypeTag = tt
+		return nil
+	}
+
+	// Otherwise try to unmarshal directly into the SDK's TypeTag (if it supports JSON)
+	var tt sui.TypeTag
+	if err := json.Unmarshal(tuple[1], &tt); err != nil {
+		return fmt.Errorf("ReturnValueType: unmarshal TypeTag: %w", err)
+	}
+	r.TypeTag = &tt
+	return nil
+}
+
+type MutableReferenceOutputType json.RawMessage
+
 type ExecutionResultType struct {
 	MutableReferenceOutputs []MutableReferenceOutputType `json:"mutableReferenceOutputs,omitempty"`
 	ReturnValues            []ReturnValueType            `json:"returnValues,omitempty"`
