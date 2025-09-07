@@ -319,8 +319,8 @@ func (r *SuiTransactionBlockResponse) GetCreatedObjectInfo(module string, objNam
 			if resource.Module == module && resource.ObjectName == objName {
 				return &change.Data.Created.ObjectId, change.Data.Created.ObjectType, nil
 			}
-			for ; resource != nil; resource = resource.SubTypes[0] {
-				if resource.Module == module && resource.ObjectName == objName {
+			for _, subtype := range resource.SubTypes {
+				if subtype.Module == module && subtype.ObjectName == objName {
 					return &change.Data.Created.ObjectId, change.Data.Created.ObjectType, nil
 				}
 			}
