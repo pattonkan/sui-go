@@ -39,8 +39,8 @@ github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1/go.mod h1:hyedUtir6IdtD/7lIxGeC
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 h1:NMZiJj8QnKe1LgsbDayM4UoHwbvwDRwnI3hwNaAHRnc=
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0/go.mod h1:ZXNYxsqcloTdSy/rNShjYzMhyjf0LaoftYK0p+A3h40=
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
-github.com/fardream/go-bcs v0.8.7 h1:Wi6Kd54zTXl+eNf08RNui+7/qy6tP7S4fq4vUtUchXk=
-github.com/fardream/go-bcs v0.8.7/go.mod h1:8xND2wUkBFUpfbxOe9iiso7jQEYeZPkn0crLfR7IRw4=
+github.com/fardream/go-bcs v0.9.0 h1:EXokzBIYafo/n/DhVO8mQKucTI/iIQREbapp4TK4KEY=
+github.com/fardream/go-bcs v0.9.0/go.mod h1:8xND2wUkBFUpfbxOe9iiso7jQEYeZPkn0crLfR7IRw4=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

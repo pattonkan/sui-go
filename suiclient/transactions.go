@@ -267,6 +267,29 @@ func (o ObjectChange) Content() string {
 	return ""
 }
 
+func (o ObjectChange) String() string {
+	s := ""
+	if o.Published != nil {
+		s = fmt.Sprintf("Published: %v", o.Published)
+	}
+	if o.Transferred != nil {
+		s = fmt.Sprintf("Transferred: %v", o.Transferred)
+	}
+	if o.Mutated != nil {
+		s = fmt.Sprintf("Mutated: %v", o.Mutated)
+	}
+	if o.Deleted != nil {
+		s = fmt.Sprintf("Deleted: %v", o.Deleted)
+	}
+	if o.Wrapped != nil {
+		s = fmt.Sprintf("Wrapped: %v", o.Wrapped)
+	}
+	if o.Created != nil {
+		s = fmt.Sprintf("Created: %v", o.Created)
+	}
+	return s
+}
+
 type BalanceChange struct {
 	Owner    ObjectOwner    `json:"owner"`
 	CoinType sui.ObjectType `json:"coinType"`
