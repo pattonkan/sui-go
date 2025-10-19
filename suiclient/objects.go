@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pattonkan/sui-go/sui"
+	"github.com/pattonkan/sui-go/sui/suiptb"
 )
 
 type SuiObjectRef struct {
@@ -126,6 +127,7 @@ func (data *SuiObjectData) Ref() *sui.ObjectRef {
 	}
 }
 
+// need to enable ShowOwner option
 func (data *SuiObjectData) RefSharedObject() *sui.ObjectRef {
 	if data.Owner == nil || data.Owner.Shared == nil || data.Owner.Shared.InitialSharedVersion == nil {
 		panic("SuiObjectData.Owner is empty")
@@ -134,6 +136,18 @@ func (data *SuiObjectData) RefSharedObject() *sui.ObjectRef {
 		ObjectId: data.ObjectId,
 		Version:  *data.Owner.Shared.InitialSharedVersion,
 		Digest:   data.Digest,
+	}
+}
+
+// need to enable ShowOwner option
+func (data *SuiObjectData) SharedObjectArg(mutable bool) *suiptb.SharedObjectArg {
+	if data.Owner == nil || data.Owner.Shared == nil || data.Owner.Shared.InitialSharedVersion == nil {
+		panic("SuiObjectData.Owner is empty")
+	}
+	return &suiptb.SharedObjectArg{
+		Id:                   data.ObjectId,
+		InitialSharedVersion: *data.Owner.Shared.InitialSharedVersion,
+		Mutable:              mutable,
 	}
 }
 
