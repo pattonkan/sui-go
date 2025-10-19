@@ -41,6 +41,10 @@ type NestedResult struct {
 
 func (a Argument) IsBcsEnum() {}
 
+func GetArgumentGasCoin() Argument {
+	return Argument{GasCoin: &sui.EmptyEnum{}}
+}
+
 type ProgrammableMoveCall struct {
 	Package       *sui.PackageId
 	Module        sui.Identifier
