@@ -40,6 +40,10 @@ type HttpClient struct {
 }
 
 func NewHttpClient(url string) *HttpClient {
+	return NewHttpClientWithTimeout(url, 30*time.Second)
+}
+
+func NewHttpClientWithTimeout(url string, timeout time.Duration) *HttpClient {
 	return &HttpClient{
 		url: strings.TrimRight(url, "/"),
 		client: &http.Client{
