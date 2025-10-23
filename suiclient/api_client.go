@@ -2,6 +2,7 @@ package suiclient
 
 import (
 	"context"
+	"time"
 
 	"github.com/pattonkan/sui-go/suiclient/conn"
 	"github.com/pattonkan/sui-go/suisigner"
@@ -16,6 +17,12 @@ type ClientImpl struct {
 func NewClient(url string) *ClientImpl {
 	return &ClientImpl{
 		http: conn.NewHttpClient(url),
+	}
+}
+
+func NewClientWithTimeout(url string, timeout time.Duration) *ClientImpl {
+	return &ClientImpl{
+		http: conn.NewHttpClientWithTimeout(url, timeout),
 	}
 }
 

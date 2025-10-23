@@ -71,11 +71,11 @@ type SuiRawMoveObject struct {
 
 // FIXME Replace with sui.MovePackage
 type SuiRawMovePackage struct {
-	Id              *sui.ObjectId         `json:"id"`
-	Version         sui.SequenceNumber    `json:"version"`
-	ModuleMap       map[string]sui.Base64 `json:"moduleMap"`
-	TypeOriginTable []sui.TypeOrigin      `json:"typeOriginTable"`
-	LinkageTable    map[sui.ObjectId]sui.UpgradeInfo
+	Id              *sui.ObjectId              `json:"id"`
+	Version         sui.SequenceNumber         `json:"version"`
+	ModuleMap       map[string]sui.Base64      `json:"moduleMap"`
+	TypeOriginTable []sui.TypeOrigin           `json:"typeOriginTable"`
+	LinkageTable    map[string]sui.UpgradeInfo `json:"linkageTable"`
 }
 
 type SuiObjectData struct {
