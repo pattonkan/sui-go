@@ -127,15 +127,15 @@ func (data *SuiObjectData) Ref() *sui.ObjectRef {
 	}
 }
 
-// need to enable ShowOwner option
-func (data *SuiObjectData) RefSharedObject() *sui.ObjectRef {
+func (data *SuiObjectData) SharedObjectRef() *sui.SharedObjectRef {
 	if data.Owner == nil || data.Owner.Shared == nil || data.Owner.Shared.InitialSharedVersion == nil {
 		panic("SuiObjectData.Owner is empty")
 	}
-	return &sui.ObjectRef{
-		ObjectId: data.ObjectId,
-		Version:  *data.Owner.Shared.InitialSharedVersion,
-		Digest:   data.Digest,
+	return &sui.SharedObjectRef{
+		Id:                   data.ObjectId,
+		Digest:               data.Digest,
+		Version:              data.Version.Uint64(),
+		InitialSharedVersion: *data.Owner.Shared.InitialSharedVersion,
 	}
 }
 
