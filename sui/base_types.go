@@ -47,8 +47,9 @@ type ObjectRef struct {
 
 type SharedObjectRef struct {
 	Id                   *ObjectId      `json:"id"`
-	InitialSharedVersion SequenceNumber `json:"initial_shared_version"`
+	Digest               *ObjectDigest  `json:"digest"`
 	Version              SequenceNumber `json:"version"`
+	InitialSharedVersion SequenceNumber `json:"initial_shared_version"`
 	Mutable              bool           `json:"mutable"`
 }
 
