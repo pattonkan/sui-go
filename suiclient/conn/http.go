@@ -49,9 +49,9 @@ func NewHttpClientWithTimeout(url string, timeout time.Duration) *HttpClient {
 		client: &http.Client{
 			Transport: &http.Transport{
 				MaxIdleConns:    3,
-				IdleConnTimeout: 30 * time.Second,
+				IdleConnTimeout: timeout,
 			},
-			Timeout: 30 * time.Second,
+			Timeout: timeout,
 		},
 	}
 }

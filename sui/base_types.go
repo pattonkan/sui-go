@@ -45,6 +45,13 @@ type ObjectRef struct {
 	Digest   *ObjectDigest  `json:"digest"`
 }
 
+type SharedObjectRef struct {
+	Id                   *ObjectId      `json:"id"`
+	InitialSharedVersion SequenceNumber `json:"initial_shared_version"`
+	Version              SequenceNumber `json:"version"`
+	Mutable              bool           `json:"mutable"`
+}
+
 type MoveObjectType struct {
 	Other     *StructTag
 	GasCoin   *EmptyEnum

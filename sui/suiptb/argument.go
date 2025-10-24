@@ -35,3 +35,13 @@ func (o ObjectArg) id() *sui.ObjectId {
 		return &sui.ObjectId{}
 	}
 }
+
+func ObjectArgFromSharedObjectRef(ref *sui.SharedObjectRef, mutable bool) ObjectArg {
+	return ObjectArg{
+		SharedObject: &SharedObjectArg{
+			Id:                   ref.Id,
+			InitialSharedVersion: ref.InitialSharedVersion,
+			Mutable:              mutable,
+		},
+	}
+}
