@@ -26,3 +26,11 @@ var (
 	SuiClockObjectSharedVersion              = SequenceNumber(1)
 	SuiAuthenticatorStateObjectSharedVersion = SequenceNumber(1)
 )
+
+var (
+	SuiClockSharedObjectRef = SharedObjectRef{
+		Id:                   MustAddressFromHex("0x6"),
+		InitialSharedVersion: SuiClockObjectSharedVersion,
+		Mutable:              false,
+	}
+)
