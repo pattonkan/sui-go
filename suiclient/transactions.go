@@ -403,7 +403,9 @@ func (r *ReturnValueType) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type MutableReferenceOutputType json.RawMessage
+// Use a type alias so encoding/json treats this as json.RawMessage
+// and preserves raw JSON instead of attempting []byte (base64) decoding.
+type MutableReferenceOutputType = json.RawMessage
 
 type ExecutionResultType struct {
 	MutableReferenceOutputs []MutableReferenceOutputType `json:"mutableReferenceOutputs,omitempty"`
