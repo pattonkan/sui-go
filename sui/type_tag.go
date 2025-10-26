@@ -123,7 +123,7 @@ func (t1 TypeTag) Equal(t2 TypeTag) bool {
 
 func parseStructTypeArgs(structTypeParams string) ([]TypeTag, error) {
 	var retTypeTag []TypeTag
-	tokens := splitGenericParameters(structTypeParams, nil)
+	tokens := splitGenericParameters(structTypeParams, []string{"<", ">"})
 	for _, tok := range tokens {
 		elt, err := NewTypeTag(tok)
 		if err != nil {
