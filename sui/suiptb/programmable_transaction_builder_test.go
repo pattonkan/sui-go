@@ -3,6 +3,7 @@ package suiptb_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 
@@ -420,4 +421,40 @@ func TestPTBPay(t *testing.T) {
 	require.NoError(t, err)
 	txBytesRemote := txn.TxBytes.Data()
 	require.Equal(t, txBytes, txBytesRemote)
+}
+
+func TestToString(t *testing.T) {
+	ptb := suiptb.NewTransactionDataTransactionBuilder()
+	ptb.Command(
+		suiptb.Command{
+			MoveCall: &suiptb.ProgrammableMoveCall{
+				Package:       sui.MustPackageIdFromHex("0x123"),
+				Module:        "sdk_verify",
+				Function:      "ret_two_1",
+				TypeArguments: []sui.TypeTag{},
+				Arguments: []suiptb.Argument{
+					ptb.MustPure("hi"),
+					ptb.MustPure([]byte{7, 8, 9}),
+				},
+			},
+		},
+	)
+	ptb.Command(
+		suiptb.Command{
+			MoveCall: &suiptb.ProgrammableMoveCall{
+				Package:       sui.MustPackageIdFromHex("0x123"),
+				Module:        "sdk_verify",
+				Function:      "ret_two_2",
+				TypeArguments: []sui.TypeTag{},
+				Arguments: []suiptb.Argument{
+					{NestedResult: &suiptb.NestedResult{Cmd: 0, Result: 1}},
+					{NestedResult: &suiptb.NestedResult{Cmd: 0, Result: 0}},
+				},
+			},
+		},
+	)
+
+	pt := ptb.Finish()
+	fmt.Println("pt.CommandsToString(): ", pt.CommandsToString())
+	fmt.Println("pt.InputsToString(): ", pt.InputsToString())
 }
