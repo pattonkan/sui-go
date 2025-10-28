@@ -3,16 +3,16 @@ package suiptb
 import "github.com/pattonkan/sui-go/sui"
 
 type CallArg struct {
-	Pure   *[]byte
-	Object *ObjectArg
+	Pure   *[]byte    `json:"pure,omitempty"`
+	Object *ObjectArg `json:"object,omitempty"`
 }
 
 func (c CallArg) IsBcsEnum() {}
 
 type ObjectArg struct {
-	ImmOrOwnedObject *sui.ObjectRef
-	SharedObject     *SharedObjectArg
-	Receiving        *sui.ObjectRef
+	ImmOrOwnedObject *sui.ObjectRef   `json:"imm_or_owned_object,omitempty"`
+	SharedObject     *SharedObjectArg `json:"shared_object,omitempty"`
+	Receiving        *sui.ObjectRef   `json:"receiving,omitempty"`
 }
 
 type SharedObjectArg struct {

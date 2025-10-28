@@ -1,6 +1,7 @@
 package suiptb
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -22,6 +23,21 @@ type ProgrammableTransactionBuilder struct {
 type ProgrammableTransaction struct {
 	Inputs   []CallArg
 	Commands []Command
+}
+
+func (p ProgrammableTransaction) CommandsToString() string {
+	b, err := json.Marshal(&p.Commands)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
+func (p ProgrammableTransaction) InputsToString() string {
+	b, err := json.Marshal(&p.Inputs)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }
 
 type BuilderArg struct {
