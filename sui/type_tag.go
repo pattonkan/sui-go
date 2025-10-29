@@ -11,18 +11,18 @@ import (
 // this is enum `TypeTag` in `external-crates/move/crates/move-core-types/src/language_storage.rs`
 // each field should be the same as enum `TypeTag` there
 type TypeTag struct {
-	Bool    *EmptyEnum
-	U8      *EmptyEnum
-	U64     *EmptyEnum
-	U128    *EmptyEnum
-	Address *EmptyEnum
-	Signer  *EmptyEnum
-	Vector  *TypeTag
-	Struct  *StructTag
+	Bool    *EmptyEnum `json:"bool,omitempty"`
+	U8      *EmptyEnum `json:"u8,omitempty"`
+	U64     *EmptyEnum `json:"u64,omitempty"`
+	U128    *EmptyEnum `json:"u128,omitempty"`
+	Address *EmptyEnum `json:"address,omitempty"`
+	Signer  *EmptyEnum `json:"signer,omitempty"`
+	Vector  *TypeTag   `json:"vector,omitempty"`
+	Struct  *StructTag `json:"struct,omitempty"`
 
-	U16  *EmptyEnum
-	U32  *EmptyEnum
-	U256 *EmptyEnum
+	U16  *EmptyEnum `json:"u16,omitempty"`
+	U32  *EmptyEnum `json:"u32,omitempty"`
+	U256 *EmptyEnum `json:"u256,omitempty"`
 }
 
 func (t TypeTag) IsBcsEnum() {}
