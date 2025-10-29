@@ -10,17 +10,17 @@ import (
 // https://sdk.mystenlabs.com/typescript/transaction-building/basics#object-references
 // https://docs.sui.io/concepts/transactions/prog-txn-blocks
 type Command struct {
-	MoveCall        *ProgrammableMoveCall
-	TransferObjects *ProgrammableTransferObjects
-	SplitCoins      *ProgrammableSplitCoins
-	MergeCoins      *ProgrammableMergeCoins
+	MoveCall        *ProgrammableMoveCall        `json:"move_call,omitempty"`
+	TransferObjects *ProgrammableTransferObjects `json:"transfer_objects,omitempty"`
+	SplitCoins      *ProgrammableSplitCoins      `json:"split_coins,omitempty"`
+	MergeCoins      *ProgrammableMergeCoins      `json:"merge_coins,omitempty"`
 	// `Publish` publishes a Move package. Returns the upgrade capability object.
-	Publish *ProgrammablePublish
+	Publish *ProgrammablePublish `json:"publish,omitempty"`
 	// `MakeMoveVec` constructs a vector of objects that can be passed into a moveCall.
 	// This is required as there’s no way to define a vector as an input.
-	MakeMoveVec *ProgrammableMakeMoveVec
+	MakeMoveVec *ProgrammableMakeMoveVec `json:"make_move_vec,omitempty"`
 	// upgrades a Move package
-	Upgrade *ProgrammableUpgrade
+	Upgrade *ProgrammableUpgrade `json:"upgrade,omitempty"`
 }
 
 func (c Command) IsBcsEnum() {}
@@ -53,14 +53,14 @@ func (c Command) String() string {
 type Argument struct {
 	// The gas coin. The gas coin can only be used by-ref, except for with
 	// `TransferObjects`, which can use it by-value.
-	GasCoin *sui.EmptyEnum
+	GasCoin *sui.EmptyEnum `json:"gas_coin,omitempty"`
 	// One of the input objects or primitive values (from `ProgrammableTransaction` inputs)
-	Input *uint16
+	Input *uint16 `json:"input,omitempty"`
 	// The result of another transaction (from `ProgrammableTransaction` transactions)
-	Result *uint16
+	Result *uint16 `json:"result,omitempty"`
 	// Like a `Result` but it accesses a nested result. Currently, the only usage of this is to access a
 	// value from a Move call with multiple return values.
-	NestedResult *NestedResult
+	NestedResult *NestedResult `json:"nested_result,omitempty"`
 }
 type NestedResult struct {
 	Cmd    uint16 // command index
