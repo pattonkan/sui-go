@@ -23,7 +23,7 @@ type Event struct {
 	// Move event type.
 	Type *sui.StructTag `json:"type"`
 	// Parsed json value of the event
-	ParsedJson interface{} `json:"parsedJson,omitempty"`
+	ParsedJson json.RawMessage `json:"parsedJson,omitempty"`
 	// Base 58 encoded bcs bytes of the move event
 	Bcs         sui.Base64  `json:"bcs"`
 	TimestampMs *sui.BigInt `json:"timestampMs,omitempty"`
