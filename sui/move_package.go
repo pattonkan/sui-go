@@ -15,6 +15,6 @@ type TypeOrigin struct {
 }
 
 type UpgradeInfo struct {
-	UpgradedId      ObjectId
-	UpgradedVersion SequenceNumber
+	UpgradedId      ObjectId       `json:"upgraded_id"`
+	UpgradedVersion SequenceNumber `json:"upgraded_version"`
 }
