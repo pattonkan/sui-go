@@ -24,7 +24,7 @@ type DynamicFieldName struct {
 
 type DynamicFieldInfo struct {
 	Name       DynamicFieldName                    `json:"name"`
-	BcsName    sui.Base58                          `json:"bcsName"`
+	BcsName    sui.Base64                          `json:"bcsName"`
 	Type       WrapperTaggedJson[DynamicFieldType] `json:"type"`
 	ObjectType sui.ObjectType                      `json:"objectType"`
 	ObjectId   sui.ObjectId                        `json:"objectId"`
