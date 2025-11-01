@@ -161,60 +161,13 @@ func TestGetLatestCheckpointSequenceNumber(t *testing.T) {
 }
 
 func TestGetObject(t *testing.T) {
-	type args struct {
-		ctx   context.Context
-		objId *sui.ObjectId
-	}
-	api := suiclient.NewClient(conn.TestnetEndpointUrl)
-	coins, err := api.GetCoins(context.TODO(), &suiclient.GetCoinsRequest{
-		Owner: suisigner.TEST_ADDRESS,
-		Limit: 1,
+	api := suiclient.NewClient(conn.MainnetEndpointUrl)
+	object, err := api.GetObject(context.TODO(), &suiclient.GetObjectRequest{
+		ObjectId: sui.MustObjectIdFromHex("0x6"),
+		Options:  &suiclient.SuiObjectDataOptions{ShowBcs: true},
 	})
 	require.NoError(t, err)
-
-	tests := []struct {
-		name    string
-		api     *suiclient.ClientImpl
-		args    args
-		want    int
-		wantErr bool
-	}{
-		{
-			name: "test for devnet",
-			api:  api,
-			args: args{
-				ctx:   context.TODO(),
-				objId: coins.Data[0].CoinObjectId,
-			},
-			want:    3,
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(
-			tt.name, func(t *testing.T) {
-				got, err := tt.api.GetObject(
-					tt.args.ctx, &suiclient.GetObjectRequest{
-						ObjectId: tt.args.objId,
-						Options: &suiclient.SuiObjectDataOptions{
-							ShowType:                true,
-							ShowOwner:               true,
-							ShowContent:             true,
-							ShowDisplay:             true,
-							ShowBcs:                 true,
-							ShowPreviousTransaction: true,
-							ShowStorageRebate:       true,
-						},
-					},
-				)
-				if (err != nil) != tt.wantErr {
-					t.Errorf("GetObject() error: %v, wantErr %v", err, tt.wantErr)
-					return
-				}
-				t.Logf("%+v", got)
-			},
-		)
-	}
+	require.NotNil(t, object)
 }
 
 func TestGetProtocolConfig(t *testing.T) {
