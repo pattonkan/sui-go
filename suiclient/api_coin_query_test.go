@@ -102,15 +102,13 @@ func TestGetCoinMetadata(t *testing.T) {
 	api := suiclient.NewClient(conn.TestnetEndpointUrl)
 	metadata, err := api.GetCoinMetadata(context.TODO(), sui.SuiCoinType)
 	require.NoError(t, err)
-	testSuiMetadata := &suiclient.CoinMetadata{
-		Decimals:    9,
-		Description: "",
-		IconUrl:     "",
-		Id:          sui.MustObjectIdFromHex("0x587c29de216efd4219573e08a1f6964d4fa7cb714518c2c8a0f29abfa264327d"),
-		Name:        "Sui",
-		Symbol:      "SUI",
-	}
-	require.Equal(t, testSuiMetadata, metadata)
+
+	// On shared testnet the metadata object ID can change after upgrades/migrations.
+	// Keep assertions on stable protocol-level fields.
+	require.Equal(t, uint8(9), metadata.Decimals)
+	require.Equal(t, "Sui", metadata.Name)
+	require.Equal(t, "SUI", metadata.Symbol)
+	require.NotNil(t, metadata.Id)
 }
 
 func TestGetCoins(t *testing.T) {
