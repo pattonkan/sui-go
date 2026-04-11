@@ -13,6 +13,27 @@ Sui Golang SDK
 go get github.com/pattonkan/sui-go
 ```
 
+## Development
+
+For contributors and AI-assisted workflows:
+
+* Read [`AGENTS.md`](AGENTS.md) for repository-specific working rules.
+* Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup and PR workflow.
+* Use standardized commands:
+
+```sh
+make deps
+make check
+make test-unit
+```
+
+Integration tests may require local Sui/faucet services:
+
+```sh
+sui start --force-regenesis --with-faucet=9123
+make test-integration
+```
+
 ## Features
 
 * The most comprehensive support of Sui's communication protocols
